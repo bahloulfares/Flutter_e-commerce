@@ -1,0 +1,505 @@
+[{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a93"
+  },
+  "articleID": "60a18f135cac7624f04676b9",
+  "designation": "XIAOMI Redmi 9 - 6.53\" - 4 Go - 64 Go",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658750695/images/xioami.jpg.jpg",
+  "marque": "Xioami",
+  "prix": 440,
+  "qtestock": 93,
+  "reference": "redmi9",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad2"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451556428"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a89"
+  },
+  "articleID": "60a171315508622064fcbbb5",
+  "designation": "Delice Punch Orange 1,5L",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754135/images/deliceorange.jpg.jpg",
+  "marque": "Delice",
+  "prix": 1.6,
+  "qtestock": 85,
+  "reference": "delpush",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5acb"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451641415"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a86"
+  },
+  "articleID": "60a16f4e5508622064fcbbb2",
+  "designation": "Delice Lait UHT demi-écrémé - 1L",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754255/images/laitdelice.jpg.jpg",
+  "marque": "Delice",
+  "prix": 1.2,
+  "qtestock": 1000,
+  "reference": "lait",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5acc"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451608454"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a8a"
+  },
+  "articleID": "60a171bc5508622064fcbbb6",
+  "designation": "Sicam DCT 1/2 SICAM",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658755124/images/sicamtomate.jpg.jpg",
+  "marque": "Sicam",
+  "prix": 2.3,
+  "qtestock": 85,
+  "reference": "Sicamtom",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5acd"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451650838"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a99"
+  },
+  "articleID": "60a22db911241a2650cfd3c7",
+  "designation": "Lenovo PC Portable ThinkBook - i3 10è Gén-4Go-1To-Gris",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754720/images/lenov21.jpg.jpg",
+  "marque": "Lenovo",
+  "prix": 1100,
+  "qtestock": 20,
+  "reference": "lenov1",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad3"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451500455"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a8f"
+  },
+  "articleID": "60a18c345cac7624f04676b5",
+  "designation": "Tecno Spark 6 - 6.8\" - 4 Go - 128 Go",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658755208/images/tecno.jpg.jpg",
+  "marque": "Tecno",
+  "prix": 370,
+  "qtestock": 80,
+  "reference": "TecnoOC",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad2"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451735333"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a8b"
+  },
+  "articleID": "60a173325508622064fcbbb7",
+  "designation": "El Manar Lot de 3 Thon entier Extra - A l'huile d'olive",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658755235/images/fnarThon.jpg.jpg",
+  "marque": "Elmanar",
+  "prix": 8.9,
+  "qtestock": 85,
+  "reference": "thon",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5acd"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451657470"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a8e"
+  },
+  "articleID": "60a18b345cac7624f04676b4",
+  "designation": "Samsung Galaxy A02 s - 6.5\" - 4Go - 64Go - Noir",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754339/images/samsungGalaxy1.jpg.jpg",
+  "marque": "Samsung",
+  "prix": 380,
+  "qtestock": 100,
+  "reference": "GalaxyA02",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad2"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451693382"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a90"
+  },
+  "articleID": "60a18cde5cac7624f04676b6",
+  "designation": "Samsung Galaxy A12 - 6.5\" - 4 Go - 128 Go",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658751429/images/about.jpg.jpg",
+  "marque": "Samsung",
+  "prix": 543,
+  "qtestock": 123,
+  "reference": "A12",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad2"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451712088"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a85"
+  },
+  "articleID": "60a16eba5508622064fcbbb1",
+  "designation": "Al Jazira Huile de grignons d'olive",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658751537/images/huilealjazeera.jpg.jpg",
+  "marque": "Al Jazira",
+  "prix": 20.3,
+  "qtestock": 120,
+  "reference": "Huilejs",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ace"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451600009"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a8d"
+  },
+  "articleID": "60a189eb5cac7624f04676b3",
+  "designation": "Infinix Smart 5 - 6.6\" - 3 Go - 64 Go - Quetzal Cyan",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754656/images/infinix2.jpg.jpg",
+  "marque": "280",
+  "prix": {
+    "$numberDecimal": "10"
+  },
+  "qtestock": 25,
+  "reference": "Infinix",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad2"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451685693"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a9c"
+  },
+  "articleID": "60a22f6511241a2650cfd3ca",
+  "designation": "Versus Pc portable V-Book - 2 Go",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658755316/images/versus2.jpg.jpg",
+  "marque": "Versus",
+  "prix": 300,
+  "qtestock": 49,
+  "reference": "VersusVBOO",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad8"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451481780"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a8c"
+  },
+  "articleID": "60a17e995cac7624f04676b2",
+  "designation": "Delice Déli'O Menthe - 25Cl",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754036/images/delicedelio.jpg.jpg",
+  "marque": "Delice",
+  "prix": 0.59,
+  "qtestock": 98,
+  "reference": "delio",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5acb"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689696654452"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a91"
+  },
+  "articleID": "60a18db35cac7624f04676b7",
+  "designation": "Tecno Pop 4 - 6\"- 2Go - 32Go",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658755185/images/tecno1.jpg.jpg",
+  "marque": "Tecno",
+  "prix": 220,
+  "qtestock": 85,
+  "reference": "Techno4",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad2"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451708641"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a88"
+  },
+  "articleID": "60a170c05508622064fcbbb4",
+  "designation": "Sanabel Carthage Farine Paquet De 1Kg",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754214/images/farine.jpg.jpg",
+  "marque": "Sanabel Carthage",
+  "prix": 1.6,
+  "qtestock": 220,
+  "reference": "farsan",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5aca"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451631930"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a9b"
+  },
+  "articleID": "60a22eeb11241a2650cfd3c9",
+  "designation": "DELL PC Inspiron 5570",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754060/images/dell.jpg.jpg",
+  "marque": "DELL",
+  "prix": 2200,
+  "qtestock": 10,
+  "reference": "Dell5570",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad8"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451486288"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a9a"
+  },
+  "articleID": "60a22e7611241a2650cfd3c8",
+  "designation": "Lenovo PC Portable IP330/4000 DualCore/4Go/1To",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754854/images/lenov23.jpg.jpg",
+  "marque": "Lenovo",
+  "prix": 840,
+  "qtestock": 10,
+  "reference": "Lenov22",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad3"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451492729"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a95"
+  },
+  "articleID": "60a229a111241a2650cfd3c3",
+  "designation": "Lenovo Tab M7 7.0 - 16GB",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754720/images/lenov21.jpg.jpg",
+  "marque": "Lenouv",
+  "prix": 240,
+  "qtestock": 25,
+  "reference": "Lenoouv1",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad3"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451547010"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a87"
+  },
+  "articleID": "60a170105508622064fcbbb3",
+  "designation": "Delice EAU MINÉRALE 1.5 L",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754189/images/eausabrine.jpg.jpg",
+  "marque": "Delice",
+  "prix": 0.39,
+  "qtestock": 1000,
+  "reference": "eauxmin",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5acb"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451618785"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a96"
+  },
+  "articleID": "60a22a4e11241a2650cfd3c4",
+  "designation": "Huawei Tablette - MatePad T",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754627/images/hwawi1.jpg.jpg",
+  "marque": "Huawei",
+  "prix": 299,
+  "qtestock": 9,
+  "reference": "Huawi1",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad2"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451540984"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "639338df23558fd3b55b5a98"
+  },
+  "articleID": "60a22cbc11241a2650cfd3c6",
+  "designation": "Hp PC Portable - 13.3\" - Intel Core™ i5-7200U",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658754499/images/HP1.jpg.jpg",
+  "marque": "Hp",
+  "prix": 3800,
+  "qtestock": 10,
+  "reference": "HP1",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad3"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451506434"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "65cdc5d23643e0d6e7c379d7"
+  },
+  "reference": "SamKVBOO",
+  "designation": "Samsung TV 4K",
+  "prix": 3300,
+  "marque": "Samsung",
+  "qtestock": 35,
+  "imageart": "https://res.cloudinary.com/iset-sfax/image/upload/v1658755298/images/s11.jpg.jpg",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad6"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "65cdc5f63643e0d6e7c379db"
+  },
+  "reference": "SamSmVBOO",
+  "designation": "Samsung TV smart TV",
+  "prix": 2300,
+  "marque": "Samsung",
+  "qtestock": 20,
+  "imageart": "https://res.cloudinary.com/iset-sfax/image/upload/v1658755298/images/s11.jpg.jpg",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad6"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "65e2e7f8b68c08aaa89fd4b7"
+  },
+  "reference": "sam122245",
+  "designation": "Samsung s20",
+  "prix": 540,
+  "marque": "Samsung",
+  "qtestock": 1,
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658750695/images/xioami.jpg.jpg",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad8"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "663a3d91346d18c942b960b2"
+  },
+  "articleID": "60a18f135cac7624f04676b9",
+  "designation": "XXXXXIAOMI Redmi 9 - 6.53\" - 4 Go - 64 Go",
+  "imageart": "http://res.cloudinary.com/iset-sfax/image/upload/v1658750695/images/xioami.jpg.jpg",
+  "marque": "Xioami",
+  "prix": 440,
+  "qtestock": 94,
+  "reference": "rrrrredmi9",
+  "scategorieID": {
+    "$oid": "6393390123558fd3b55b5ad2"
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1689451556428"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "6671a17f561db8ba776b0368"
+  },
+  "reference": "vmi9",
+  "designation": "Vans Blancs",
+  "prix": 440,
+  "marque": "Vans",
+  "qtestock": 94,
+  "imageart": "https://res.cloudinary.com/iset-sfax/image/upload/v1702412297/images/1212.jpg.jpg",
+  "scategorieID": {
+    "$oid": "66719fe8561db8ba776b0364"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6671a1b2561db8ba776b036a"
+  },
+  "reference": "vddi9",
+  "designation": "Adidas Blancs",
+  "prix": 240,
+  "marque": "Adidas",
+  "qtestock": 9,
+  "imageart": "https://res.cloudinary.com/iset-sfax/image/upload/v1701513133/images/ID7116_Q6W_Q1.jpg.jpg",
+  "scategorieID": {
+    "$oid": "66719fe8561db8ba776b0364"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6671a1e0561db8ba776b036c"
+  },
+  "reference": "vaddi5",
+  "designation": "Adidas Noir",
+  "prix": 200,
+  "marque": "Adidas",
+  "qtestock": 20,
+  "imageart": "https://res.cloudinary.com/iset-sfax/image/upload/v1701981293/images/chaussures.webp.webp",
+  "scategorieID": {
+    "$oid": "66719fe8561db8ba776b0364"
+  },
+  "__v": 0
+}]

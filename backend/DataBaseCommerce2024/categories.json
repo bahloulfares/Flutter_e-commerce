@@ -1,0 +1,87 @@
+[{
+  "_id": {
+    "$oid": "60985cbb4c1e520a803696f5"
+  },
+  "nomcategorie": "Électroménager",
+  "imagecategorie": "http://res.cloudinary.com/iset-sfax/image/upload/v1658749312/images/FerEvertek.jpg.jpg",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "609e7b4da1f6de3754461b1d"
+  },
+  "nomcategorie": "Téléphone & Tablette",
+  "imagecategorie": "http://res.cloudinary.com/iset-sfax/image/upload/v1658749354/images/Telephones-tablettes.jpg.jpg",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62dc2109159eac356ee45488"
+  },
+  "nomcategorie": "jeux vidéos",
+  "imagecategorie": "http://res.cloudinary.com/iset-sfax/image/upload/v1658593524/images/jeuxvideo.jpg.jpg",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "609a83b80c806f32e04bb484"
+  },
+  "nomcategorie": "Électroniques",
+  "imagecategorie": "http://res.cloudinary.com/iset-sfax/image/upload/v1658749242/images/lenouv.jpg.jpg",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60a15febc1b48f332c9740c0"
+  },
+  "nomcategorie": "Informatique",
+  "imagecategorie": "http://res.cloudinary.com/iset-sfax/image/upload/v1658749154/images/Informatique.jpg.jpg",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60a160adc1b48f332c9740c5"
+  },
+  "nomcategorie": "Superette",
+  "imagecategorie": "http://res.cloudinary.com/iset-sfax/image/upload/v1658749330/images/Superettes.jpg.jpg",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60a16051c1b48f332c9740c2"
+  },
+  "nomcategorie": "Articles de sport",
+  "imagecategorie": "http://res.cloudinary.com/iset-sfax/image/upload/v1658749202/images/sport4.jpg.jpg",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60a16003c1b48f332c9740c1"
+  },
+  "nomcategorie": "Mode",
+  "imagecategorie": "http://res.cloudinary.com/iset-sfax/image/upload/v1658747406/images/Mode-HommeJ.jpg.jpg",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60a16099c1b48f332c9740c4"
+  },
+  "nomcategorie": "Santé & Beauté",
+  "imagecategorie": "http://res.cloudinary.com/iset-sfax/image/upload/v1658749261/images/Sante-beaute.jpg.jpg",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "640783396e84eb7a97ed23e2"
+  },
+  "nomcategorie": "MODE HOMME",
+  "imagecategorie": "https://firebasestorage.googleapis.com/v0/b/gestcom-4a752.appspot.com/o/banner%2Fim1.jpg?alt=media&token=131e580c-84f5-45d0-b9df-4bacce7232d4"
+},{
+  "_id": {
+    "$oid": "658059133441591239c3de2f"
+  },
+  "nomcategorie": "bureautique",
+  "imagecategorie": "https://res.cloudinary.com/iset-sfax/image/upload/v1658754288/images/flash1.jpg.jpg",
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1702910227770"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1702910227770"
+    }
+  },
+  "__v": 0
+}]
