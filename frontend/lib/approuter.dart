@@ -11,6 +11,8 @@ import 'package:atelier7/presentation/screens/register.screen.dart';
 import 'package:atelier7/presentation/screens/settings.screen.dart';
 import 'package:atelier7/presentation/screens/details.dart';
 import 'package:atelier7/presentation/screens/products.dart';
+import 'package:atelier7/presentation/screens/checkout.screen.dart';
+import 'package:atelier7/presentation/screens/order_confirmation.screen.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -42,5 +44,8 @@ Map<String, WidgetBuilder> appRoutes() {
     '/shopping': (context) =>
         const Products(), // Route pour l'écran produits (nouveau)
     '/cartView': (context) => const CartView(), // Route pour l'écran cart view
+    '/checkout': (context) => const CheckoutScreen(), // Route pour checkout
+    '/orderConfirmation': (context) =>
+        const OrderConfirmationScreen(), // Route confirmation commande
   };
 }

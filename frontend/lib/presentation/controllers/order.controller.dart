@@ -60,10 +60,10 @@ class OrderController extends GetxController {
     try {
       isLoading.value = true;
       errorMessage.value = '';
-      
+
       final orders = await useCase.fetchAllOrders();
       ordersList.value = orders;
-      
+
       developer.log('Fetched ${orders.length} orders', name: 'OrderController');
     } catch (e) {
       errorMessage.value = 'Erreur de chargement des commandes';
@@ -78,14 +78,15 @@ class OrderController extends GetxController {
     try {
       isLoading.value = true;
       errorMessage.value = '';
-      
+
       final order = await useCase.fetchOrderDetails(orderId);
       currentOrder.value = order;
-      
+
       developer.log('Fetched order details: $orderId', name: 'OrderController');
     } catch (e) {
       errorMessage.value = 'Commande introuvable';
-      developer.log('Error fetching order details: $e', name: 'OrderController');
+      developer.log('Error fetching order details: $e',
+          name: 'OrderController');
     } finally {
       isLoading.value = false;
     }

@@ -36,7 +36,8 @@ class OrderUseCase {
   }
 
   // Update order status (for admin)
-  Future<Map<String, dynamic>> updateStatus(int orderId, String newStatus) async {
+  Future<Map<String, dynamic>> updateStatus(
+      int orderId, String newStatus) async {
     return await repository.updateOrderStatus(orderId, newStatus);
   }
 

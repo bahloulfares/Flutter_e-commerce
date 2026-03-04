@@ -5,16 +5,20 @@ import 'package:atelier7/approuter.dart';
 import 'package:atelier7/data/repositories/article.repository.dart';
 import 'package:atelier7/data/repositories/categorie.repository.dart';
 import 'package:atelier7/data/repositories/user.repository.dart';
+import 'package:atelier7/data/repositories/order.repository.dart';
 import 'package:atelier7/data/datasource/services/article_service.dart';
 import 'package:atelier7/data/datasource/services/categorie.service.dart';
 import 'package:atelier7/data/datasource/services/user.service.dart';
+import 'package:atelier7/data/datasource/services/order.service.dart';
 import 'package:atelier7/domain/usecases/article.usecase.dart';
 import 'package:atelier7/domain/usecases/categorie.usecase.dart';
 import 'package:atelier7/domain/usecases/user.usecase.dart';
+import 'package:atelier7/domain/usecases/order.usecase.dart';
 import 'package:atelier7/presentation/widgets/myappbar.dart';
 import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/controllers/categorie.controller.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
+import 'package:atelier7/presentation/controllers/order.controller.dart';
 import 'package:atelier7/presentation/screens/menu.dart';
 import 'package:atelier7/presentation/widgets/mybottomnavbar.dart';
 import 'package:atelier7/presentation/widgets/mydrawer.dart';
@@ -44,6 +48,11 @@ void main() async {
   Get.put(UserRepository(userService: Get.find()));
   Get.put(AuthenticateUserUseCase(repository: Get.find()));
   Get.put(AuthController(userUseCase: Get.find()));
+
+  Get.put(OrderService());
+  Get.put(OrderRepository(orderService: Get.find()));
+  Get.put(OrderUseCase(repository: Get.find()));
+  Get.put(OrderController(useCase: Get.find()));
 
   runApp(const MyApp());
 }

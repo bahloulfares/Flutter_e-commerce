@@ -16,7 +16,7 @@ class OrderRepository {
         client: client,
         lineOrder: lineOrder,
       );
-      developer.log('Order created: ${response['order']['id']}', 
+      developer.log('Order created: ${response['order']['id']}',
           name: 'OrderRepository');
       return response;
     } catch (e) {
