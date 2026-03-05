@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'dart:developer' as developer;
 import 'package:atelier7/approuter.dart';
 import 'package:atelier7/data/repositories/article.repository.dart';
 import 'package:atelier7/data/repositories/categorie.repository.dart';
@@ -31,8 +32,8 @@ void main() async {
   try {
     await dotenv.load(fileName: '.env.$env');
   } catch (e) {
-    print('⚠️ Impossible de charger .env.$env: $e');
-    print('   Utilisant les valeurs par défaut...');
+    developer.log('⚠️ Impossible de charger .env.$env: $e', name: 'main');
+    developer.log('Utilisant les valeurs par défaut...', name: 'main');
     // Continuer sans le fichier .env - la constante aura sa valeur par défaut
   }
 

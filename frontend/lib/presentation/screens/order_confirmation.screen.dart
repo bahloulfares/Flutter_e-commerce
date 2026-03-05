@@ -5,6 +5,13 @@ import 'package:atelier7/presentation/controllers/order.controller.dart';
 class OrderConfirmationScreen extends StatelessWidget {
   const OrderConfirmationScreen({super.key});
 
+  double _safeToDouble(dynamic value) {
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final orderController = Get.find<OrderController>();
@@ -35,7 +42,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -99,7 +106,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                       const Divider(height: 24),
                       _buildDetailRow(
                         'Montant total',
-                        '${(order['total'] ?? 0).toStringAsFixed(2)} TND',
+                        '${_safeToDouble(order['total']).toStringAsFixed(2)} TND',
                         Icons.payments,
                       ),
                       const Divider(height: 24),
@@ -126,7 +133,7 @@ class OrderConfirmationScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(

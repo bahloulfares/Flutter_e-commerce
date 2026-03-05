@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 class Article {
   String? id;
   String? reference;
@@ -36,7 +38,12 @@ class Article {
           ? json['scategorieId']
           : int.tryParse(json['scategorieId']?.toString() ?? '');
     } catch (e, stackTrace) {
-      print('❌ Article.fromJson ERROR: $e\n$stackTrace\n📦 JSON: $json');
+      developer.log(
+        '❌ Article.fromJson ERROR: $e\n📦 JSON: $json',
+        name: 'ArticleModel',
+        error: e,
+        stackTrace: stackTrace,
+      );
       rethrow;
     }
   }

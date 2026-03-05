@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:atelier7/domain/entities/categorie.entity.dart';
+import 'package:atelier7/domain/entities/article.entity.dart';
 import 'package:atelier7/data/datasource/models/article.model.dart';
 import 'package:atelier7/myproducts.dart';
 import 'package:atelier7/presentation/screens/addcategorie.screen.dart';
@@ -25,8 +26,24 @@ Map<String, WidgetBuilder> appRoutes() {
     '/Subscribe': (context) => const Register(),
     '/Products': (context) => const Products(), // Route pour l'écran Products
     '/details': (context) {
-      final article = ModalRoute.of(context)!.settings.arguments as Article;
-      return Details(myListElement: article);
+      final arg = ModalRoute.of(context)!.settings.arguments;
+      if (arg is Article) {
+        return Details(myListElement: arg);
+      }
+      if (arg is ArticleEntity) {
+        return Details(
+          myListElement: Article(
+            id: arg.id,
+            designation: arg.designation,
+            prix: arg.prix,
+            qtestock: arg.qtestock,
+            imageart: arg.imageart,
+          ),
+        );
+      }
+      return const Scaffold(
+        body: Center(child: Text('Article invalide')),
+      );
     },
     '/Categories': (context) =>
         const Categorieslist(), // Route pour l'écran Categories
