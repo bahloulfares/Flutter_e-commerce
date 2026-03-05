@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
+import 'package:atelier7/presentation/widgets/mydrawer.dart';
+import 'package:atelier7/utils/constants.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 
@@ -21,12 +23,16 @@ class _ProductsState extends State<Products> {
     super.initState();
     _articleController = Get.find<ArticleController>();
     _authController = Get.find<AuthController>();
-    _articleController.fetchAllArticles();
+    // Defer fetchAllArticles to avoid calling setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _articleController.fetchAllArticles();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const MyDrawer(),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xFF6C63FF),
@@ -36,6 +42,7 @@ class _ProductsState extends State<Products> {
               fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: false,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -108,11 +115,46 @@ class _ProductsState extends State<Products> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  // Debug info
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.orange[200]!),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '🔧 Debug: API = $baseUrl',
+                          style: TextStyle(
+                              fontSize: 11, color: Colors.orange[900]),
+                        ),
+                        Obx(() => Text(
+                              '📊 Articles chargés: ${_articleController.articlesList.length}',
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.orange[900]),
+                            )),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
             Expanded(
               child: Obx(() {
+                // Show loading indicator while fetching
+                if (_articleController.isLoading.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF6C63FF),
+                    ),
+                  );
+                }
+
+                // Show empty state if no products
                 if (_articleController.articlesList.isEmpty) {
                   return Center(
                     child: Column(
@@ -124,10 +166,23 @@ class _ProductsState extends State<Products> {
                         Text('Aucun produit disponible',
                             style: TextStyle(
                                 fontSize: 16, color: Colors.grey[600])),
+                        const SizedBox(height: 8),
+                        ElevatedButton.icon(
+                          onPressed: () =>
+                              _articleController.fetchAllArticles(),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Réessayer'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6C63FF),
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
                       ],
                     ),
                   );
                 }
+
+                // Show products grid
                 return GridView.builder(
                   padding: const EdgeInsets.all(12),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

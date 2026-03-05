@@ -1,12 +1,12 @@
 class Categorie {
- String? id;
- String? nomcategorie;
- String? imagecategorie;
+  String? id;
+  String? nomcategorie;
+  String? imagecategorie;
 
   Categorie({this.id, this.nomcategorie, this.imagecategorie});
 
   Categorie.fromJson(Map<String, dynamic> json) {
-    id = json['_id'];
+    id = json['id']?.toString(); // Convert int to string (MySQL format)
     nomcategorie = json['nomcategorie'];
     imagecategorie = json['imagecategorie'];
   }

@@ -18,15 +18,20 @@ class Article {
       this.imageart,
       this.scategorieID});
 
-  Article.fromJson(Map<String, dynamic> json) { 
-    id = json['_id'];
+  Article.fromJson(Map<String, dynamic> json) {
+    id = json['id']?.toString(); // Convert int to string
     reference = json['reference'];
     designation = json['designation'];
-    prix = json['prix'];
+    // Handle prix as both string and number
+    if (json['prix'] is String) {
+      prix = num.tryParse(json['prix']) ?? 0;
+    } else {
+      prix = json['prix'];
+    }
     marque = json['marque'];
     qtestock = json['qtestock'];
     imageart = json['imageart'];
-    scategorieID = json['scategorieID'] ;
+    scategorieID = json['scategorieId']; // Note: camelCase 'Id' not 'ID'
   }
 
   Map<String, dynamic> toJson() {
@@ -39,6 +44,6 @@ class Article {
     data['qtestock'] = qtestock;
     data['imageart'] = imageart;
     data['scategorieID'] = scategorieID;
-  return data;
+    return data;
   }
 }

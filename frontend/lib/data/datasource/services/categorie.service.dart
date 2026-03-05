@@ -8,6 +8,8 @@ import 'package:atelier7/utils/error_handler.dart';
 class CategorieService {
   late Dio dio;
   CategorieService() {
+    developer.log('🔧 CategorieService: Configuration avec baseUrl = $baseUrl',
+        name: 'CategorieService');
     BaseOptions options = BaseOptions(
       baseUrl: baseUrl,
       receiveDataWhenStatusError: true,
@@ -19,19 +21,30 @@ class CategorieService {
 //Affichage
   Future<List<dynamic>> getCategories() async {
     try {
+      developer.log('🌐 CategorieService: GET $baseUrl/categories',
+          name: 'CategorieService');
       Response response = await dio.get('/categories');
+      developer.log('📡 CategorieService: Status ${response.statusCode}',
+          name: 'CategorieService');
       if (response.statusCode == 200) {
-        return response.data;
+        if (response.data is List) {
+          developer.log(
+              '✅ CategorieService: ${response.data.length} catégories reçues',
+              name: 'CategorieService');
+          return response.data as List<dynamic>;
+        } else {
+          throw AppException('Format de réponse invalide');
+        }
       } else {
         throw AppException('Erreur lors de la récupération des catégories');
       }
     } on DioException catch (e) {
       final errorMessage = ErrorHandler.handleDioError(e);
-      developer.log('Erreur API Catégories: $errorMessage',
+      developer.log('❌ Erreur API Catégories: $errorMessage',
           name: 'CategorieService');
       throw AppException(errorMessage);
     } catch (e) {
-      developer.log('Erreur inattendue: $e', name: 'CategorieService');
+      developer.log('❌ Erreur inattendue: $e', name: 'CategorieService');
       throw AppException('Erreur lors de la récupération des catégories');
     }
   }

@@ -8,8 +8,27 @@ class CategorieRepository {
   CategorieRepository({required this.catserv});
 
   Future<List<Categorie>> getCategories() async {
-    final categories = await catserv.getCategories();
-    return categories.map((c) => Categorie.fromJson(c)).toList();
+    developer.log('📥 CategorieRepository: Appel du service...',
+        name: 'CategorieRepository');
+    try {
+      final categories = await catserv.getCategories();
+      developer.log(
+          '📦 CategorieRepository: ${categories.length} catégories reçues',
+          name: 'CategorieRepository');
+      final mapped = categories.map((c) {
+        developer.log('🔧 CategorieRepository: Mapping ${c['nomcategorie']}',
+            name: 'CategorieRepository');
+        return Categorie.fromJson(c);
+      }).toList();
+      developer.log(
+          '✅ CategorieRepository: ${mapped.length} catégories mappées',
+          name: 'CategorieRepository');
+      return mapped;
+    } catch (e, stackTrace) {
+      developer.log('❌ CategorieRepository Error: $e\n$stackTrace',
+          name: 'CategorieRepository', error: e, stackTrace: stackTrace);
+      rethrow;
+    }
   }
 
   Future<Map> postCategorie(String nom, dynamic image) async {

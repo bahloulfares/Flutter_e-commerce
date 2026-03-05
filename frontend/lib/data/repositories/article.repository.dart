@@ -10,10 +10,24 @@ class ArticleRepository {
 //Affichage
   Future<List<Article?>?> getArticles() async {
     try {
+      developer.log('📥 Repository: Appel du service...',
+          name: 'ArticleRepository');
       final articles = await artserv.getArticles();
-      return articles.map((art) => Article.fromJson(art)).toList();
-    } catch (error) {
-      developer.log('Error: $error', name: 'ArticleRepository');
+      developer.log('📦 Repository: ${articles.length} articles bruts reçus',
+          name: 'ArticleRepository');
+
+      final mappedArticles = articles.map((art) {
+        developer.log('🔧 Repository: Mapping ${art['designation']}',
+            name: 'ArticleRepository');
+        return Article.fromJson(art);
+      }).toList();
+
+      developer.log('✅ Repository: ${mappedArticles.length} articles mappés',
+          name: 'ArticleRepository');
+      return mappedArticles;
+    } catch (error, stackTrace) {
+      developer.log('❌ Repository Error: $error',
+          name: 'ArticleRepository', error: error, stackTrace: stackTrace);
       return null;
     }
   }
