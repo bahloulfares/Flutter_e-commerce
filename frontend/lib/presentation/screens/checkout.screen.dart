@@ -35,6 +35,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
+  // Helper method to safely convert unitPrice (can be String or num) to double
+  double _toDouble(dynamic value) {
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
+
   Future<void> _placeOrder() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -60,7 +68,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       return {
         'articleId': item.productId,
         'quantity': item.quantity,
-        'unitPrice': item.unitPrice,
+        'unitPrice': _toDouble(item.unitPrice), // Ensure unitPrice is a number
       };
     }).toList();
 
@@ -177,7 +185,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '${data.unitPrice.toStringAsFixed(2)} TND × ${data.quantity}',
+                                  '${_toDouble(data.unitPrice).toStringAsFixed(2)} TND × ${data.quantity}',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey[600],
@@ -187,7 +195,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ),
                           ),
                           Text(
-                            '${(data.unitPrice * data.quantity).toStringAsFixed(2)} TND',
+                            '${(_toDouble(data.unitPrice) * data.quantity).toStringAsFixed(2)} TND',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -222,7 +230,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                     ),
                     Text(
-                      '${totalAmount.toStringAsFixed(2)} TND',
+                      '${_toDouble(totalAmount).toStringAsFixed(2)} TND',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,

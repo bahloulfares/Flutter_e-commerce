@@ -154,6 +154,43 @@ class _ProductsState extends State<Products> {
                   );
                 }
 
+                // Show error message if exists
+                if (_articleController.errorMessage.value.isNotEmpty) {
+                  return SingleChildScrollView(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 32.0, horizontal: 16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.error_outline,
+                                size: 64, color: Colors.red),
+                            const SizedBox(height: 16),
+                            Text(
+                              _articleController.errorMessage.value,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.red),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: () =>
+                                  _articleController.fetchAllArticles(),
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Réessayer'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF6C63FF),
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
                 // Show empty state if no products
                 if (_articleController.articlesList.isEmpty) {
                   return Center(
@@ -234,7 +271,7 @@ class _ProductCard extends StatelessWidget {
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(16)),
                   child: Image.network(
-                    article.image ?? 'https://via.placeholder.com/200',
+                    article.imageart ?? 'https://via.placeholder.com/200',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: Colors.grey[300],
@@ -342,7 +379,7 @@ class _ProductCard extends StatelessWidget {
                         productId: article.id,
                         productName: article.designation ?? 'Produit',
                         unitPrice: article.prix?.toDouble() ?? 0.0,
-                        productImages: [article.image ?? ''],
+                        productImages: [article.imageart ?? ''],
                         quantity: 1,
                       ),
                     ),

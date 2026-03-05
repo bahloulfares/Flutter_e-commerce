@@ -28,7 +28,13 @@ void main() async {
   // ⚙️ Charger les variables d'environnement (.env.dev par défaut)
   // Pour production, utilisez: --dart-define=ENV=prod
   const String env = String.fromEnvironment('ENV', defaultValue: 'dev');
-  await dotenv.load(fileName: '.env.$env');
+  try {
+    await dotenv.load(fileName: '.env.$env');
+  } catch (e) {
+    print('⚠️ Impossible de charger .env.$env: $e');
+    print('   Utilisant les valeurs par défaut...');
+    // Continuer sans le fichier .env - la constante aura sa valeur par défaut
+  }
 
   //Initialiser shoppingCart
   await PersistentShoppingCart().init();
@@ -61,7 +67,8 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      // Changed from MaterialApp to GetMaterialApp for GetX navigation
       debugShowCheckedModeBanner: false, //bch na7ina echalta l7amra
       initialRoute: '/',
       routes: appRoutes(),

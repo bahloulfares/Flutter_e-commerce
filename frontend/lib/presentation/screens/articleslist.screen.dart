@@ -4,13 +4,29 @@ import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/widgets/articleslist.widget.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 
-class ArticlesListScreen extends StatelessWidget {
+class ArticlesListScreen extends StatefulWidget {
   const ArticlesListScreen({super.key});
+
+  @override
+  State<ArticlesListScreen> createState() => _ArticlesListScreenState();
+}
+
+class _ArticlesListScreenState extends State<ArticlesListScreen> {
+  late ArticleController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<ArticleController>();
+    // Appeler une seule fois au démarrage
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchAllArticles();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     var controller = Get.find<ArticleController>();
-    controller.fetchAllArticles();
 
     return Scaffold(
       appBar: AppBar(
@@ -47,9 +63,10 @@ class ArticlesListScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final articles = controller.articlesList[index];
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 5),
-                          child: ArticlesListWidget(articles: articles,) 
-                        );
+                            padding: const EdgeInsets.only(bottom: 5),
+                            child: ArticlesListWidget(
+                              articles: articles,
+                            ));
                       }),
                 ),
               ),

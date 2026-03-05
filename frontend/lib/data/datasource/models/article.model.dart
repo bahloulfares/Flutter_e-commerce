@@ -6,7 +6,7 @@ class Article {
   String? marque;
   int? qtestock;
   String? imageart;
-  Map<String, dynamic>? scategorieID;
+  int? scategorieID; // Changed to int - it's the subcategory ID number
 
   Article(
       {this.id,
@@ -19,19 +19,26 @@ class Article {
       this.scategorieID});
 
   Article.fromJson(Map<String, dynamic> json) {
-    id = json['id']?.toString(); // Convert int to string
-    reference = json['reference'];
-    designation = json['designation'];
-    // Handle prix as both string and number
-    if (json['prix'] is String) {
-      prix = num.tryParse(json['prix']) ?? 0;
-    } else {
-      prix = json['prix'];
+    try {
+      id = json['id']?.toString(); // Convert int to string
+      reference = json['reference'];
+      designation = json['designation'];
+      // Handle prix as both string and number
+      if (json['prix'] is String) {
+        prix = num.tryParse(json['prix']) ?? 0;
+      } else {
+        prix = json['prix'];
+      }
+      marque = json['marque'];
+      qtestock = json['qtestock'];
+      imageart = json['imageart'];
+      scategorieID = json['scategorieId'] is int
+          ? json['scategorieId']
+          : int.tryParse(json['scategorieId']?.toString() ?? '');
+    } catch (e, stackTrace) {
+      print('❌ Article.fromJson ERROR: $e\n$stackTrace\n📦 JSON: $json');
+      rethrow;
     }
-    marque = json['marque'];
-    qtestock = json['qtestock'];
-    imageart = json['imageart'];
-    scategorieID = json['scategorieId']; // Note: camelCase 'Id' not 'ID'
   }
 
   Map<String, dynamic> toJson() {
