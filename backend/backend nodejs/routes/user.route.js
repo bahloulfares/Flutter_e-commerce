@@ -121,4 +121,58 @@ router.post('/refreshToken', async (req, res) => {
   }
 });
 
+// Get all users (admin)
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ['id', 'name', 'email', 'role', 'avatar', 'createdAt'],
+      order: [['id', 'ASC']],
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Update user role (admin)
+router.put('/:id/role', async (req, res) => {
+  try {
+    const { role } = req.body;
+    const validRoles = ['user', 'admin'];
+
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ message: 'Invalid role. Must be "user" or "admin".' });
+    }
+
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await user.update({ role });
+    res.status(200).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Delete user (admin)
+router.delete('/:id', async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    await user.destroy();
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

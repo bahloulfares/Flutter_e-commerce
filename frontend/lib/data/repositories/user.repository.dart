@@ -29,11 +29,31 @@ class UserRepository {
     final user = (response['user'] ?? {}) as Map<String, dynamic>;
 
     await prefs.setString(StorageKeys.accessToken, response['token'] ?? '');
+    await prefs.setString(StorageKeys.token, response['token'] ?? ''); // Alias
     await prefs.setString(
         StorageKeys.refreshToken, response['refreshToken'] ?? '');
-    await prefs.setString(StorageKeys.userId, user['_id'] ?? '');
+    await prefs.setString(
+        StorageKeys.userId, (user['id'] ?? user['_id'] ?? '').toString());
     await prefs.setString(StorageKeys.username, user['name'] ?? '');
     await prefs.setString(StorageKeys.email, user['email'] ?? '');
+    await prefs.setString(
+        StorageKeys.userRole, user['role'] ?? 'user'); // Sauvegarder le rôle
     await prefs.setBool(StorageKeys.isLoggedIn, true);
+
+    developer.log(
+        '✅ User authenticated: ${user['name']} (${user['role'] ?? 'user'})',
+        name: 'UserRepository');
+  }
+
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
+    return await userService.getAllUsers();
+  }
+
+  Future<Map<String, dynamic>> updateUserRole(int id, String role) async {
+    return await userService.updateUserRole(id, role);
+  }
+
+  Future<void> deleteUser(int id) async {
+    await userService.deleteUser(id);
   }
 }

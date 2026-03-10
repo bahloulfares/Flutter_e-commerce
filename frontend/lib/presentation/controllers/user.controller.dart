@@ -13,6 +13,7 @@ class AuthController extends GetxController {
   var userName = ''.obs;
   var userEmail = ''.obs;
   var userId = ''.obs;
+  var userRole = ''.obs; // 'user' ou 'admin'
 
   @override
   void onInit() {
@@ -26,7 +27,14 @@ class AuthController extends GetxController {
     userName.value = prefs.getString(StorageKeys.username) ?? '';
     userEmail.value = prefs.getString(StorageKeys.email) ?? '';
     userId.value = prefs.getString(StorageKeys.userId) ?? '';
+    userRole.value = prefs.getString(StorageKeys.userRole) ?? 'user';
   }
+
+  // Vérifier si l'utilisateur est admin
+  bool get isAdmin => userRole.value == 'admin';
+
+  // Vérifier si l'utilisateur est un client normal
+  bool get isUser => userRole.value == 'user';
 
   Future<bool> login(String email, String password) async {
     final res = await _userUseCase.call(email, password);
@@ -47,5 +55,46 @@ class AuthController extends GetxController {
     userName.value = '';
     userEmail.value = '';
     userId.value = '';
+    userRole.value = 'user';
+  }
+
+  // Admin: users management
+  var usersList = <Map<String, dynamic>>[].obs;
+  var isUsersLoading = false.obs;
+
+  Future<void> fetchAllUsers() async {
+    try {
+      isUsersLoading.value = true;
+      usersList.value = await _userUseCase.getAllUsers();
+    } catch (e) {
+      usersList.value = [];
+    } finally {
+      isUsersLoading.value = false;
+    }
+  }
+
+  Future<bool> updateUserRole(int id, String role) async {
+    try {
+      await _userUseCase.updateUserRole(id, role);
+      final index = usersList.indexWhere((u) => u['id'] == id);
+      if (index != -1) {
+        usersList[index] = Map<String, dynamic>.from(usersList[index])
+          ..['role'] = role;
+        usersList.refresh();
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> deleteUser(int id) async {
+    try {
+      await _userUseCase.deleteUser(id);
+      usersList.removeWhere((u) => u['id'] == id);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

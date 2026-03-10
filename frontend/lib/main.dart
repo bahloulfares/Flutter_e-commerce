@@ -11,6 +11,9 @@ import 'package:atelier7/data/datasource/services/article_service.dart';
 import 'package:atelier7/data/datasource/services/categorie.service.dart';
 import 'package:atelier7/data/datasource/services/user.service.dart';
 import 'package:atelier7/data/datasource/services/order.service.dart';
+import 'package:atelier7/data/datasource/services/scategorie.service.dart';
+import 'package:atelier7/data/repositories/scategorie.repository.dart';
+import 'package:atelier7/presentation/controllers/scategorie.controller.dart';
 import 'package:atelier7/domain/usecases/article.usecase.dart';
 import 'package:atelier7/domain/usecases/categorie.usecase.dart';
 import 'package:atelier7/domain/usecases/user.usecase.dart';
@@ -60,6 +63,10 @@ void main() async {
   Get.put(OrderRepository(orderService: Get.find()));
   Get.put(OrderUseCase(repository: Get.find()));
   Get.put(OrderController(useCase: Get.find()));
+
+  Get.put(ScategorieService());
+  Get.put(ScategorieRepository(scatService: Get.find()));
+  Get.put(ScategorieController(repository: Get.find()));
 
   runApp(const MyApp());
 }

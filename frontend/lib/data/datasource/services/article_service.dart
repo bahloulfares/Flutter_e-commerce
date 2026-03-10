@@ -89,4 +89,46 @@ class ArticleService {
       throw AppException('Erreur: $e');
     }
   }
+
+  // Create article
+  Future<Map<String, dynamic>> createArticle(Map<String, dynamic> data) async {
+    try {
+      final response = await dio.post('/articles', data: data);
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+      throw AppException('Erreur création article');
+    } on DioException catch (e) {
+      throw AppException(ErrorHandler.handleDioError(e));
+    } catch (e) {
+      throw AppException('Erreur: $e');
+    }
+  }
+
+  // Update article
+  Future<Map<String, dynamic>> updateArticle(
+      String id, Map<String, dynamic> data) async {
+    try {
+      final response = await dio.put('/articles/$id', data: data);
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+      throw AppException('Erreur modification article');
+    } on DioException catch (e) {
+      throw AppException(ErrorHandler.handleDioError(e));
+    } catch (e) {
+      throw AppException('Erreur: $e');
+    }
+  }
+
+  // Delete article
+  Future<void> deleteArticle(String id) async {
+    try {
+      await dio.delete('/articles/$id');
+    } on DioException catch (e) {
+      throw AppException(ErrorHandler.handleDioError(e));
+    } catch (e) {
+      throw AppException('Erreur: $e');
+    }
+  }
 }

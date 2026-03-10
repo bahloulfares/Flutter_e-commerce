@@ -54,4 +54,32 @@ class ArticleRepository {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> createArticle(Map<String, dynamic> data) async {
+    try {
+      return await artserv.createArticle(data);
+    } catch (e) {
+      developer.log('Create article error: $e', name: 'ArticleRepository');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> updateArticle(
+      String id, Map<String, dynamic> data) async {
+    try {
+      return await artserv.updateArticle(id, data);
+    } catch (e) {
+      developer.log('Update article error: $e', name: 'ArticleRepository');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteArticle(String id) async {
+    try {
+      await artserv.deleteArticle(id);
+    } catch (e) {
+      developer.log('Delete article error: $e', name: 'ArticleRepository');
+      rethrow;
+    }
+  }
 }

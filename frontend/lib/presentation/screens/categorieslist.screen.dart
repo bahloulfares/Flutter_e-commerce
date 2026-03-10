@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/controllers/categorie.controller.dart';
+import 'package:atelier7/presentation/controllers/user.controller.dart';
 import 'package:atelier7/presentation/widgets/categorieslist.widget.dart';
 
 class Categorieslist extends StatelessWidget {
@@ -29,12 +30,19 @@ class Categorieslist extends StatelessWidget {
                 },
               ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {    
-          Navigator.of(context).pushNamed('/addcategories'); 
+      floatingActionButton: Obx(() {
+        final authController = Get.find<AuthController>();
+        // Seuls les admins peuvent ajouter des catégories
+        if (!authController.isAdmin) {
+          return const SizedBox.shrink(); // Cache le bouton pour les non-admins
+        }
+        return FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed('/addcategories');
           },
-  child: const Icon(Icons.add),
-      ),
+          child: const Icon(Icons.add),
+        );
+      }),
     );
   }
 }

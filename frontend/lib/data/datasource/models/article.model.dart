@@ -8,7 +8,8 @@ class Article {
   String? marque;
   int? qtestock;
   String? imageart;
-  int? scategorieID; // Changed to int - it's the subcategory ID number
+  int? scategorieID;
+  int? categorieId; // Main category ID
 
   Article(
       {this.id,
@@ -18,7 +19,8 @@ class Article {
       this.marque,
       this.qtestock,
       this.imageart,
-      this.scategorieID});
+      this.scategorieID,
+      this.categorieId});
 
   Article.fromJson(Map<String, dynamic> json) {
     try {
@@ -37,6 +39,9 @@ class Article {
       scategorieID = json['scategorieId'] is int
           ? json['scategorieId']
           : int.tryParse(json['scategorieId']?.toString() ?? '');
+      categorieId = json['categorieId'] is int
+          ? json['categorieId']
+          : int.tryParse(json['categorieId']?.toString() ?? '');
     } catch (e, stackTrace) {
       developer.log(
         '❌ Article.fromJson ERROR: $e\n📦 JSON: $json',
@@ -58,6 +63,7 @@ class Article {
     data['qtestock'] = qtestock;
     data['imageart'] = imageart;
     data['scategorieID'] = scategorieID;
+    data['categorieId'] = categorieId;
     return data;
   }
 }

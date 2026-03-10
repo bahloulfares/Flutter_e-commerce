@@ -25,6 +25,10 @@ class ArticleUseCase {
           prix: element?.prix ?? 0,
           qtestock: element?.qtestock ?? 0,
           imageart: element?.imageart ?? "",
+          marque: element?.marque,
+          reference: element?.reference,
+          scategorieId: element?.scategorieID,
+          categorieId: element?.categorieId,
         );
       }).toList();
 
@@ -37,5 +41,18 @@ class ArticleUseCase {
       // Relancer l'exception pour que le controller la reçoive
       rethrow;
     }
+  }
+
+  Future<Map<String, dynamic>> createArticle(Map<String, dynamic> data) async {
+    return await _respository.createArticle(data);
+  }
+
+  Future<Map<String, dynamic>> updateArticle(
+      String id, Map<String, dynamic> data) async {
+    return await _respository.updateArticle(id, data);
+  }
+
+  Future<void> deleteArticle(String id) async {
+    await _respository.deleteArticle(id);
   }
 }

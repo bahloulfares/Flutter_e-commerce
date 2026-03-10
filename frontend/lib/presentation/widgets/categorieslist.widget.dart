@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/domain/entities/categorie.entity.dart';
 import 'package:atelier7/presentation/controllers/categorie.controller.dart';
+import 'package:atelier7/presentation/controllers/user.controller.dart';
 
 class Categorieslistwidget extends StatelessWidget {
   final CategorieEntity categories;
@@ -22,26 +23,34 @@ class Categorieslistwidget extends StatelessWidget {
             height: 68,
           ),
           title: Text(categories.nomcategorie),
-          trailing: Wrap(
-            children: <Widget>[
-              IconButton(
+          trailing: Obx(() {
+            final authController = Get.find<AuthController>();
+            // Seuls les admins peuvent modifier/supprimer des catégories
+            if (!authController.isAdmin) {
+              return const SizedBox
+                  .shrink(); // Cache les boutons pour les non-admins
+            }
+            return Wrap(
+              children: <Widget>[
+                IconButton(
+                    icon: const Icon(
+                      Icons.edit,
+                      color: Colors.green,
+                    ),
+                    onPressed: () => {
+                          Navigator.of(context).pushNamed("/editcategories",
+                              arguments: categories)
+                        }),
+                IconButton(
                   icon: const Icon(
-                    Icons.edit,
-                    color: Colors.green,
+                    Icons.delete,
+                    color: Colors.red,
                   ),
-                  onPressed: () => {
-                        Navigator.of(context)
-                            .pushNamed("/editcategories", arguments: categories)
-                      }),
-              IconButton(
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
+                  onPressed: () => controller.deleteCategorie(categories.id),
                 ),
-                onPressed: () => controller.deleteCategorie(categories.id),
-              ),
-            ],
-          ),
+              ],
+            );
+          }),
         ),
       ),
     );

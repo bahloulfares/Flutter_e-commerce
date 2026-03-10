@@ -1,16 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const { Article, Scategorie } = require('../models');
+const { Article, Scategorie, Categorie } = require('../models');
 const { Op } = require('sequelize');
 
 // Get all articles
 router.get('/', async (req, res) => {
   try {
     const articles = await Article.findAll({
-      include: [{ model: Scategorie, as: 'scategorie' }],
+      include: [{ 
+        model: Scategorie, 
+        as: 'scategorie',
+        include: [{ model: Categorie, as: 'categorie', attributes: ['id', 'nomcategorie'] }]
+      }],
       order: [['id', 'DESC']],
     });
-    res.status(200).json(articles);
+    
+    // Map articles to include categorieId from the nested categorie
+    const mappedArticles = articles.map(article => {
+      const plainArticle = article.toJSON();
+      if (article.scategorie && article.scategorie.categorie) {
+        plainArticle.categorieId = article.scategorie.categorie.id;
+      }
+      return plainArticle;
+    });
+    
+    res.status(200).json(mappedArticles);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -30,12 +44,22 @@ router.post('/', async (req, res) => {
 router.get('/:articleId', async (req, res) => {
   try {
     const article = await Article.findByPk(req.params.articleId, {
-      include: [{ model: Scategorie, as: 'scategorie' }],
+      include: [{ 
+        model: Scategorie, 
+        as: 'scategorie',
+        include: [{ model: Categorie, as: 'categorie', attributes: ['id', 'nomcategorie'] }]
+      }],
     });
     if (!article) {
       return res.status(404).json({ message: 'Article not found' });
     }
-    res.status(200).json(article);
+    
+    const plainArticle = article.toJSON();
+    if (article.scategorie && article.scategorie.categorie) {
+      plainArticle.categorieId = article.scategorie.categorie.id;
+    }
+    
+    res.status(200).json(plainArticle);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -50,9 +74,19 @@ router.put('/:articleId', async (req, res) => {
     }
     await article.update(req.body);
     const updated = await Article.findByPk(article.id, {
-      include: [{ model: Scategorie, as: 'scategorie' }],
+      include: [{ 
+        model: Scategorie, 
+        as: 'scategorie',
+        include: [{ model: Categorie, as: 'categorie', attributes: ['id', 'nomcategorie'] }]
+      }],
     });
-    res.status(200).json(updated);
+    
+    const plainArticle = updated.toJSON();
+    if (updated.scategorie && updated.scategorie.categorie) {
+      plainArticle.categorieId = updated.scategorie.categorie.id;
+    }
+    
+    res.status(200).json(plainArticle);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -88,4 +88,45 @@ class UserService {
       throw AppException('Erreur lors du rafraîchissement du token');
     }
   }
+
+  // Admin: get all users
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
+    try {
+      final response = await dio.get('/users');
+      if (response.statusCode == 200 && response.data is List) {
+        return List<Map<String, dynamic>>.from(response.data as List);
+      }
+      throw AppException('Erreur chargement utilisateurs');
+    } on DioException catch (e) {
+      throw AppException(ErrorHandler.handleDioError(e));
+    } catch (e) {
+      throw AppException('Erreur: $e');
+    }
+  }
+
+  // Admin: update user role
+  Future<Map<String, dynamic>> updateUserRole(int id, String role) async {
+    try {
+      final response = await dio.put('/users/$id/role', data: {'role': role});
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+      throw AppException('Erreur modification rôle');
+    } on DioException catch (e) {
+      throw AppException(ErrorHandler.handleDioError(e));
+    } catch (e) {
+      throw AppException('Erreur: $e');
+    }
+  }
+
+  // Admin: delete user
+  Future<void> deleteUser(int id) async {
+    try {
+      await dio.delete('/users/$id');
+    } on DioException catch (e) {
+      throw AppException(ErrorHandler.handleDioError(e));
+    } catch (e) {
+      throw AppException('Erreur: $e');
+    }
+  }
 }

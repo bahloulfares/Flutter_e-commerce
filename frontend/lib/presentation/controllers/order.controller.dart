@@ -103,6 +103,36 @@ class OrderController extends GetxController {
     return (order['total'] ?? 0).toDouble();
   }
 
+  // Admin: update order status
+  Future<bool> updateOrderStatus(int orderId, String newStatus) async {
+    try {
+      await useCase.updateStatus(orderId, newStatus);
+      // Update local list
+      final index = ordersList.indexWhere((o) => o['id'] == orderId);
+      if (index != -1) {
+        ordersList[index] = Map<String, dynamic>.from(ordersList[index])
+          ..['status'] = newStatus;
+        ordersList.refresh();
+      }
+      return true;
+    } catch (e) {
+      errorMessage.value = 'Erreur mise à jour: $e';
+      return false;
+    }
+  }
+
+  // Admin: delete order
+  Future<bool> deleteOrder(int orderId) async {
+    try {
+      await useCase.cancelOrder(orderId);
+      ordersList.removeWhere((o) => o['id'] == orderId);
+      return true;
+    } catch (e) {
+      errorMessage.value = 'Erreur suppression: $e';
+      return false;
+    }
+  }
+
   // Get order status color
   String getStatusColor(String status) {
     switch (status) {

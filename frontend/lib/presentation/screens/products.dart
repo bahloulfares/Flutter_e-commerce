@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
+import 'package:atelier7/presentation/controllers/categorie.controller.dart';
 import 'package:atelier7/presentation/widgets/mydrawer.dart';
 import 'package:atelier7/utils/constants.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
@@ -17,15 +18,21 @@ class Products extends StatefulWidget {
 class _ProductsState extends State<Products> {
   late final ArticleController _articleController;
   late final AuthController _authController;
+  late final CategorieController _categorieController;
+
+  String _searchQuery = '';
+  String? _selectedCategoryId;
 
   @override
   void initState() {
     super.initState();
     _articleController = Get.find<ArticleController>();
     _authController = Get.find<AuthController>();
-    // Defer fetchAllArticles to avoid calling setState during build
+    _categorieController = Get.find<CategorieController>();
+    // Defer fetch to avoid calling setState during build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _articleController.fetchAllArticles();
+      _categorieController.fetchAllCategories();
     });
   }
 
@@ -100,10 +107,26 @@ class _ProductsState extends State<Products> {
                             fontSize: 18, fontWeight: FontWeight.bold),
                       )),
                   const SizedBox(height: 12),
+                  // Search Bar
                   TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                      });
+                    },
                     decoration: InputDecoration(
                       hintText: 'Rechercher un produit...',
                       prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12)),
                       enabledBorder: OutlineInputBorder(
@@ -115,6 +138,59 @@ class _ProductsState extends State<Products> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  // Category Filter
+                  Obx(() {
+                    if (_categorieController.categoriesList.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return SizedBox(
+                      height: 40,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          FilterChip(
+                            label: const Text('Tout'),
+                            selected: _selectedCategoryId == null,
+                            onSelected: (selected) {
+                              setState(() {
+                                _selectedCategoryId = null;
+                              });
+                            },
+                            selectedColor: const Color(0xFF6C63FF),
+                            labelStyle: TextStyle(
+                              color: _selectedCategoryId == null
+                                  ? Colors.white
+                                  : Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          ..._categorieController.categoriesList.map((cat) {
+                            final isSelected = _selectedCategoryId == cat.id;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: FilterChip(
+                                label: Text(cat.nomcategorie),
+                                selected: isSelected,
+                                onSelected: (selected) {
+                                  setState(() {
+                                    _selectedCategoryId =
+                                        selected ? cat.id : null;
+                                  });
+                                },
+                                selectedColor: const Color(0xFF6C63FF),
+                                labelStyle: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    );
+                  }),
                   const SizedBox(height: 8),
                   // Debug info
                   Container(
@@ -219,6 +295,66 @@ class _ProductsState extends State<Products> {
                   );
                 }
 
+                // Filter articles based on search query and category
+                final filteredArticles =
+                    _articleController.articlesList.where((article) {
+                  // Category filter - only if categorieId is available from API
+                  if (_selectedCategoryId != null &&
+                      article.categorieId != null) {
+                    if (article.categorieId !=
+                        int.tryParse(_selectedCategoryId!)) {
+                      return false;
+                    }
+                  }
+
+                  // Search filter - search in designation, marque, and reference
+                  if (_searchQuery.isEmpty) return true;
+
+                  final designation = article.designation.toLowerCase();
+                  final marque = (article.marque ?? '').toLowerCase();
+                  final reference = (article.reference ?? '').toLowerCase();
+                  final searchTerm = _searchQuery.toLowerCase();
+
+                  // Return true if any field contains the search term
+                  final matches = designation.contains(searchTerm) ||
+                      marque.contains(searchTerm) ||
+                      reference.contains(searchTerm);
+
+                  return matches;
+                }).toList();
+
+                // Show empty state if no filtered products
+                if (filteredArticles.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.search_off,
+                            size: 64, color: Colors.grey[400]),
+                        const SizedBox(height: 16),
+                        Text(
+                          _searchQuery.isNotEmpty
+                              ? 'Aucun produit trouvé pour "$_searchQuery"'
+                              : 'Aucun produit dans cette catégorie',
+                          textAlign: TextAlign.center,
+                          style:
+                              TextStyle(fontSize: 16, color: Colors.grey[600]),
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _searchQuery = '';
+                              _selectedCategoryId = null;
+                            });
+                          },
+                          child: const Text('Réinitialiser les filtres'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
                 // Show products grid
                 return GridView.builder(
                   padding: const EdgeInsets.all(12),
@@ -228,9 +364,9 @@ class _ProductsState extends State<Products> {
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                   ),
-                  itemCount: _articleController.articlesList.length,
+                  itemCount: filteredArticles.length,
                   itemBuilder: (context, index) {
-                    final article = _articleController.articlesList[index];
+                    final article = filteredArticles[index];
                     return _ProductCard(article: article, context: context);
                   },
                 );

@@ -31,7 +31,7 @@ class ArticleController extends GetxController {
 
 🔍 DIAGNOSTIC:
 ✓ Téléphone IP: 172.16.41.3
-✓ PC IP: 172.16.42.95 
+✓ PC IP: 172.16.43.213 
 ✓ Les deux sont sur le même Wi-Fi
 
 SOLUTIONS À ESSAYER:
@@ -45,7 +45,7 @@ SOLUTIONS À ESSAYER:
    
 3️⃣ Test manuellement:
    - Sur ton téléphone, ouvre un navigateur
-   - Va à: http://172.16.42.95:3001/api/articles
+   - Va à: http://172.16.43.213:3001/api/articles
    - Si ça marche, c'est un problème d'app
    - Si ça ne marche pas, c'est réseau/firewall
 
@@ -83,7 +83,7 @@ Vérifiez le format API.''';
       if (networkError.contains('SocketException') ||
           networkError.contains('Connection refused')) {
         errorMessage.value =
-            '''Impossible de se connecter au serveur (172.16.42.95:3001)
+            '''Impossible de se connecter au serveur (172.16.43.213:3001)
 
 Le téléphone ne peut pas atteindre le PC:
 ✓ Vérifiez que vous êtes sur le même Wi-Fi
@@ -100,5 +100,52 @@ Détails: ${networkError.substring(0, 80)}''';
       }
       articlesList.value = [];
     });
+  }
+
+  // Admin: create article
+  Future<bool> createArticle(Map<String, dynamic> data) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+      await _useCase.createArticle(data);
+      await Future(() => fetchAllArticles());
+      return true;
+    } catch (e) {
+      errorMessage.value = 'Erreur création: $e';
+      developer.log('Create article error: $e', name: 'ArticleController');
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Admin: update article
+  Future<bool> updateArticle(String id, Map<String, dynamic> data) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+      await _useCase.updateArticle(id, data);
+      await Future(() => fetchAllArticles());
+      return true;
+    } catch (e) {
+      errorMessage.value = 'Erreur modification: $e';
+      developer.log('Update article error: $e', name: 'ArticleController');
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Admin: delete article
+  Future<bool> deleteArticle(String id) async {
+    try {
+      await _useCase.deleteArticle(id);
+      articlesList.removeWhere((a) => a.id == id);
+      return true;
+    } catch (e) {
+      errorMessage.value = 'Erreur suppression: $e';
+      developer.log('Delete article error: $e', name: 'ArticleController');
+      return false;
+    }
   }
 }

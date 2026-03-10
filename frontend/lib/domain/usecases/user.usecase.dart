@@ -13,4 +13,16 @@ class AuthenticateUserUseCase {
   Future<bool> register(String name, String email, String password) async {
     return _repository.registerUser(name, email, password);
   }
+
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
+    return _repository.getAllUsers();
+  }
+
+  Future<Map<String, dynamic>> updateUserRole(int id, String role) async {
+    return _repository.updateUserRole(id, role);
+  }
+
+  Future<void> deleteUser(int id) async {
+    await _repository.deleteUser(id);
+  }
 }
