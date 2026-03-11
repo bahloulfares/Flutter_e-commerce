@@ -38,18 +38,24 @@ class _ProductsState extends State<Products> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       drawer: const MyDrawer(),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF6C63FF),
-        title: const Text(
+        backgroundColor: colorScheme.primary,
+        title: Text(
           'Boutique',
           style: TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onPrimary,
+          ),
         ),
         centerTitle: false,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: colorScheme.onPrimary),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -61,7 +67,7 @@ class _ProductsState extends State<Products> {
                       icon: const Icon(Icons.shopping_cart_outlined, size: 28),
                       onPressed: () =>
                           Navigator.pushNamed(context, '/cartView'),
-                      color: Colors.white,
+                      color: colorScheme.onPrimary,
                     ),
                     if (itemCount > 0)
                       Positioned(
@@ -93,18 +99,24 @@ class _ProductsState extends State<Products> {
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              color: Colors.grey[50],
+              color: colorScheme.surface,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Bienvenue',
-                      style: TextStyle(fontSize: 14, color: Colors.grey)),
+                  Text(
+                    'Bienvenue',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                   Obx(() => Text(
                         _authController.userName.value.isNotEmpty
                             ? _authController.userName.value
                             : 'Client',
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       )),
                   const SizedBox(height: 12),
                   // Search Bar
@@ -116,7 +128,10 @@ class _ProductsState extends State<Products> {
                     },
                     decoration: InputDecoration(
                       hintText: 'Rechercher un produit...',
-                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
                               icon: const Icon(Icons.clear),
@@ -131,10 +146,12 @@ class _ProductsState extends State<Products> {
                           borderRadius: BorderRadius.circular(12)),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
+                        borderSide: BorderSide(
+                          color: colorScheme.outline.withValues(alpha: 0.5),
+                        ),
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: colorScheme.surfaceContainerHighest,
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
@@ -157,11 +174,11 @@ class _ProductsState extends State<Products> {
                                 _selectedCategoryId = null;
                               });
                             },
-                            selectedColor: const Color(0xFF6C63FF),
+                            selectedColor: colorScheme.primary,
                             labelStyle: TextStyle(
                               color: _selectedCategoryId == null
-                                  ? Colors.white
-                                  : Colors.black87,
+                                  ? colorScheme.onPrimary
+                                  : colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -178,11 +195,11 @@ class _ProductsState extends State<Products> {
                                         selected ? cat.id : null;
                                   });
                                 },
-                                selectedColor: const Color(0xFF6C63FF),
+                                selectedColor: colorScheme.primary,
                                 labelStyle: TextStyle(
                                   color: isSelected
-                                      ? Colors.white
-                                      : Colors.black87,
+                                      ? colorScheme.onPrimary
+                                      : colorScheme.onSurface,
                                 ),
                               ),
                             );
@@ -196,9 +213,12 @@ class _ProductsState extends State<Products> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.orange[50],
+                      color:
+                          colorScheme.tertiaryContainer.withValues(alpha: 0.4),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.orange[200]!),
+                      border: Border.all(
+                        color: colorScheme.tertiary.withValues(alpha: 0.4),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,12 +226,16 @@ class _ProductsState extends State<Products> {
                         Text(
                           '🔧 Debug: API = $baseUrl',
                           style: TextStyle(
-                              fontSize: 11, color: Colors.orange[900]),
+                            fontSize: 11,
+                            color: colorScheme.onTertiaryContainer,
+                          ),
                         ),
                         Obx(() => Text(
                               '📊 Articles chargés: ${_articleController.articlesList.length}',
                               style: TextStyle(
-                                  fontSize: 11, color: Colors.orange[900]),
+                                fontSize: 11,
+                                color: colorScheme.onTertiaryContainer,
+                              ),
                             )),
                       ],
                     ),
@@ -223,9 +247,9 @@ class _ProductsState extends State<Products> {
               child: Obx(() {
                 // Show loading indicator while fetching
                 if (_articleController.isLoading.value) {
-                  return const Center(
+                  return Center(
                     child: CircularProgressIndicator(
-                      color: Color(0xFF6C63FF),
+                      color: colorScheme.primary,
                     ),
                   );
                 }
@@ -256,8 +280,8 @@ class _ProductsState extends State<Products> {
                               icon: const Icon(Icons.refresh),
                               label: const Text('Réessayer'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF6C63FF),
-                                foregroundColor: Colors.white,
+                                backgroundColor: colorScheme.primary,
+                                foregroundColor: colorScheme.onPrimary,
                               ),
                             ),
                           ],
@@ -286,8 +310,8 @@ class _ProductsState extends State<Products> {
                           icon: const Icon(Icons.refresh),
                           label: const Text('Réessayer'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF6C63FF),
-                            foregroundColor: Colors.white,
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.onPrimary,
                           ),
                         ),
                       ],
@@ -337,8 +361,9 @@ class _ProductsState extends State<Products> {
                               ? 'Aucun produit trouvé pour "$_searchQuery"'
                               : 'Aucun produit dans cette catégorie',
                           textAlign: TextAlign.center,
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.grey[600]),
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: colorScheme.onSurfaceVariant),
                         ),
                         const SizedBox(height: 8),
                         TextButton(
@@ -387,6 +412,8 @@ class _ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/details', arguments: article),
       child: Card(
@@ -401,7 +428,7 @@ class _ProductCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(16)),
-                  color: Colors.grey[200],
+                  color: colorScheme.surfaceContainerHighest,
                 ),
                 child: ClipRRect(
                   borderRadius:
@@ -410,9 +437,12 @@ class _ProductCard extends StatelessWidget {
                     article.imageart ?? 'https://via.placeholder.com/200',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.image_not_supported,
-                          color: Colors.grey, size: 40),
+                      color: colorScheme.surfaceContainer,
+                      child: Icon(
+                        Icons.image_not_supported,
+                        color: colorScheme.onSurfaceVariant,
+                        size: 40,
+                      ),
                     ),
                   ),
                 ),

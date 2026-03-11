@@ -25,6 +25,7 @@ import 'package:atelier7/presentation/screens/admin_scategories.screen.dart';
 import 'package:atelier7/presentation/screens/add_scategorie.screen.dart';
 import 'package:atelier7/presentation/screens/edit_scategorie.screen.dart';
 import 'package:atelier7/presentation/screens/admin_users.screen.dart';
+import 'package:atelier7/presentation/screens/profile.screen.dart';
 
 // Widget de protection pour les routes réservées aux admins
 class AdminRouteGuard extends StatelessWidget {
@@ -186,6 +187,7 @@ Map<String, WidgetBuilder> appRoutes() {
     '/register': (context) => const Register(), // Route pour l'écran register
     '/settingsDetails': (context) =>
         const AuthRouteGuard(child: SettingsScreen()),
+    '/profile': (context) => const AuthRouteGuard(child: ProfileScreen()),
     '/shopping': (context) => const Products(),
     '/cartView': (context) => const AuthRouteGuard(child: CartView()),
     '/checkout': (context) => const AuthRouteGuard(child: CheckoutScreen()),

@@ -13,7 +13,9 @@ class AuthController extends GetxController {
   var userName = ''.obs;
   var userEmail = ''.obs;
   var userId = ''.obs;
-  var userRole = ''.obs; // 'user' ou 'admin'
+  var userAvatar = ''.obs;
+  var userRole = ''.obs;
+  var isProfileLoading = false.obs;
 
   @override
   void onInit() {
@@ -27,13 +29,12 @@ class AuthController extends GetxController {
     userName.value = prefs.getString(StorageKeys.username) ?? '';
     userEmail.value = prefs.getString(StorageKeys.email) ?? '';
     userId.value = prefs.getString(StorageKeys.userId) ?? '';
+    userAvatar.value = prefs.getString(StorageKeys.avatar) ?? '';
     userRole.value = prefs.getString(StorageKeys.userRole) ?? 'user';
   }
 
-  // Vérifier si l'utilisateur est admin
   bool get isAdmin => userRole.value == 'admin';
 
-  // Vérifier si l'utilisateur est un client normal
   bool get isUser => userRole.value == 'user';
 
   Future<bool> login(String email, String password) async {
@@ -55,7 +56,39 @@ class AuthController extends GetxController {
     userName.value = '';
     userEmail.value = '';
     userId.value = '';
+    userAvatar.value = '';
     userRole.value = 'user';
+  }
+
+  Future<void> fetchProfile() async {
+    try {
+      isProfileLoading.value = true;
+      await _userUseCase.getProfile();
+      await _loadUserData();
+    } finally {
+      isProfileLoading.value = false;
+    }
+  }
+
+  Future<bool> updateProfile({
+    required String name,
+    required String email,
+    String avatar = '',
+  }) async {
+    try {
+      isProfileLoading.value = true;
+      await _userUseCase.updateProfile(
+        name: name,
+        email: email,
+        avatar: avatar,
+      );
+      await _loadUserData();
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      isProfileLoading.value = false;
+    }
   }
 
   // Admin: users management

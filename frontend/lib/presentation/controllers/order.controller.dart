@@ -98,9 +98,21 @@ class OrderController extends GetxController {
     errorMessage.value = '';
   }
 
+  double _safeToDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value.replaceAll(',', '.')) ?? 0.0;
+    }
+    return 0.0;
+  }
+
   // Get order total
   double getOrderTotal(Map<String, dynamic> order) {
-    return (order['total'] ?? 0).toDouble();
+    return _safeToDouble(order['total']);
+  }
+
+  double getLineTotal(Map<String, dynamic> line) {
+    return _safeToDouble(line['totalPrice']);
   }
 
   // Admin: update order status

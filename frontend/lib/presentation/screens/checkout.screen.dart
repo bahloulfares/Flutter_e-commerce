@@ -101,16 +101,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     final orderController = Get.find<OrderController>();
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF6C63FF),
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
+        backgroundColor: colorScheme.primary,
+        iconTheme: IconThemeData(color: colorScheme.onPrimary),
+        title: Text(
           'Finaliser la commande',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: colorScheme.onPrimary),
         ),
       ),
       body: SingleChildScrollView(
@@ -139,11 +140,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           horizontal: 16, vertical: 8),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: colorScheme.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: colorScheme.shadow.withValues(alpha: 0.08),
                             blurRadius: 10,
                             offset: const Offset(0, 2),
                           ),
@@ -164,7 +165,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   Container(
                                 width: 60,
                                 height: 60,
-                                color: Colors.grey[200],
+                                color: colorScheme.surfaceContainer,
                                 child: const Icon(Icons.image_not_supported),
                               ),
                             ),
@@ -188,7 +189,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   '${_toDouble(data.unitPrice).toStringAsFixed(2)} TND × ${data.quantity}',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.grey[600],
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -196,10 +197,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           Text(
                             '${(_toDouble(data.unitPrice) * data.quantity).toStringAsFixed(2)} TND',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              color: Color(0xFF6C63FF),
+                              color: colorScheme.primary,
                             ),
                           ),
                         ],
@@ -215,7 +216,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF6C63FF).withValues(alpha: 0.1),
+                color: colorScheme.primaryContainer.withValues(alpha: 0.35),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: PersistentShoppingCart().showTotalAmountWidget(
@@ -231,10 +232,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                     Text(
                       '${_toDouble(totalAmount).toStringAsFixed(2)} TND',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF6C63FF),
+                        color: colorScheme.primary,
                       ),
                     ),
                   ],
@@ -249,11 +250,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: colorScheme.shadow.withValues(alpha: 0.08),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -283,7 +284,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[50],
+                        fillColor: colorScheme.surfaceContainerHighest,
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -306,7 +307,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[50],
+                        fillColor: colorScheme.surfaceContainerHighest,
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -333,7 +334,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[50],
+                        fillColor: colorScheme.surfaceContainerHighest,
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -357,7 +358,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[50],
+                        fillColor: colorScheme.surfaceContainerHighest,
                       ),
                     ),
                   ],
@@ -377,27 +378,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       onPressed:
                           orderController.isLoading.value ? null : _placeOrder,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C63FF),
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 2,
                       ),
                       child: orderController.isLoading.value
-                          ? const SizedBox(
+                          ? SizedBox(
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
-                                color: Colors.white,
+                                color: colorScheme.onPrimary,
                                 strokeWidth: 2,
                               ),
                             )
-                          : const Text(
+                          : Text(
                               'Confirmer la commande',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: colorScheme.onPrimary,
                               ),
                             ),
                     ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
+import 'package:get/get.dart';
+import 'package:atelier7/presentation/controllers/theme.controller.dart';
 import 'package:atelier7/presentation/screens/map.screen.dart';
 
 class SettingsWidget extends StatefulWidget {
@@ -13,6 +15,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
   // Variables pour stocker l'état des Switch
   bool notificationsEnabled = false;
   bool locationEnabled = false;
+  final ThemeController _themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +52,20 @@ class SettingsWidgetState extends State<SettingsWidget> {
                         'Services de localisation activés: $locationEnabled',
                         name: 'SettingsWidget');
                   },
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.dark_mode),
+                title: const Text('Dark mode'),
+                trailing: Obx(
+                  () => Switch(
+                    value: _themeController.isDarkMode.value,
+                    onChanged: (value) async {
+                      await _themeController.setDarkMode(value);
+                      developer.log('Dark mode activé: $value',
+                          name: 'SettingsWidget');
+                    },
+                  ),
                 ),
               ),
               ListTile(

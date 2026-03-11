@@ -9,7 +9,8 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 15,
-        backgroundColor: const Color.fromARGB(255, 225, 122, 188),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         title: const Text("Settings and Help"),
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),

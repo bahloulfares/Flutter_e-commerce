@@ -25,4 +25,20 @@ class AuthenticateUserUseCase {
   Future<void> deleteUser(int id) async {
     await _repository.deleteUser(id);
   }
+
+  Future<Map<String, dynamic>> getProfile() async {
+    return _repository.getProfile();
+  }
+
+  Future<Map<String, dynamic>> updateProfile({
+    required String name,
+    required String email,
+    String avatar = '',
+  }) async {
+    return _repository.updateProfile(
+      name: name,
+      email: email,
+      avatar: avatar,
+    );
+  }
 }

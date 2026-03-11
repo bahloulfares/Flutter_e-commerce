@@ -13,8 +13,8 @@ class MyDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: [
-          GetBuilder<AuthController>(
-            builder: (_) => UserAccountsDrawerHeader(
+          Obx(
+            () => UserAccountsDrawerHeader(
               accountName: Text(authController.userName.value.isNotEmpty
                   ? authController.userName.value
                   : "Utilisateur"),
@@ -28,15 +28,20 @@ class MyDrawer extends StatelessWidget {
               ),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white,
-                child: Icon(
-                  authController.userRole.value == 'admin'
-                      ? Icons.admin_panel_settings
-                      : Icons.person,
-                  size: 40,
-                  color: authController.userRole.value == 'admin'
-                      ? const Color.fromARGB(255, 175, 30, 124)
-                      : const Color.fromARGB(255, 30, 175, 124),
-                ),
+                backgroundImage: authController.userAvatar.value.isNotEmpty
+                    ? NetworkImage(authController.userAvatar.value)
+                    : null,
+                child: authController.userAvatar.value.isEmpty
+                    ? Icon(
+                        authController.userRole.value == 'admin'
+                            ? Icons.admin_panel_settings
+                            : Icons.person,
+                        size: 40,
+                        color: authController.userRole.value == 'admin'
+                            ? const Color.fromARGB(255, 175, 30, 124)
+                            : const Color.fromARGB(255, 30, 175, 124),
+                      )
+                    : null,
               ),
               otherAccountsPictures: [
                 if (authController.userRole.value == 'admin')
@@ -206,6 +211,12 @@ const List<Choice> choices = <Choice>[
     title: 'Panier',
     icon: Icons.shopping_cart,
     route: '/cartView',
+    requiresAuth: true,
+  ),
+  Choice(
+    title: 'Profil',
+    icon: Icons.account_circle,
+    route: '/profile',
     requiresAuth: true,
   ),
   Choice(

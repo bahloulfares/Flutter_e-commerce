@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'dart:developer' as developer;
@@ -23,12 +24,15 @@ import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/controllers/categorie.controller.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
 import 'package:atelier7/presentation/controllers/order.controller.dart';
+import 'package:atelier7/presentation/controllers/theme.controller.dart';
 import 'package:atelier7/presentation/screens/menu.dart';
 import 'package:atelier7/presentation/widgets/mybottomnavbar.dart';
 import 'package:atelier7/presentation/widgets/mydrawer.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // ⚙️ Charger les variables d'environnement (.env.dev par défaut)
   // Pour production, utilisez: --dart-define=ENV=prod
   const String env = String.fromEnvironment('ENV', defaultValue: 'dev');
@@ -41,7 +45,18 @@ void main() async {
   }
 
   //Initialiser shoppingCart
-  await PersistentShoppingCart().init();
+  if (!kIsWeb) {
+    try {
+      await PersistentShoppingCart().init();
+    } catch (e) {
+      developer.log('⚠️ Erreur init panier persistant: $e', name: 'main');
+    }
+  } else {
+    developer.log(
+      'ℹ️ Initialisation du panier persistant ignorée sur le web',
+      name: 'main',
+    );
+  }
 
   //injection articles getx
   Get.put(ArticleService());
@@ -58,6 +73,7 @@ void main() async {
   Get.put(UserRepository(userService: Get.find()));
   Get.put(AuthenticateUserUseCase(repository: Get.find()));
   Get.put(AuthController(userUseCase: Get.find()));
+  Get.put(ThemeController());
 
   Get.put(OrderService());
   Get.put(OrderRepository(orderService: Get.find()));
@@ -75,16 +91,30 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      // Changed from MaterialApp to GetMaterialApp for GetX navigation
-      debugShowCheckedModeBanner: false, //bch na7ina echalta l7amra
-      initialRoute: '/',
-      routes: appRoutes(),
-      home: const Scaffold(
-        appBar: MyAppBar(),
-        body: Menu(),
-        drawer: MyDrawer(),
-        bottomNavigationBar: Mybottomnavigationbar(),
+    final themeController = Get.find<ThemeController>();
+    return Obx(
+      () => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        ),
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.indigo,
+            brightness: Brightness.dark,
+          ),
+        ),
+        themeMode: themeController.themeMode,
+        initialRoute: '/',
+        routes: appRoutes(),
+        home: const Scaffold(
+          appBar: MyAppBar(),
+          body: Menu(),
+          drawer: MyDrawer(),
+          bottomNavigationBar: Mybottomnavigationbar(),
+        ),
       ),
     );
   }

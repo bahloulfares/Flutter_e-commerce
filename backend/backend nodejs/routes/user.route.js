@@ -3,6 +3,7 @@ const router = express.Router();
 const { User } = require('../models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const auth = require('../middleware/auth');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -10,12 +11,12 @@ router.post('/register', async (req, res) => {
     const { name, email, password, role = 'user', avatar = '' } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(409).json({ success: false, message: "Account already exists" });
+      return res.status(409).json({ success: false, message: 'Account already exists' });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -29,15 +30,16 @@ router.post('/register', async (req, res) => {
       avatar,
     });
 
-    return res.status(201).json({ 
-      success: true, 
-      message: "Account created successfully", 
+    return res.status(201).json({
+      success: true,
+      message: 'Account created successfully',
       user: {
         id: newUser.id,
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
-      }
+        avatar: newUser.avatar,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -46,7 +48,11 @@ router.post('/register', async (req, res) => {
 
 // Generate Token
 const generateToken = (user) => {
-  return jwt.sign({ user: { id: user.id, email: user.email, name: user.name } }, process.env.TOKEN, { expiresIn: '15m' });
+  return jwt.sign(
+    { user: { id: user.id, email: user.email, name: user.name } },
+    process.env.TOKEN,
+    { expiresIn: '15m' },
+  );
 };
 
 // Login
@@ -55,7 +61,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
     const user = await User.findOne({ where: { email } });
@@ -66,7 +72,7 @@ router.post('/login', async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: "Invalid credentials" });
+      return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
 
     const token = generateToken(user);
@@ -81,6 +87,7 @@ router.post('/login', async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        avatar: user.avatar,
       },
     });
   } catch (error) {
@@ -90,7 +97,11 @@ router.post('/login', async (req, res) => {
 
 // Generate Refresh Token
 function generateRefreshToken(user) {
-  return jwt.sign({ user: { id: user.id, email: user.email } }, process.env.REFRESH_TOKEN, { expiresIn: '1y' });
+  return jwt.sign(
+    { user: { id: user.id, email: user.email } },
+    process.env.REFRESH_TOKEN,
+    { expiresIn: '1y' },
+  );
 }
 
 // Refresh Token Route
@@ -99,12 +110,12 @@ router.post('/refreshToken', async (req, res) => {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      return res.status(400).json({ success: false, message: "Token not provided" });
+      return res.status(400).json({ success: false, message: 'Token not provided' });
     }
 
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, decoded) => {
       if (err) {
-        return res.status(401).json({ success: false, message: "Invalid or expired token" });
+        return res.status(401).json({ success: false, message: 'Invalid or expired token' });
       }
 
       const user = { id: decoded.user.id, email: decoded.user.email };
@@ -118,6 +129,58 @@ router.post('/refreshToken', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// Current user profile
+router.get('/me', auth, async (req, res) => {
+  try {
+    const userId = req.user?.user?.id;
+    const user = await User.findByPk(userId, {
+      attributes: ['id', 'name', 'email', 'role', 'avatar', 'createdAt'],
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+router.put('/me', auth, async (req, res) => {
+  try {
+    const userId = req.user?.user?.id;
+    const { name, email, avatar = '' } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({ success: false, message: 'Name and email are required' });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser && existingUser.id !== user.id) {
+      return res.status(409).json({ success: false, message: 'Email already used' });
+    }
+
+    await user.update({ name, email, avatar });
+
+    return res.status(200).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 });
 

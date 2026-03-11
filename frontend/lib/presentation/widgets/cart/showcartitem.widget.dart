@@ -13,6 +13,8 @@ class CartViewItem extends StatefulWidget {
 class _CartViewState extends State<CartViewItem> {
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -43,17 +45,19 @@ class _CartViewState extends State<CartViewItem> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Total',
                           style: TextStyle(
-                              color: Color.fromARGB(255, 113, 107, 107),
-                              fontSize: 22),
+                            color: colorScheme.onSurfaceVariant,
+                            fontSize: 22,
+                          ),
                         ),
                         Text(
                           "$totalAmount TND",
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 143, 133, 133),
-                              fontSize: 22),
+                          style: TextStyle(
+                            color: colorScheme.onSurface,
+                            fontSize: 22,
+                          ),
                         ),
                       ],
                     ),
@@ -66,17 +70,18 @@ class _CartViewState extends State<CartViewItem> {
                           Navigator.pushNamed(context, '/checkout');
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6C63FF),
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Passer la commande',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                           ),
                         ),
                       ),

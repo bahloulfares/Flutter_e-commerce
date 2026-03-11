@@ -11,13 +11,15 @@ class CartTitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.only(bottom: 10),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.grey.withValues(alpha: .05),
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: .5),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -35,10 +37,11 @@ class CartTitleWidget extends StatelessWidget {
                 children: [
                   Text(
                     data.productName,
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color.fromARGB(125, 17, 3, 3)),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.onSurface,
+                    ),
                     maxLines: 1, // Add this to prevent overflow
                     overflow: TextOverflow.ellipsis, // Truncate if necessary
                   ),
@@ -47,10 +50,11 @@ class CartTitleWidget extends StatelessWidget {
                       Expanded(
                         child: Text(
                           "${data.unitPrice} TND",
-                          style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.onSurface,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -69,12 +73,17 @@ class CartTitleWidget extends StatelessWidget {
                           width: 70,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.red),
+                            border: Border.all(color: colorScheme.error),
                           ),
                           child: Center(
                             child: Text(
                               'Remove',
-                              style: Theme.of(context).textTheme.bodySmall,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: colorScheme.error,
+                                  ),
                             ),
                           ),
                         ),
@@ -93,10 +102,10 @@ class CartTitleWidget extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: .2),
+                      color: colorScheme.surfaceContainer,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Icon(Icons.add),
+                    child: Icon(Icons.add, color: colorScheme.onSurfaceVariant),
                   ),
                 ),
                 Text(
@@ -110,10 +119,11 @@ class CartTitleWidget extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: .2),
+                      color: colorScheme.surfaceContainer,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Icon(Icons.remove),
+                    child:
+                        Icon(Icons.remove, color: colorScheme.onSurfaceVariant),
                   ),
                 )
               ],

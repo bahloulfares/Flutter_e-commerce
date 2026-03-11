@@ -215,7 +215,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                               title: Text(
                                   article?['designation'] ?? 'Article inconnu'),
                               trailing: Text(
-                                'x${line['quantity']}  —  ${line['totalPrice']} DT',
+                                'x${line['quantity']}  —  ${_controller.getLineTotal(Map<String, dynamic>.from(line)).toStringAsFixed(2)} DT',
                                 style: const TextStyle(color: Colors.indigo),
                               ),
                             );
