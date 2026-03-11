@@ -13,15 +13,17 @@ class Details extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF6C63FF),
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: colorScheme.primary,
+        iconTheme: IconThemeData(color: colorScheme.onPrimary),
         title: Text(
           myListElement.designation ?? 'Détails produit',
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: colorScheme.onPrimary),
         ),
         actions: [
           IconButton(
@@ -40,19 +42,19 @@ class Details extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 height: 350,
-                color: Colors.grey[100],
+                color: colorScheme.surfaceContainerLowest,
                 child: myListElement.imageart != null
                     ? Image.network(
                         myListElement.imageart!,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) => Container(
-                          color: Colors.grey[200],
-                          child: const Icon(Icons.broken_image,
-                              size: 100, color: Colors.grey),
+                          color: colorScheme.surfaceContainer,
+                          child: Icon(Icons.broken_image,
+                              size: 100, color: colorScheme.onSurfaceVariant),
                         ),
                       )
-                    : const Icon(Icons.image_not_supported,
-                        size: 100, color: Colors.grey),
+                    : Icon(Icons.image_not_supported,
+                        size: 100, color: colorScheme.onSurfaceVariant),
               ),
             ),
 
@@ -80,7 +82,10 @@ class Details extends StatelessWidget {
                   if (myListElement.reference != null)
                     Text(
                       'Réf: ${myListElement.reference}',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
 
                   if (myListElement.marque != null)
@@ -88,7 +93,7 @@ class Details extends StatelessWidget {
                       'Marque: ${myListElement.marque}',
                       style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[700],
+                          color: colorScheme.onSurface,
                           fontWeight: FontWeight.w500),
                     ),
 
@@ -99,7 +104,8 @@ class Details extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6C63FF).withValues(alpha: 0.1),
+                      color:
+                          colorScheme.primaryContainer.withValues(alpha: 0.35),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -112,10 +118,10 @@ class Details extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           '${myListElement.prix?.toStringAsFixed(2) ?? '0.00'} TND',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF6C63FF),
+                            color: colorScheme.primary,
                           ),
                         ),
                       ],
@@ -191,7 +197,7 @@ class Details extends StatelessWidget {
                         height: 55,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: const Color(0xFF6C63FF),
+                          color: colorScheme.primary,
                         ),
                         child: const Center(
                           child: Row(
