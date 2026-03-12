@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:atelier7/domain/entities/article.entity.dart';
 import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/screens/scan_screen.dart';
+import 'package:atelier7/utils/barcode_scanner_service.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AdminArticlesScreen extends StatefulWidget {
   const AdminArticlesScreen({super.key});
@@ -13,6 +15,8 @@ class AdminArticlesScreen extends StatefulWidget {
 
 class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
   final ArticleController _controller = Get.find<ArticleController>();
+  final BarcodeScannerService _barcodeScannerService = BarcodeScannerService();
+  final ImagePicker _imagePicker = ImagePicker();
   String _search = '';
 
   String _normalizeReference(String value) {
@@ -34,9 +38,73 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
       MaterialPageRoute(builder: (_) => const ScanScreen()),
     );
 
+    await _handleScannedReference(scannedRef, source: 'caméra');
+  }
+
+  Future<void> _scanAndFindArticleFromGallery() async {
+    final picked = await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (picked == null) return;
+
+    String? scannedRef;
+    try {
+      scannedRef = await _barcodeScannerService.scanFromFilePath(picked.path);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur scan galerie: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+
+    await _handleScannedReference(scannedRef, source: 'galerie');
+  }
+
+  Future<void> _showScanOptionsSheet() async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Scanner avec la caméra'),
+              onTap: () => Navigator.pop(ctx, 'camera'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Scanner depuis la galerie'),
+              onTap: () => Navigator.pop(ctx, 'gallery'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+    if (selected == 'camera') {
+      await _scanAndFindArticle();
+    } else if (selected == 'gallery') {
+      await _scanAndFindArticleFromGallery();
+    }
+  }
+
+  Future<void> _handleScannedReference(String? scannedRef,
+      {required String source}) async {
     if (!mounted || scannedRef == null || scannedRef.trim().isEmpty) return;
 
-    final article = _findByReference(scannedRef);
+    final cleanedRef = scannedRef.trim();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Référence détectée ($source): $cleanedRef'),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+      ),
+    );
+
+    final article = _findByReference(cleanedRef);
 
     if (article != null) {
       if (!mounted) return;
@@ -52,7 +120,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
       builder: (ctx) => AlertDialog(
         title: const Text('Article introuvable'),
         content: Text(
-          'Aucun article avec la référence "$scannedRef".\nCréer un nouvel article prérempli ?',
+          'Aucun article avec la référence "$cleanedRef".\nCréer un nouvel article prérempli ?',
         ),
         actions: [
           TextButton(
@@ -69,7 +137,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
 
     if (create == true && mounted) {
       await Navigator.of(context)
-          .pushNamed('/admin/addArticle', arguments: scannedRef.trim())
+          .pushNamed('/admin/addArticle', arguments: cleanedRef)
           .then((_) => _controller.fetchAllArticles());
     }
   }
@@ -99,11 +167,14 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(ok ? 'Article supprimé' : 'Erreur suppression'),
-                  backgroundColor: ok ? Colors.green : Colors.red,
+                  backgroundColor: ok
+                      ? Theme.of(context).colorScheme.tertiary
+                      : Theme.of(context).colorScheme.error,
                 ));
               }
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.error),
             child: const Text('Supprimer'),
           ),
         ],
@@ -113,16 +184,18 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestion des articles'),
-        backgroundColor: Colors.teal,
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
         actions: [
           IconButton(
             icon: const Icon(Icons.qr_code_scanner),
             tooltip: 'Scanner une référence',
-            onPressed: _scanAndFindArticle,
+            onPressed: _showScanOptionsSheet,
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -137,7 +210,8 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
         }),
         icon: const Icon(Icons.add),
         label: const Text('Ajouter'),
-        backgroundColor: Colors.teal,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
       ),
       body: Column(
         children: [
@@ -149,6 +223,8 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                 prefixIcon: const Icon(Icons.search),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: colorScheme.surfaceContainerHighest,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
               ),
               onChanged: (v) => setState(() => _search = v.toLowerCase()),
@@ -205,15 +281,15 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                           Row(
                             children: [
                               Text('${art.prix} DT',
-                                  style: const TextStyle(
-                                      color: Colors.teal,
+                                  style: TextStyle(
+                                      color: colorScheme.primary,
                                       fontWeight: FontWeight.bold)),
                               const SizedBox(width: 10),
                               Text('Stock: ${art.qtestock ?? 0}',
                                   style: TextStyle(
                                       color: (art.qtestock ?? 0) > 0
-                                          ? Colors.green
-                                          : Colors.red,
+                                          ? colorScheme.tertiary
+                                          : colorScheme.error,
                                       fontSize: 12)),
                             ],
                           ),
@@ -228,7 +304,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                                 .then((_) => _controller.fetchAllArticles()),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
+                            icon: Icon(Icons.delete, color: colorScheme.error),
                             onPressed: () =>
                                 _confirmDelete(art.id, art.designation),
                           ),

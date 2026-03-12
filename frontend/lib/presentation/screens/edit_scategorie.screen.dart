@@ -251,7 +251,7 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
               Obx(() {
                 final cats = _catController.categoriesList;
                 return DropdownButtonFormField<String>(
-                  value: _selectedCategorieId,
+                  initialValue: _selectedCategorieId,
                   decoration: InputDecoration(
                     labelText: 'Catégorie parente',
                     prefixIcon: const Icon(Icons.category),

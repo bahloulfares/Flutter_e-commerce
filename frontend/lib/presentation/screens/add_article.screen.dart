@@ -69,7 +69,9 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
               ? 'Référence déjà existante ($sourceLabel): $normalized'
               : 'Référence détectée ($sourceLabel): $normalized',
         ),
-        backgroundColor: duplicate ? Colors.orange : Colors.green,
+        backgroundColor: duplicate
+            ? Theme.of(context).colorScheme.secondary
+            : Theme.of(context).colorScheme.tertiary,
       ),
     );
   }
@@ -108,9 +110,9 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
 
       if (hasDuplicate) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Cette référence existe déjà.'),
-            backgroundColor: Colors.orange,
+          SnackBar(
+            content: const Text('Cette référence existe déjà.'),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
         return;
@@ -135,7 +137,9 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
             : _articleController.errorMessage.value.isNotEmpty
                 ? _articleController.errorMessage.value
                 : 'Erreur création'),
-        backgroundColor: ok ? Colors.green : Colors.red,
+        backgroundColor: ok
+            ? Theme.of(context).colorScheme.tertiary
+            : Theme.of(context).colorScheme.error,
       ));
       if (ok) Navigator.pop(context);
     }
@@ -164,9 +168,9 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Image uploadée avec succès'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('Image uploadée avec succès'),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
           ),
         );
       }
@@ -180,7 +184,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erreur upload image: ${error.message}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -189,7 +193,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erreur upload image: $error'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -220,10 +224,10 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
+            SnackBar(
+              content: const Text(
                   'Aucun code-barres valide détecté (formats autorisés: EAN/UPC/Code128/Code39/QR).'),
-              backgroundColor: Colors.orange,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
             ),
           );
         }
@@ -233,7 +237,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erreur scan ML Kit: $error'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -272,11 +276,13 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ajouter un article'),
-        backgroundColor: Colors.teal,
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -366,7 +372,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                     'URL Cloudinary prête',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.green.shade700,
+                      color: colorScheme.tertiary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -411,8 +417,8 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                           : const Icon(Icons.save),
                       label: const Text('Enregistrer'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white,
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
