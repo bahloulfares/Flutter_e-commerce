@@ -36,6 +36,42 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   bool _isUploadingImage = false;
   bool _isScanningReference = false;
 
+  String _normalizeReference(String value) {
+    return value.trim().replaceAll(' ', '');
+  }
+
+  bool _referenceExists(String value) {
+    final normalized = _normalizeReference(value).toLowerCase();
+    if (normalized.isEmpty) return false;
+
+    return _articleController.articlesList.any(
+      (article) =>
+          _normalizeReference(article.reference ?? '').toLowerCase() ==
+          normalized,
+    );
+  }
+
+  void _applyScannedReference(String scannedValue, String sourceLabel) {
+    final normalized = _normalizeReference(scannedValue);
+    if (normalized.isEmpty) return;
+
+    setState(() {
+      _referenceCtrl.text = normalized;
+    });
+
+    final duplicate = _referenceExists(normalized);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          duplicate
+              ? 'Référence déjà existante ($sourceLabel): $normalized'
+              : 'Référence détectée ($sourceLabel): $normalized',
+        ),
+        backgroundColor: duplicate ? Colors.orange : Colors.green,
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -59,11 +95,10 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final reference = _referenceCtrl.text.trim();
+    final reference = _normalizeReference(_referenceCtrl.text);
+    _referenceCtrl.text = reference;
     if (reference.isNotEmpty) {
-      final hasDuplicate = _articleController.articlesList.any((article) =>
-          (article.reference ?? '').trim().toLowerCase() ==
-          reference.toLowerCase());
+      final hasDuplicate = _referenceExists(reference);
 
       if (hasDuplicate) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -173,17 +208,8 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
           await _barcodeScannerService.scanFromFilePath(picked.path);
 
       if (scannedValue != null) {
-        setState(() {
-          _referenceCtrl.text = scannedValue;
-        });
-
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Référence détectée avec ML Kit (galerie)'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          _applyScannedReference(scannedValue, 'galerie');
         }
       } else {
         if (mounted) {
@@ -227,15 +253,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
       if (!mounted) return;
 
       if (result != null && result.trim().isNotEmpty) {
-        setState(() {
-          _referenceCtrl.text = result.trim();
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Référence détectée avec ML Kit (caméra)'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        _applyScannedReference(result, 'caméra');
       }
     } finally {
       if (mounted) {
