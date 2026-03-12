@@ -278,13 +278,14 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                           if (art.marque != null)
                             Text('Marque: ${art.marque}',
                                 style: const TextStyle(fontSize: 12)),
-                          Row(
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 2,
                             children: [
                               Text('${art.prix} DT',
                                   style: TextStyle(
                                       color: colorScheme.primary,
                                       fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 10),
                               Text('Stock: ${art.qtestock ?? 0}',
                                   style: TextStyle(
                                       color: (art.qtestock ?? 0) > 0
@@ -295,15 +296,18 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                           ),
                         ],
                       ),
-                      trailing: Wrap(
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
+                            visualDensity: VisualDensity.compact,
                             icon: const Icon(Icons.edit, color: Colors.blue),
                             onPressed: () => Navigator.of(context)
                                 .pushNamed('/admin/editArticle', arguments: art)
                                 .then((_) => _controller.fetchAllArticles()),
                           ),
                           IconButton(
+                            visualDensity: VisualDensity.compact,
                             icon: Icon(Icons.delete, color: colorScheme.error),
                             onPressed: () =>
                                 _confirmDelete(art.id, art.designation),

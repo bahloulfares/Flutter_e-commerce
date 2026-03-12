@@ -7,30 +7,90 @@ router.post('/', async (req, res) => {
   try {
     const { client, lineOrder } = req.body;
 
-    const total = lineOrder.reduce((acc, item) => acc + item.totalPrice, 0);
-
-    const newOrder = await Order.create({
-      client,
-      total,
-      status: 'Not processed',
-    });
-
-    // Create line items
-    for (const item of lineOrder) {
-      await LineOrder.create({
-        orderId: newOrder.id,
-        articleId: item.articleId,
-        quantity: item.quantity,
-        totalPrice: item.totalPrice,
-      });
+    if (!client || !Array.isArray(lineOrder) || lineOrder.length === 0) {
+      return res.status(400).json({ message: 'Client et lineOrder sont requis' });
     }
 
-    const orderWithLines = await Order.findByPk(newOrder.id, {
-      include: [{ model: LineOrder, as: 'lineOrder' }],
+    const orderWithLines = await Order.sequelize.transaction(async (transaction) => {
+      const sanitizedLines = [];
+
+      for (const item of lineOrder) {
+        const articleId = Number(item.articleId);
+        const quantity = Number(item.quantity);
+
+        if (!Number.isInteger(articleId) || articleId <= 0) {
+          throw new Error(`articleId invalide: ${item.articleId}`);
+        }
+
+        if (!Number.isInteger(quantity) || quantity <= 0) {
+          throw new Error(`quantité invalide pour article ${articleId}`);
+        }
+
+        const article = await Article.findByPk(articleId, {
+          attributes: ['id', 'prix'],
+          transaction,
+        });
+
+        if (!article) {
+          throw new Error(`Article introuvable: ${articleId}`);
+        }
+
+        const unitPrice = Number(article.prix ?? 0);
+        if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+          throw new Error(`Prix invalide pour article ${articleId}`);
+        }
+
+        const totalPrice = Number((unitPrice * quantity).toFixed(2));
+
+        sanitizedLines.push({
+          articleId,
+          quantity,
+          totalPrice,
+        });
+      }
+
+      const total = Number(
+        sanitizedLines
+          .reduce((acc, item) => acc + item.totalPrice, 0)
+          .toFixed(2)
+      );
+
+      const newOrder = await Order.create(
+        {
+          client,
+          total,
+          status: 'Not processed',
+        },
+        { transaction }
+      );
+
+      for (const item of sanitizedLines) {
+        await LineOrder.create(
+          {
+            orderId: newOrder.id,
+            articleId: item.articleId,
+            quantity: item.quantity,
+            totalPrice: item.totalPrice,
+          },
+          { transaction }
+        );
+      }
+
+      return Order.findByPk(newOrder.id, {
+        include: [{ model: LineOrder, as: 'lineOrder' }],
+        transaction,
+      });
     });
 
     res.status(201).json({ message: 'Order created successfully', order: orderWithLines });
   } catch (error) {
+    if (
+      error.message?.includes('invalide') ||
+      error.message?.includes('introuvable')
+    ) {
+      return res.status(400).json({ message: error.message });
+    }
+
     res.status(500).json({ message: error.message });
   }
 });

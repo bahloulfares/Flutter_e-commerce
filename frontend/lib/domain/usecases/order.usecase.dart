@@ -10,12 +10,11 @@ class OrderUseCase {
     required String clientName,
     required List<Map<String, dynamic>> items,
   }) async {
-    // Transform cart items to line order format
+    // Send only article and quantity; totals are computed server-side.
     final lineOrder = items.map((item) {
       return {
         'articleId': item['articleId'],
         'quantity': item['quantity'],
-        'totalPrice': (item['unitPrice'] * item['quantity']),
       };
     }).toList();
 

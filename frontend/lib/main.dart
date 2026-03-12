@@ -44,18 +44,18 @@ void main() async {
     // Continuer sans le fichier .env - la constante aura sa valeur par défaut
   }
 
-  //Initialiser shoppingCart
-  if (!kIsWeb) {
-    try {
-      await PersistentShoppingCart().init();
-    } catch (e) {
-      developer.log('⚠️ Erreur init panier persistant: $e', name: 'main');
-    }
-  } else {
+  // Initialiser le panier persistant sur toutes les plateformes.
+  // Sur le web, cela ouvre la box Hive utilisée par le package.
+  try {
+    await PersistentShoppingCart().init();
     developer.log(
-      'ℹ️ Initialisation du panier persistant ignorée sur le web',
+      kIsWeb
+          ? '✅ Panier persistant initialisé sur le web'
+          : '✅ Panier persistant initialisé sur mobile/desktop',
       name: 'main',
     );
+  } catch (e) {
+    developer.log('⚠️ Erreur init panier persistant: $e', name: 'main');
   }
 
   //injection articles getx
