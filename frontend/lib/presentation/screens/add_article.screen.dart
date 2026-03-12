@@ -10,7 +10,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 
 class AddArticleScreen extends StatefulWidget {
-  const AddArticleScreen({super.key});
+  final String? initialReference;
+
+  const AddArticleScreen({super.key, this.initialReference});
 
   @override
   State<AddArticleScreen> createState() => _AddArticleScreenState();
@@ -75,6 +77,10 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   @override
   void initState() {
     super.initState();
+    final initialRef = widget.initialReference;
+    if (initialRef != null && initialRef.trim().isNotEmpty) {
+      _referenceCtrl.text = _normalizeReference(initialRef);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scatController.fetchAllScategories();
       _articleController.fetchAllArticles();

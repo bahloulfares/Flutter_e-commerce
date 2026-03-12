@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:atelier7/domain/entities/article.entity.dart';
 import 'package:atelier7/presentation/controllers/article.controller.dart';
+import 'package:atelier7/presentation/screens/scan_screen.dart';
 
 class AdminArticlesScreen extends StatefulWidget {
   const AdminArticlesScreen({super.key});
@@ -12,6 +14,65 @@ class AdminArticlesScreen extends StatefulWidget {
 class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
   final ArticleController _controller = Get.find<ArticleController>();
   String _search = '';
+
+  String _normalizeReference(String value) {
+    return value.trim().replaceAll(' ', '').toLowerCase();
+  }
+
+  ArticleEntity? _findByReference(String scannedRef) {
+    final normalized = _normalizeReference(scannedRef);
+    for (final article in _controller.articlesList) {
+      if (_normalizeReference(article.reference ?? '') == normalized) {
+        return article;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _scanAndFindArticle() async {
+    final scannedRef = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const ScanScreen()),
+    );
+
+    if (!mounted || scannedRef == null || scannedRef.trim().isEmpty) return;
+
+    final article = _findByReference(scannedRef);
+
+    if (article != null) {
+      if (!mounted) return;
+      await Navigator.of(context)
+          .pushNamed('/admin/editArticle', arguments: article)
+          .then((_) => _controller.fetchAllArticles());
+      return;
+    }
+
+    if (!mounted) return;
+    final create = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Article introuvable'),
+        content: Text(
+          'Aucun article avec la référence "$scannedRef".\nCréer un nouvel article prérempli ?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Créer'),
+          ),
+        ],
+      ),
+    );
+
+    if (create == true && mounted) {
+      await Navigator.of(context)
+          .pushNamed('/admin/addArticle', arguments: scannedRef.trim())
+          .then((_) => _controller.fetchAllArticles());
+    }
+  }
 
   @override
   void initState() {
@@ -58,6 +119,11 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            tooltip: 'Scanner une référence',
+            onPressed: _scanAndFindArticle,
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _controller.fetchAllArticles,

@@ -200,9 +200,13 @@ Map<String, WidgetBuilder> appRoutes() {
     '/admin/articles': (context) => const AdminRouteGuard(
           child: AdminArticlesScreen(),
         ),
-    '/admin/addArticle': (context) => const AdminRouteGuard(
-          child: AddArticleScreen(),
-        ),
+    '/admin/addArticle': (context) {
+      final arg = ModalRoute.of(context)?.settings.arguments;
+      final initialReference = arg is String ? arg : null;
+      return AdminRouteGuard(
+        child: AddArticleScreen(initialReference: initialReference),
+      );
+    },
     '/admin/editArticle': (context) {
       final article =
           ModalRoute.of(context)!.settings.arguments as ArticleEntity;
