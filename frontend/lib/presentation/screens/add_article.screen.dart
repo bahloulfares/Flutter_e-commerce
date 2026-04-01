@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,6 +6,7 @@ import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/controllers/scategorie.controller.dart';
 import 'package:atelier7/presentation/screens/scan_screen.dart';
 import 'package:atelier7/utils/barcode_scanner_service.dart';
+import 'package:atelier7/utils/ocr_service.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
@@ -24,6 +26,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   final ScategorieController _scatController = Get.find<ScategorieController>();
   final ImagePicker _imagePicker = ImagePicker();
   final BarcodeScannerService _barcodeScannerService = BarcodeScannerService();
+  final OcrService _ocrService = OcrService();
   final CloudinaryPublic _cloudinary =
       CloudinaryPublic('dymt4nyul', 'koyuqu3d', cache: false);
 
@@ -45,7 +48,6 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   bool _referenceExists(String value) {
     final normalized = _normalizeReference(value).toLowerCase();
     if (normalized.isEmpty) return false;
-
     return _articleController.articlesList.any(
       (article) =>
           _normalizeReference(article.reference ?? '').toLowerCase() ==
@@ -56,11 +58,9 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   void _applyScannedReference(String scannedValue, String sourceLabel) {
     final normalized = _normalizeReference(scannedValue);
     if (normalized.isEmpty) return;
-
     setState(() {
       _referenceCtrl.text = normalized;
     });
-
     final duplicate = _referenceExists(normalized);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -97,7 +97,46 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
     _marqueCtrl.dispose();
     _referenceCtrl.dispose();
     _imageCtrl.dispose();
+    _ocrService.dispose();
     super.dispose();
+  }
+
+  Future<void> _runOcrOnImage(String imagePath) async {
+    try {
+      final file = File(imagePath);
+      final result = await _ocrService.extractInfoFromImage(file);
+      setState(() {
+        if (result['designation']?.isNotEmpty == true) {
+          _designationCtrl.text = result['designation']!;
+        }
+        if (result['marque']?.isNotEmpty == true) {
+          _marqueCtrl.text = result['marque']!;
+        }
+        if (result['prix']?.isNotEmpty == true) {
+          _prixCtrl.text = result['prix']!;
+        }
+        if (result['reference']?.isNotEmpty == true) {
+          _referenceCtrl.text = result['reference']!;
+        }
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Texte extrait par OCR.'),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur OCR: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _submit() async {
@@ -105,18 +144,14 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
 
     final reference = _normalizeReference(_referenceCtrl.text);
     _referenceCtrl.text = reference;
-    if (reference.isNotEmpty) {
-      final hasDuplicate = _referenceExists(reference);
-
-      if (hasDuplicate) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Cette référence existe déjà.'),
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-          ),
-        );
-        return;
-      }
+    if (reference.isNotEmpty && _referenceExists(reference)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Cette référence existe déjà.'),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+        ),
+      );
+      return;
     }
 
     final data = {
@@ -154,6 +189,9 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
       _isUploadingImage = true;
     });
 
+    // OCR automatique après sélection image
+    await _runOcrOnImage(picked.path);
+
     try {
       final response = await _cloudinary.uploadFile(
         CloudinaryFile.fromFile(
@@ -161,11 +199,9 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
           resourceType: CloudinaryResourceType.Image,
         ),
       );
-
       setState(() {
         _imageCtrl.text = response.secureUrl;
       });
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -174,7 +210,6 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
           ),
         );
       }
-
       developer.log('Cloudinary URL: ${response.secureUrl}',
           name: 'AddArticleScreen');
     } on CloudinaryException catch (error) {
@@ -210,27 +245,20 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
     final picked = await _imagePicker.pickImage(source: ImageSource.gallery);
     if (picked == null) return;
 
-    setState(() {
-      _isScanningReference = true;
-    });
+    setState(() => _isScanningReference = true);
     try {
       final scannedValue =
           await _barcodeScannerService.scanFromFilePath(picked.path);
-
-      if (scannedValue != null) {
-        if (mounted) {
-          _applyScannedReference(scannedValue, 'galerie');
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                  'Aucun code-barres valide détecté (formats autorisés: EAN/UPC/Code128/Code39/QR).'),
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-            ),
-          );
-        }
+      if (scannedValue != null && mounted) {
+        _applyScannedReference(scannedValue, 'galerie');
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+                'Aucun code-barres valide détecté (formats autorisés: EAN/UPC/Code128/Code39/QR).'),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+          ),
+        );
       }
     } catch (error) {
       if (mounted) {
@@ -242,35 +270,22 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
         );
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isScanningReference = false;
-        });
-      }
+      if (mounted) setState(() => _isScanningReference = false);
     }
   }
 
   Future<void> _scanReferenceLive() async {
-    setState(() {
-      _isScanningReference = true;
-    });
-
+    setState(() => _isScanningReference = true);
     try {
       final result = await Navigator.of(context).push<String>(
         MaterialPageRoute(builder: (_) => const ScanScreen()),
       );
-
       if (!mounted) return;
-
       if (result != null && result.trim().isNotEmpty) {
         _applyScannedReference(result, 'caméra');
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isScanningReference = false;
-        });
-      }
+      if (mounted) setState(() => _isScanningReference = false);
     }
   }
 
@@ -351,7 +366,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                   icon: const Icon(Icons.attach_file),
                   label: Text(_isUploadingImage
                       ? 'Upload en cours...'
-                      : 'Choisir un fichier existant'),
+                      : 'Choisir un fichier existant (+ OCR auto)'),
                 ),
               ),
               if (_selectedImagePath != null) ...[
@@ -379,11 +394,10 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                 ),
               ],
               const SizedBox(height: 12),
-              // Sous-catégorie dropdown
               Obx(() {
                 final scats = _scatController.scategoriesList;
                 return DropdownButtonFormField<int>(
-                  initialValue: _selectedScategorieId,
+                  value: _selectedScategorieId,
                   decoration: InputDecoration(
                     labelText: 'Sous-catégorie',
                     prefixIcon: const Icon(Icons.category),
@@ -398,9 +412,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                           child: Text(s.nomscategorie ?? 'Sans nom'),
                         )),
                   ],
-                  onChanged: (v) {
-                    setState(() => _selectedScategorieId = v);
-                  },
+                  onChanged: (v) => setState(() => _selectedScategorieId = v),
                 );
               }),
               const SizedBox(height: 24),

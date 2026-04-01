@@ -57,6 +57,12 @@ class _ProductsState extends State<Products> {
         centerTitle: false,
         iconTheme: IconThemeData(color: colorScheme.onPrimary),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.document_scanner_outlined, size: 26),
+            tooltip: 'Scanner un produit',
+            color: colorScheme.onPrimary,
+            onPressed: () => Navigator.pushNamed(context, '/scanFusion'),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(

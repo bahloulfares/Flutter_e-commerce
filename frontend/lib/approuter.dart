@@ -26,6 +26,8 @@ import 'package:atelier7/presentation/screens/add_scategorie.screen.dart';
 import 'package:atelier7/presentation/screens/edit_scategorie.screen.dart';
 import 'package:atelier7/presentation/screens/admin_users.screen.dart';
 import 'package:atelier7/presentation/screens/profile.screen.dart';
+import 'package:atelier7/presentation/screens/scan_fusion_screen.dart';
+import 'package:atelier7/presentation/screens/mlkit_diagnostic_screen.dart';
 
 // Widget de protection pour les routes réservées aux admins
 class AdminRouteGuard extends StatelessWidget {
@@ -229,5 +231,7 @@ Map<String, WidgetBuilder> appRoutes() {
     '/admin/users': (context) => const AdminRouteGuard(
           child: AdminUsersScreen(),
         ),
+    '/scanFusion': (context) => const ScanFusionScreen(),
+    '/mlkitDiag': (context) => const MlkitDiagnosticScreen(),
   };
 }

@@ -134,6 +134,69 @@ router.get('/cat/:categorieId', async (req, res) => {
   }
 });
 
+// Search article by reference (for barcode scan)
+router.get('/search/reference', async (req, res) => {
+  try {
+    const { ref } = req.query;
+    if (!ref) {
+      return res.status(400).json({ message: 'Paramètre ref requis' });
+    }
+    const article = await Article.findOne({
+      where: { reference: { [Op.like]: `%${ref}%` } },
+      include: [{
+        model: Scategorie,
+        as: 'scategorie',
+        include: [{ model: Categorie, as: 'categorie', attributes: ['id', 'nomcategorie'] }]
+      }],
+    });
+    if (!article) {
+      return res.status(404).json({ message: 'Article non trouvé' });
+    }
+    const plainArticle = article.toJSON();
+    if (article.scategorie && article.scategorie.categorie) {
+      plainArticle.categorieId = article.scategorie.categorie.id;
+    }
+    res.status(200).json(plainArticle);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Search articles by designation or marque (for OCR)
+router.get('/search/text', async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) {
+      return res.status(400).json({ message: 'Paramètre q requis' });
+    }
+    const articles = await Article.findAll({
+      where: {
+        [Op.or]: [
+          { designation: { [Op.like]: `%${q}%` } },
+          { marque: { [Op.like]: `%${q}%` } },
+          { reference: { [Op.like]: `%${q}%` } },
+        ]
+      },
+      include: [{
+        model: Scategorie,
+        as: 'scategorie',
+        include: [{ model: Categorie, as: 'categorie', attributes: ['id', 'nomcategorie'] }]
+      }],
+      limit: 10,
+    });
+    const mapped = articles.map(article => {
+      const plain = article.toJSON();
+      if (article.scategorie && article.scategorie.categorie) {
+        plain.categorieId = article.scategorie.categorie.id;
+      }
+      return plain;
+    });
+    res.status(200).json(mapped);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Update quantity only
 router.put('/qty/:id', async (req, res) => {
   try {

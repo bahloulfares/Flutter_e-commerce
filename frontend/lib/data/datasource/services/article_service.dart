@@ -131,4 +131,37 @@ class ArticleService {
       throw AppException('Erreur: $e');
     }
   }
+
+  // Search article by reference (barcode)
+  Future<Map<String, dynamic>?> searchByReference(String ref) async {
+    try {
+      final response =
+          await dio.get('/articles/search/reference', queryParameters: {'ref': ref});
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+      return null;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      throw AppException(ErrorHandler.handleDioError(e));
+    } catch (e) {
+      throw AppException('Erreur: $e');
+    }
+  }
+
+  // Search articles by text (OCR)
+  Future<List<dynamic>> searchByText(String query) async {
+    try {
+      final response =
+          await dio.get('/articles/search/text', queryParameters: {'q': query});
+      if (response.statusCode == 200) {
+        return response.data as List<dynamic>;
+      }
+      return [];
+    } on DioException catch (e) {
+      throw AppException(ErrorHandler.handleDioError(e));
+    } catch (e) {
+      throw AppException('Erreur: $e');
+    }
+  }
 }

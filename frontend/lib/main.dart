@@ -25,6 +25,7 @@ import 'package:atelier7/presentation/controllers/categorie.controller.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
 import 'package:atelier7/presentation/controllers/order.controller.dart';
 import 'package:atelier7/presentation/controllers/theme.controller.dart';
+import 'package:atelier7/presentation/controllers/language.controller.dart';
 import 'package:atelier7/presentation/screens/menu.dart';
 import 'package:atelier7/presentation/widgets/mybottomnavbar.dart';
 import 'package:atelier7/presentation/widgets/mydrawer.dart';
@@ -74,6 +75,7 @@ void main() async {
   Get.put(AuthenticateUserUseCase(repository: Get.find()));
   Get.put(AuthController(userUseCase: Get.find()));
   Get.put(ThemeController());
+  Get.put(LanguageController());
 
   Get.put(OrderService());
   Get.put(OrderRepository(orderService: Get.find()));
