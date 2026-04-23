@@ -11,12 +11,21 @@ class UserRepository {
 
   Future<bool> authenticate(String email, String password) async {
     final response = await userService.login(email, password);
-
     if (response['success'] == true) {
       await _persistAuth(response);
       return true;
     }
     return false;
+  }
+
+  /// Vérifie les credentials sans persister la session
+  Future<bool> verifyCredentials(String email, String password) async {
+    try {
+      final response = await userService.login(email, password);
+      return response['success'] == true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<bool> registerUser(String name, String email, String password) async {

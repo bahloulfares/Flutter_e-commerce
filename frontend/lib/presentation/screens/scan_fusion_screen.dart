@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:atelier7/utils/barcode_scanner_service.dart';
 import 'package:atelier7/utils/ocr_service.dart';
@@ -146,7 +147,7 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Produit'),
+        title: Text('scan_titre'.tr),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
         actions: [
@@ -180,7 +181,7 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
             Icon(Icons.document_scanner_outlined, size: 80, color: cs.primary),
             const SizedBox(height: 24),
             Text(
-              'Scanner un produit',
+              'scanner'.tr,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: cs.onSurface),
             ),
             const SizedBox(height: 8),

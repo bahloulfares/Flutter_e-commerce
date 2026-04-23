@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'dart:developer' as developer;
@@ -26,6 +27,7 @@ import 'package:atelier7/presentation/controllers/user.controller.dart';
 import 'package:atelier7/presentation/controllers/order.controller.dart';
 import 'package:atelier7/presentation/controllers/theme.controller.dart';
 import 'package:atelier7/presentation/controllers/language.controller.dart';
+import 'package:atelier7/utils/app_translations.dart';
 import 'package:atelier7/presentation/screens/menu.dart';
 import 'package:atelier7/presentation/widgets/mybottomnavbar.dart';
 import 'package:atelier7/presentation/widgets/mydrawer.dart';
@@ -33,6 +35,9 @@ import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Charger les traductions
+  final translations = await AppTranslations.load();
 
   // ⚙️ Charger les variables d'environnement (.env.dev par défaut)
   // Pour production, utilisez: --dart-define=ENV=prod
@@ -86,17 +91,29 @@ void main() async {
   Get.put(ScategorieRepository(scatService: Get.find()));
   Get.put(ScategorieController(repository: Get.find()));
 
-  runApp(const MyApp());
+  runApp(MyApp(translations: translations));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppTranslations translations;
+  const MyApp({super.key, required this.translations});
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
+    final langController = Get.find<LanguageController>();
     return Obx(
       () => GetMaterialApp(
         debugShowCheckedModeBanner: false,
+        translations: translations,
+        locale: Locale(langController.currentLocale.value),
+        fallbackLocale: const Locale('fr'),
+        supportedLocales: const [Locale('fr'), Locale('en'), Locale('ar')],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),

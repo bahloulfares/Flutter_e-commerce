@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/controllers/theme.controller.dart';
 import 'package:atelier7/presentation/controllers/language.controller.dart';
+import 'package:atelier7/presentation/controllers/user.controller.dart';
 import 'package:atelier7/utils/translation_service.dart';
 import 'package:atelier7/presentation/screens/map.screen.dart';
 
@@ -18,6 +19,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
   bool locationEnabled = false;
   final ThemeController _themeController = Get.find<ThemeController>();
   final LanguageController _langController = Get.find<LanguageController>();
+  final AuthController _authController = Get.find<AuthController>();
   final TranslationService _translationService = TranslationService();
 
   // Suivi du téléchargement des modèles
@@ -28,6 +30,87 @@ class SettingsWidgetState extends State<SettingsWidget> {
   void initState() {
     super.initState();
     _checkModels();
+  }
+
+  Future<void> _showEnableBiometricDialog(ColorScheme cs) async {
+    final emailCtrl = TextEditingController();
+    final passwordCtrl = TextEditingController();
+    bool obscure = true;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.fingerprint, color: Colors.purple),
+              SizedBox(width: 8),
+              Text('Activer la biométrie'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Entrez vos identifiants pour activer la connexion biométrique.',
+                style: TextStyle(fontSize: 13),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.person_outline),
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: passwordCtrl,
+                obscureText: obscure,
+                decoration: InputDecoration(
+                  labelText: 'Mot de passe',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                        obscure ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () =>
+                        setDialogState(() => obscure = !obscure),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Activer'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final ok = await _authController.enableBiometric(
+      emailCtrl.text.trim(),
+      passwordCtrl.text,
+    );
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(ok
+          ? '✅ Biométrie activée avec succès'
+          : '❌ Identifiants invalides ou biométrie non disponible'),
+      backgroundColor: ok ? Colors.green[700] : Colors.red[700],
+    ));
   }
 
   Future<void> _checkModels() async {
@@ -155,7 +238,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text('Langue / Language / اللغة',
+                child: Text('langue'.tr,
                     style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -216,10 +299,78 @@ class SettingsWidgetState extends State<SettingsWidget> {
 
               const Divider(),
 
+              // --- Biométrie ---
+              Obx(() {
+                final deviceAvailable = _authController.isBiometricAvailable.value;
+                final enabled = _authController.isBiometricEnabled.value;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: Text(
+                        'Biométrie',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: cs.onSurfaceVariant),
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.fingerprint,
+                        color: deviceAvailable
+                            ? (enabled ? cs.primary : cs.onSurfaceVariant)
+                            : Colors.grey,
+                        size: 28,
+                      ),
+                      title: const Text('Connexion biométrique'),
+                      subtitle: Text(
+                        !deviceAvailable
+                            ? 'Non disponible sur cet appareil'
+                            : enabled
+                                ? 'Activée — empreinte / Face ID'
+                                : 'Désactivée',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: !deviceAvailable
+                              ? Colors.grey
+                              : enabled
+                                  ? Colors.green
+                                  : cs.onSurfaceVariant,
+                        ),
+                      ),
+                      trailing: Switch(
+                        value: enabled,
+                        onChanged: deviceAvailable
+                            ? (value) async {
+                                if (value) {
+                                  await _showEnableBiometricDialog(cs);
+                                } else {
+                                  await _authController.disableBiometric();
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Biométrie désactivée')),
+                                    );
+                                  }
+                                }
+                              }
+                            : null,
+                      ),
+                    ),
+                    const Divider(),
+                  ],
+                );
+              }),
+
               // --- Thème ---
               ListTile(
                 leading: const Icon(Icons.dark_mode),
-                title: const Text('Dark mode'),
+                title: Text('dark_mode'.tr),
                 trailing: Obx(
                   () => Switch(
                     value: _themeController.isDarkMode.value,
@@ -233,7 +384,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
               // --- Notifications ---
               ListTile(
                 leading: const Icon(Icons.notifications),
-                title: const Text('Notifications'),
+                title: Text('notifications'.tr),
                 trailing: Switch(
                   value: notificationsEnabled,
                   onChanged: (value) =>
@@ -244,7 +395,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
               // --- Localisation ---
               ListTile(
                 leading: const Icon(Icons.location_on),
-                title: const Text('Location services'),
+                title: Text('localisation'.tr),
                 trailing: Switch(
                   value: locationEnabled,
                   onChanged: (value) =>
@@ -254,12 +405,12 @@ class SettingsWidgetState extends State<SettingsWidget> {
 
               ListTile(
                 leading: const Icon(Icons.info),
-                title: const Text('About'),
+                title: Text('about'.tr),
                 onTap: () {},
               ),
               ListTile(
                 leading: const Icon(Icons.bug_report, color: Colors.orange),
-                title: const Text('Diagnostic ML Kit'),
+                title: Text('diagnostic_mlkit'.tr),
                 subtitle: const Text('Tester le téléchargement des modèles'),
                 onTap: () => Navigator.pushNamed(context, '/mlkitDiag'),
               ),

@@ -2,12 +2,21 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:atelier7/domain/usecases/user.usecase.dart';
 import 'package:atelier7/utils/constants.dart';
+import 'package:atelier7/utils/biometric_service.dart';
+import 'package:atelier7/utils/secure_storage_service.dart';
 
 class AuthController extends GetxController {
   final AuthenticateUserUseCase _userUseCase;
+  final IBiometricService _biometricService;
+  final ISecureStorageService _secureStorage;
 
-  AuthController({required AuthenticateUserUseCase userUseCase})
-      : _userUseCase = userUseCase;
+  AuthController({
+    required AuthenticateUserUseCase userUseCase,
+    IBiometricService? biometricService,
+    ISecureStorageService? secureStorage,
+  })  : _userUseCase = userUseCase,
+        _biometricService = biometricService ?? BiometricService(),
+        _secureStorage = secureStorage ?? SecureStorageService();
 
   var isAuthenticated = false.obs;
   var userName = ''.obs;
@@ -16,11 +25,15 @@ class AuthController extends GetxController {
   var userAvatar = ''.obs;
   var userRole = ''.obs;
   var isProfileLoading = false.obs;
+  var isBiometricAvailable = false.obs;  // appareil supporte la biométrie
+  var isBiometricEnabled = false.obs;    // utilisateur a activé la biométrie dans les paramètres
+  var lastBiometricResult = BiometricResult.success.obs;
 
   @override
   void onInit() {
     super.onInit();
     _loadUserData();
+    checkBiometricAvailability();
   }
 
   Future<void> _loadUserData() async {
@@ -31,6 +44,7 @@ class AuthController extends GetxController {
     userId.value = prefs.getString(StorageKeys.userId) ?? '';
     userAvatar.value = prefs.getString(StorageKeys.avatar) ?? '';
     userRole.value = prefs.getString(StorageKeys.userRole) ?? 'user';
+    isBiometricEnabled.value = prefs.getBool('biometric_enabled') ?? false;
   }
 
   bool get isAdmin => userRole.value == 'admin';
@@ -50,14 +64,71 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
+    // On garde les credentials biométriques pour permettre la reconnexion par biométrie
     final prefs = await SharedPreferences.getInstance();
+    final biometricEnabled = prefs.getBool('biometric_enabled') ?? false;
     await prefs.clear();
+    // Restaurer le flag biométrie si elle était activée
+    if (biometricEnabled) {
+      await prefs.setBool('biometric_enabled', true);
+    }
     isAuthenticated.value = false;
     userName.value = '';
     userEmail.value = '';
     userId.value = '';
     userAvatar.value = '';
     userRole.value = 'user';
+    isBiometricEnabled.value = biometricEnabled;
+  }
+
+  Future<void> checkBiometricAvailability() async {
+    isBiometricAvailable.value = await _biometricService.isAvailable();
+  }
+
+  /// Active la biométrie : vérifie les credentials auprès du backend SANS refaire le login complet
+  Future<bool> enableBiometric(String email, String password) async {
+    final deviceOk = await _biometricService.isAvailable();
+    if (!deviceOk) return false;
+
+    // Vérifier les credentials sans toucher à l'état auth courant
+    final valid = await _userUseCase.verifyCredentials(email, password);
+    if (!valid) return false;
+
+    await _secureStorage.saveCredentials(email, password);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('biometric_enabled', true);
+    isBiometricEnabled.value = true;
+    return true;
+  }
+
+  /// Désactive la biométrie
+  Future<void> disableBiometric() async {
+    await _secureStorage.deleteCredentials();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('biometric_enabled', false);
+    isBiometricEnabled.value = false;
+  }
+
+  Future<bool> loginWithBiometrics() async {
+    final result = await _biometricService.authenticate(
+      reason: 'Connectez-vous avec votre empreinte ou Face ID',
+    );
+    lastBiometricResult.value = result;
+
+    if (result == BiometricResult.cancelled) return false;
+    if (result != BiometricResult.success) return false;
+
+    final creds = await _secureStorage.getCredentials();
+    if (creds == null) {
+      isBiometricAvailable.value = false;
+      return false;
+    }
+    return login(creds.email, creds.password);
+  }
+
+  Future<void> saveBiometricCredentials(String email, String password) async {
+    await _secureStorage.saveCredentials(email, password);
+    isBiometricAvailable.value = true;
   }
 
   Future<void> fetchProfile() async {

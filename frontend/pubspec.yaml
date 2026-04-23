@@ -46,10 +46,14 @@ dependencies:
   mobile_scanner: ^6.0.2
   google_mlkit_text_recognition: ^0.14.0 # Ajout pour OCR
   google_mlkit_translation: ^0.12.0 # Traduction AR/FR/EN
+  local_auth: ^2.3.0 # Authentification biométrique
+  flutter_secure_storage: ^9.2.4 # Stockage sécurisé des credentials
   path: ^1.9.0
   persistent_shopping_cart: ^0.0.8
   shared_preferences: ^2.5.4  # 🔒 Correction vulnérabilité de sécurité
   sqflite: ^2.3.3+1
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_lints: ^6.0.0
@@ -69,6 +73,9 @@ flutter:
      - assets/tel1.jpg
      - assets/tel2.png
      - assets/tel3.jpg
+     - assets/translations/fr.json
+     - assets/translations/en.json
+     - assets/translations/ar.json
      - .env.dev
      - .env.prod
   # An image asset can refer to one or more resolution-specific "variants", see

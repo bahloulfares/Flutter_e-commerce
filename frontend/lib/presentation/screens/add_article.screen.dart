@@ -41,10 +41,12 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   bool _isUploadingImage = false;
   bool _isScanningReference = false;
 
+//Supprime les espaces avant/après et dans la référence.
   String _normalizeReference(String value) {
     return value.trim().replaceAll(' ', '');
   }
 
+//Vérifie si une référence existe déjà
   bool _referenceExists(String value) {
     final normalized = _normalizeReference(value).toLowerCase();
     if (normalized.isEmpty) return false;
@@ -54,7 +56,11 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
           normalized,
     );
   }
+/*Appelée après un scan réussi (caméra ou galerie) :
 
+Normalise la valeur scannée
+Met à jour le champ _referenceCtrl
+Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si nouvelle)*/
   void _applyScannedReference(String scannedValue, String sourceLabel) {
     final normalized = _normalizeReference(scannedValue);
     if (normalized.isEmpty) return;
@@ -75,7 +81,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
       ),
     );
   }
-
+//Si l'écran est ouvert avec une référence pré-remplie (depuis ScanFusionScreen), l'injecte dans le champ
   @override
   void initState() {
     super.initState();

@@ -1,19 +1,96 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:atelier7/data/datasource/models/article.model.dart';
+import 'package:atelier7/presentation/controllers/language.controller.dart';
+import 'package:atelier7/utils/translation_service.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 
-class Details extends StatelessWidget {
+class Details extends StatefulWidget {
   final Article myListElement;
 
-  const Details({
-    super.key,
-    required this.myListElement,
-  });
+  const Details({super.key, required this.myListElement});
+
+  @override
+  State<Details> createState() => _DetailsState();
+}
+
+class _DetailsState extends State<Details> {
+  final _translationService = TranslationService();
+  final _langController = Get.find<LanguageController>();
+
+  String? _translatedDesignation;
+  String? _translatedMarque;
+  bool _isTranslating = false;
+  bool _isTranslated = false;
+
+  Future<void> _toggleTranslation() async {
+    if (_isTranslated) {
+      setState(() {
+        _translatedDesignation = null;
+        _translatedMarque = null;
+        _isTranslated = false;
+      });
+      return;
+    }
+
+    setState(() => _isTranslating = true);
+
+    final targetLang = _langController.currentLocale.value;
+    // Détecter la langue source (on suppose FR par défaut pour les produits)
+    const sourceLang = 'fr';
+
+    if (targetLang == sourceLang) {
+      setState(() => _isTranslating = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Déjà dans la langue sélectionnée')),
+      );
+      return;
+    }
+
+    try {
+      final designation = widget.myListElement.designation ?? '';
+      final marque = widget.myListElement.marque ?? '';
+
+      final results = await Future.wait([
+        _translationService.translate(designation, sourceLang, targetLang),
+        if (marque.isNotEmpty)
+          _translationService.translate(marque, sourceLang, targetLang),
+      ]);
+
+      setState(() {
+        _translatedDesignation = results[0];
+        _translatedMarque = results.length > 1 ? results[1] : marque;
+        _isTranslated = true;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur traduction ML Kit: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isTranslating = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _translationService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final article = widget.myListElement;
+
+    final displayDesignation =
+        _translatedDesignation ?? article.designation ?? 'details'.tr;
+    final displayMarque = _translatedMarque ?? article.marque;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -22,10 +99,37 @@ class Details extends StatelessWidget {
         backgroundColor: colorScheme.primary,
         iconTheme: IconThemeData(color: colorScheme.onPrimary),
         title: Text(
-          myListElement.designation ?? 'Détails produit',
+          displayDesignation,
           style: TextStyle(color: colorScheme.onPrimary),
         ),
         actions: [
+          // Bouton traduction ML Kit
+          Obx(() {
+            final lang = _langController.currentLocale.value;
+            if (lang == 'fr') return const SizedBox.shrink();
+            return _isTranslating
+                ? const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    ),
+                  )
+                : IconButton(
+                    icon: Icon(
+                      _isTranslated ? Icons.translate : Icons.g_translate,
+                      color: _isTranslated
+                          ? Colors.yellowAccent
+                          : colorScheme.onPrimary,
+                    ),
+                    tooltip: _isTranslated
+                        ? 'Afficher original'
+                        : 'Traduire avec ML Kit',
+                    onPressed: _toggleTranslation,
+                  );
+          }),
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
             onPressed: () => Navigator.pushNamed(context, '/cartView'),
@@ -36,21 +140,22 @@ class Details extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product Image
+            // Image
             Hero(
-              tag: myListElement.id ?? '',
+              tag: article.id ?? '',
               child: Container(
                 width: double.infinity,
                 height: 350,
                 color: colorScheme.surfaceContainerLowest,
-                child: myListElement.imageart != null
+                child: article.imageart != null
                     ? Image.network(
-                        myListElement.imageart!,
+                        article.imageart!,
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) => Container(
+                        errorBuilder: (_, __, ___) => Container(
                           color: colorScheme.surfaceContainer,
                           child: Icon(Icons.broken_image,
-                              size: 100, color: colorScheme.onSurfaceVariant),
+                              size: 100,
+                              color: colorScheme.onSurfaceVariant),
                         ),
                       )
                     : Icon(Icons.image_not_supported,
@@ -58,136 +163,140 @@ class Details extends StatelessWidget {
               ),
             ),
 
+            // Badge "traduit par ML Kit"
+            if (_isTranslated)
+              Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                color: colorScheme.secondaryContainer,
+                child: Row(
+                  children: [
+                    Icon(Icons.translate,
+                        size: 14, color: colorScheme.onSecondaryContainer),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Traduit par ML Kit · ${_langController.currentLabel}',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: colorScheme.onSecondaryContainer),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: _toggleTranslation,
+                      child: Text('Original',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: colorScheme.primary,
+                              decoration: TextDecoration.underline)),
+                    ),
+                  ],
+                ),
+              ),
+
             const SizedBox(height: 20),
 
-            // Product Info
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product Name
                   Text(
-                    myListElement.designation ?? 'Produit',
+                    displayDesignation,
                     style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      height: 1.3,
-                    ),
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        height: 1.3),
                   ),
-
                   const SizedBox(height: 8),
-
-                  // Reference & Brand
-                  if (myListElement.reference != null)
+                  if (article.reference != null)
                     Text(
-                      'Réf: ${myListElement.reference}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-
-                  if (myListElement.marque != null)
-                    Text(
-                      'Marque: ${myListElement.marque}',
+                      '${'reference'.tr}: ${article.reference}',
                       style: TextStyle(
                           fontSize: 14,
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w500),
+                          color: colorScheme.onSurfaceVariant),
                     ),
-
+                  if (displayMarque != null)
+                    Text(
+                      '${'marque'.tr}: $displayMarque',
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
                   const SizedBox(height: 20),
-
-                  // Price
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color:
-                          colorScheme.primaryContainer.withValues(alpha: 0.35),
+                      color: colorScheme.primaryContainer
+                          .withValues(alpha: 0.35),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        const Text(
-                          'Prix:',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
+                        Text('${'prix'.tr}:',
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500)),
                         const SizedBox(width: 8),
                         Text(
-                          '${myListElement.prix?.toStringAsFixed(2) ?? '0.00'} TND',
+                          '${article.prix?.toStringAsFixed(2) ?? '0.00'} TND',
                           style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.primary,
-                          ),
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary),
                         ),
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Stock Status
                   Row(
                     children: [
                       Icon(
-                        myListElement.qtestock != null &&
-                                myListElement.qtestock! > 0
+                        (article.qtestock ?? 0) > 0
                             ? Icons.check_circle
                             : Icons.cancel,
-                        color: myListElement.qtestock != null &&
-                                myListElement.qtestock! > 0
+                        color: (article.qtestock ?? 0) > 0
                             ? Colors.green
                             : Colors.red,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        myListElement.qtestock != null &&
-                                myListElement.qtestock! > 0
-                            ? 'En stock: ${myListElement.qtestock} unités'
-                            : 'Rupture de stock',
+                        (article.qtestock ?? 0) > 0
+                            ? '${'en_stock'.tr}: ${article.qtestock}'
+                            : 'rupture'.tr,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: myListElement.qtestock != null &&
-                                  myListElement.qtestock! > 0
+                          color: (article.qtestock ?? 0) > 0
                               ? Colors.green[700]
                               : Colors.red[700],
                         ),
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 30),
-
-                  // Add to Cart Button
                   Center(
-                    child: PersistentShoppingCart().showAndUpdateCartItemWidget(
+                    child: PersistentShoppingCart()
+                        .showAndUpdateCartItemWidget(
                       inCartWidget: Container(
                         width: double.infinity,
                         height: 55,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.red,
-                        ),
-                        child: const Center(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.red),
+                        child: Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.check, color: Colors.white, size: 24),
-                              SizedBox(width: 8),
-                              Text(
-                                'Retirer du panier',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
+                              const Icon(Icons.check,
+                                  color: Colors.white, size: 24),
+                              const SizedBox(width: 8),
+                              Text('retirer_panier'.tr,
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
                             ],
                           ),
                         ),
@@ -196,38 +305,33 @@ class Details extends StatelessWidget {
                         width: double.infinity,
                         height: 55,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: colorScheme.primary,
-                        ),
-                        child: const Center(
+                            borderRadius: BorderRadius.circular(12),
+                            color: colorScheme.primary),
+                        child: Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.shopping_cart_outlined,
+                              const Icon(Icons.shopping_cart_outlined,
                                   color: Colors.white, size: 24),
-                              SizedBox(width: 8),
-                              Text(
-                                'Ajouter au panier',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
+                              const SizedBox(width: 8),
+                              Text('ajouter_panier'.tr,
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
                             ],
                           ),
                         ),
                       ),
                       product: PersistentShoppingCartItem(
-                        productId: myListElement.id ?? '',
-                        productName: myListElement.designation ?? 'Produit',
-                        unitPrice: myListElement.prix?.toDouble() ?? 0.0,
-                        productImages: [myListElement.imageart ?? ''],
+                        productId: article.id ?? '',
+                        productName: article.designation ?? 'Produit',
+                        unitPrice: article.prix?.toDouble() ?? 0.0,
+                        productImages: [article.imageart ?? ''],
                         quantity: 1,
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 30),
                 ],
               ),

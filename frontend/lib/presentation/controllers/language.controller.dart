@@ -24,13 +24,11 @@ class LanguageController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_prefKey) ?? 'fr';
     currentLocale.value = saved;
-    Get.updateLocale(Locale(saved));
   }
 
   Future<void> setLanguage(String langCode) async {
     if (!supportedLanguages.containsKey(langCode)) return;
     currentLocale.value = langCode;
-    Get.updateLocale(Locale(langCode));
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefKey, langCode);
   }

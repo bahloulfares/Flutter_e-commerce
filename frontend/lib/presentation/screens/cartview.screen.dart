@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:atelier7/presentation/widgets/cart/showcartitem.widget.dart';
 
 class CartView extends StatelessWidget {
@@ -10,7 +11,7 @@ class CartView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Cart'),
+        title: Text('panier'.tr),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
       ),

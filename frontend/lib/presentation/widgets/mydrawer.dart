@@ -93,7 +93,7 @@ class MyDrawer extends StatelessWidget {
               textColor: Colors.blueGrey,
               title: Row(
                 children: [
-                  Text(choice.title),
+                  Text(choice.title.tr),
                   if (choice.adminOnly)
                     Container(
                       margin: const EdgeInsets.only(left: 8),
@@ -128,7 +128,7 @@ class MyDrawer extends StatelessWidget {
             return ListTile(
               leading: const Icon(Icons.logout, color: Colors.redAccent),
               textColor: Colors.redAccent,
-              title: const Text("Déconnexion"),
+              title: Text('deconnexion'.tr),
               onTap: () async {
                 final navigator = Navigator.of(context);
                 await authController.logout();
@@ -175,64 +175,16 @@ class Choice {
 }
 
 const List<Choice> choices = <Choice>[
-  Choice(title: 'Accueil', icon: Icons.home, route: '/'),
-  Choice(
-    title: 'Catégories',
-    icon: Icons.category,
-    route: '/Categories',
-    adminOnly: true,
-  ),
-  Choice(
-    title: 'Sous-catégories',
-    icon: Icons.subdirectory_arrow_right,
-    route: '/admin/scategories',
-    adminOnly: true,
-  ),
-  Choice(
-    title: 'Articles (admin)',
-    icon: Icons.inventory_2,
-    route: '/admin/articles',
-    adminOnly: true,
-  ),
-  Choice(
-    title: 'Commandes',
-    icon: Icons.receipt_long,
-    route: '/admin/orders',
-    adminOnly: true,
-  ),
-  Choice(
-    title: 'Utilisateurs',
-    icon: Icons.people,
-    route: '/admin/users',
-    adminOnly: true,
-  ),
-  Choice(title: 'Produits', icon: Icons.shopping_bag, route: '/Products'),
-  Choice(
-    title: 'Panier',
-    icon: Icons.shopping_cart,
-    route: '/cartView',
-    requiresAuth: true,
-  ),
-  Choice(
-    title: 'Profil',
-    icon: Icons.account_circle,
-    route: '/profile',
-    requiresAuth: true,
-  ),
-  Choice(
-    title: 'Paramètres',
-    icon: Icons.settings,
-    route: '/settingsDetails',
-    requiresAuth: true,
-  ),
-  Choice(
-    title: 'Inscription',
-    icon: Icons.person_add,
-    route: '/Subscribe',
-  ),
-  Choice(
-    title: 'Connexion',
-    icon: Icons.login,
-    route: '/Settings',
-  ),
+  Choice(title: 'accueil', icon: Icons.home, route: '/'),
+  Choice(title: 'categories', icon: Icons.category, route: '/Categories', adminOnly: true),
+  Choice(title: 'Sous-catégories', icon: Icons.subdirectory_arrow_right, route: '/admin/scategories', adminOnly: true),
+  Choice(title: 'Articles (admin)', icon: Icons.inventory_2, route: '/admin/articles', adminOnly: true),
+  Choice(title: 'commandes', icon: Icons.receipt_long, route: '/admin/orders', adminOnly: true),
+  Choice(title: 'utilisateurs', icon: Icons.people, route: '/admin/users', adminOnly: true),
+  Choice(title: 'produits', icon: Icons.shopping_bag, route: '/Products'),
+  Choice(title: 'panier', icon: Icons.shopping_cart, route: '/cartView', requiresAuth: true),
+  Choice(title: 'profil', icon: Icons.account_circle, route: '/profile', requiresAuth: true),
+  Choice(title: 'parametres', icon: Icons.settings, route: '/settingsDetails', requiresAuth: true),
+  Choice(title: 'inscription', icon: Icons.person_add, route: '/Subscribe'),
+  Choice(title: 'connexion', icon: Icons.login, route: '/Settings'),
 ];

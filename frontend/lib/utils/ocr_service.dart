@@ -2,12 +2,16 @@ import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class OcrService {
+  //instance réutilisable (pas recréée à chaque appel, économise la mémoire)
   final TextRecognizer _textRecognizer = TextRecognizer();
 
   /// Extrait les informations d'une image d'étiquette produit.
   /// Retourne: designation, marque, prix, reference (best-effort)
   Future<Map<String, String>> extractInfoFromImage(File imageFile) async {
     final inputImage = InputImage.fromFile(imageFile);
+    
+    /*processImage() → retourne un arbre :
+    RecognizedText → Block → Line → Element*/
     final RecognizedText recognizedText =
         await _textRecognizer.processImage(inputImage);
 

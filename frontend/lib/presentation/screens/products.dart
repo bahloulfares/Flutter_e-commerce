@@ -47,7 +47,7 @@ class _ProductsState extends State<Products> {
         elevation: 0,
         backgroundColor: colorScheme.primary,
         title: Text(
-          'Boutique',
+          'boutique'.tr,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -110,7 +110,7 @@ class _ProductsState extends State<Products> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Bienvenue',
+                    'bienvenue'.tr,
                     style: TextStyle(
                       fontSize: 14,
                       color: colorScheme.onSurfaceVariant,
@@ -133,7 +133,7 @@ class _ProductsState extends State<Products> {
                       });
                     },
                     decoration: InputDecoration(
-                      hintText: 'Rechercher un produit...',
+                      hintText: 'rechercher'.tr,
                       prefixIcon: Icon(
                         Icons.search,
                         color: colorScheme.onSurfaceVariant,
@@ -173,7 +173,7 @@ class _ProductsState extends State<Products> {
                         scrollDirection: Axis.horizontal,
                         children: [
                           FilterChip(
-                            label: const Text('Tout'),
+                            label: Text('tout'.tr),
                             selected: _selectedCategoryId == null,
                             onSelected: (selected) {
                               setState(() {
@@ -218,33 +218,8 @@ class _ProductsState extends State<Products> {
                   // Debug info
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color:
-                          colorScheme.tertiaryContainer.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: colorScheme.tertiary.withValues(alpha: 0.4),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '🔧 Debug: API = $baseUrl',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: colorScheme.onTertiaryContainer,
-                          ),
-                        ),
-                        Obx(() => Text(
-                              '📊 Articles chargés: ${_articleController.articlesList.length}',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: colorScheme.onTertiaryContainer,
-                              ),
-                            )),
-                      ],
-                    ),
+                    decoration: const BoxDecoration(),
+                    child: const SizedBox.shrink(),
                   ),
                 ],
               ),
@@ -306,7 +281,7 @@ class _ProductsState extends State<Products> {
                         Icon(Icons.shopping_bag_outlined,
                             size: 64, color: Colors.grey[400]),
                         const SizedBox(height: 16),
-                        Text('Aucun produit disponible',
+                        Text('aucun_produit'.tr,
                             style: TextStyle(
                                 fontSize: 16, color: Colors.grey[600])),
                         const SizedBox(height: 8),
@@ -513,15 +488,15 @@ class _ProductCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           color: Colors.red,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.check, size: 16, color: Colors.white),
-                              SizedBox(width: 4),
+                              const Icon(Icons.check, size: 16, color: Colors.white),
+                              const SizedBox(width: 4),
                               Text(
-                                'Retirer',
-                                style: TextStyle(
+                                'retirer'.tr,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
@@ -538,16 +513,16 @@ class _ProductCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           color: const Color(0xFF6C63FF),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.shopping_cart_outlined,
+                              const Icon(Icons.shopping_cart_outlined,
                                   size: 16, color: Colors.white),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Text(
-                                'Ajouter',
-                                style: TextStyle(
+                                'ajouter'.tr,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,

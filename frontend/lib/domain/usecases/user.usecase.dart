@@ -10,6 +10,11 @@ class AuthenticateUserUseCase {
     return _repository.authenticate(email, password);
   }
 
+  /// Vérifie les credentials sans persister la session (pour activer la biométrie)
+  Future<bool> verifyCredentials(String email, String password) async {
+    return _repository.verifyCredentials(email, password);
+  }
+
   Future<bool> register(String name, String email, String password) async {
     return _repository.registerUser(name, email, password);
   }

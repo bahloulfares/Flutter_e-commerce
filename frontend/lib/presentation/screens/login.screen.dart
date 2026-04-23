@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:atelier7/presentation/widgets/loginform.widget.dart';
 
 class Login extends StatelessWidget {
@@ -10,7 +11,7 @@ class Login extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.purpleAccent,
-        title: const Text('Connexion'),
+      title: Text('connexion'.tr),
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back_ios_new),
