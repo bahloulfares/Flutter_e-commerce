@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
+import 'package:atelier7/presentation/screens/face_capture_screen.dart';
 import 'package:atelier7/utils/biometric_service.dart';
 import 'package:atelier7/utils/form_validators.dart';
 
@@ -23,13 +24,31 @@ class _Loginform extends State<Loginform> {
   bool _isBiometricLoading = false;
   String? _biometricError;
 
+  // Types biométriques disponibles
+  bool _fingerprintAvailable = false;
+
+  // ML Kit Face ID
+  bool _isFaceIdMlKitLoading = false;
+  String? _faceIdMlKitError;
+
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controller.checkBiometricAvailability();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _controller.checkBiometricAvailability();
+      final bs = _controller.biometricService;
+      final fp = await bs.isFingerprintAvailable();
+      if (mounted) {
+        setState(() {
+          _fingerprintAvailable = fp;
+          // Si aucun type détecté mais appareil disponible → activer empreinte par défaut
+          if (!fp && _controller.isBiometricAvailable.value) {
+            _fingerprintAvailable = true;
+          }
+        });
+      }
     });
   }
 
@@ -40,6 +59,7 @@ class _Loginform extends State<Loginform> {
     super.dispose();
   }
 
+//Biometrics
   Future<void> _loginWithBiometrics() async {
     setState(() {
       _isBiometricLoading = true;
@@ -59,25 +79,164 @@ class _Loginform extends State<Loginform> {
       final biometricResult = _controller.lastBiometricResult.value;
       if (biometricResult == BiometricResult.cancelled) return;
 
+      String errorMessage;
+      switch (biometricResult) {
+        case BiometricResult.lockedOut:
+          errorMessage =
+              'Trop de tentatives. Déverrouillez via PIN ou redémarrez le téléphone.';
+          break;
+        case BiometricResult.permissionDenied:
+          errorMessage =
+              'Permission biométrique refusée. Activez-la dans les paramètres.';
+          break;
+        case BiometricResult.notAvailable:
+          errorMessage = 'Biométrie non disponible sur cet appareil.';
+          break;
+        case BiometricResult.failure:
+          errorMessage = 'Authentification échouée. Utilisez email/password.';
+          break;
+        default:
+          errorMessage = 'Erreur biométrique. Utilisez email/password.';
+      }
+
       setState(() {
-        _biometricError = biometricResult == BiometricResult.failure
-            ? 'Trop de tentatives. Déverrouillez via PIN ou redémarrez le téléphone.'
-            : 'Authentification échouée. Utilisez email/password.';
+        _biometricError = errorMessage;
       });
     } catch (_) {
       if (mounted) {
-        setState(() => _biometricError =
-            'Erreur biométrique. Utilisez email/password.');
+        setState(() =>
+            _biometricError = 'Erreur biométrique. Utilisez email/password.');
       }
     } finally {
       if (mounted) setState(() => _isBiometricLoading = false);
     }
   }
 
+  /// Authentification Face ID ML Kit : lance la capture du visage
+  Future<void> _loginWithFaceIdMlKit() async {
+    setState(() {
+      _isFaceIdMlKitLoading = true;
+      _faceIdMlKitError = null;
+    });
+
+    try {
+      // Vérifier que Face ID ML Kit est activé
+      if (!_controller.isFaceIdMlKitEnabled.value) {
+        if (mounted) {
+          setState(() {
+            _faceIdMlKitError =
+                'Face ID ML Kit n\'est pas activé. Activez-le dans les paramètres.';
+          });
+        }
+        return;
+      }
+
+      // Lancer l'écran de capture pour la vérification
+      if (!mounted) return;
+      final verifyResult = await Navigator.of(context).pushNamed(
+        '/faceCapture',
+        arguments: FaceCaptureMode.verify,
+      );
+
+      if (!mounted) return;
+
+      if (verifyResult == true) {
+        // Visage reconnu - effectuer le login avec les credentials stockés
+        final loginResult = await _controller.loginWithFaceIdMlKit();
+
+        if (!mounted) return;
+
+        if (loginResult) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/Products', (route) => false);
+          return;
+        } else {
+          setState(() {
+            _faceIdMlKitError = 'Login échoué. Vérifiez vos identifiants.';
+          });
+        }
+      } else {
+        // Utilisateur a annulé ou visage non reconnu
+        setState(() {
+          _faceIdMlKitError = null;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _faceIdMlKitError = 'Erreur Face ID: $e';
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _isFaceIdMlKitLoading = false);
+    }
+  }
+
+  Widget _buildBiometricButton({
+    required IconData icon,
+    required String label,
+    required bool available,
+    required bool enabled,
+    required bool canUse,
+  }) {
+    final Color borderColor;
+    final String subtitle;
+
+    if (!available) {
+      borderColor = Colors.grey.shade400;
+      subtitle = 'Non disponible — configurez dans Android';
+    } else if (!enabled) {
+      borderColor = Colors.orange;
+      subtitle = 'Désactivé — activez dans Paramètres';
+    } else {
+      borderColor = Colors.purple;
+      subtitle = 'Appuyez pour vous connecter';
+    }
+
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: canUse && !_isBiometricLoading ? _loginWithBiometrics : null,
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          side: BorderSide(color: borderColor),
+          foregroundColor: borderColor,
+          disabledForegroundColor: Colors.grey.shade400,
+        ),
+        child: _isBiometricLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(strokeWidth: 2))
+            : Row(
+                children: [
+                  Icon(icon,
+                      size: 26,
+                      color: canUse ? Colors.purple : Colors.grey.shade400),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(label,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: canUse
+                                  ? Colors.purple
+                                  : Colors.grey.shade500)),
+                      Text(subtitle,
+                          style:
+                              TextStyle(fontSize: 11, color: Colors.grey[600])),
+                    ],
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
     return SingleChildScrollView(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.all(16),
@@ -192,91 +351,134 @@ class _Loginform extends State<Loginform> {
 
             const SizedBox(height: 16),
 
-            // Bouton biométrique — TOUJOURS VISIBLE
+            // ── Bouton empreinte + bouton Face ID ML Kit ───────────────────
             Obx(() {
-              final deviceAvailable = _controller.isBiometricAvailable.value;
               final enabled = _controller.isBiometricEnabled.value;
-
-              // État du bouton
-              final canUse = deviceAvailable && enabled;
-              final String label;
-              final String subtitle;
-              final Color borderColor;
-
-              if (!deviceAvailable) {
-                label = 'Biométrie non disponible';
-                subtitle = 'Votre appareil ne supporte pas la biométrie';
-                borderColor = Colors.grey;
-              } else if (!enabled) {
-                label = 'Biométrie désactivée';
-                subtitle = 'Activez-la dans Paramètres → Biométrie';
-                borderColor = Colors.orange;
-              } else {
-                label = 'Connexion biométrique';
-                subtitle = 'Empreinte digitale ou Face ID';
-                borderColor = Colors.purple;
-              }
+              final canUse = _controller.isBiometricAvailable.value && enabled;
 
               return Column(
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: canUse && !_isBiometricLoading
-                          ? _loginWithBiometrics
-                          : null,
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: BorderSide(color: borderColor),
-                        foregroundColor: borderColor,
-                      ),
-                      child: _isBiometricLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child:
-                                  CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  deviceAvailable && enabled
-                                      ? Icons.fingerprint
-                                      : Icons.fingerprint,
-                                  size: 28,
-                                  color: canUse ? Colors.purple : Colors.grey,
-                                ),
-                                const SizedBox(width: 10),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(label,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: canUse
-                                                ? Colors.purple
-                                                : Colors.grey)),
-                                    Text(subtitle,
-                                        style: TextStyle(
-                                            fontSize: 11,
-                                            color: Colors.grey[600])),
-                                  ],
-                                ),
-                              ],
-                            ),
-                    ),
+                  // Bouton Empreinte digitale
+                  _buildBiometricButton(
+                    icon: Icons.fingerprint,
+                    label: 'Empreinte digitale',
+                    available: _fingerprintAvailable,
+                    enabled: enabled,
+                    canUse: canUse && _fingerprintAvailable,
                   ),
+                  // Message d'erreur
                   if (_biometricError != null) ...[
-                    const SizedBox(height: 6),
-                    Text(_biometricError!,
-                        textAlign: TextAlign.center,
-                        style:
-                            const TextStyle(color: Colors.red, fontSize: 12)),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error_outline,
+                              size: 16, color: Colors.red[700]),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(_biometricError!,
+                                style: TextStyle(
+                                    color: Colors.red[700], fontSize: 12)),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ],
               );
             }),
+
+            const SizedBox(height: 16),
+
+            // ── BOUTON FACE ID ML KIT ───────────────────────────────────────
+            Obx(() {
+              final mlkitEnabled = _controller.isFaceIdMlKitEnabled.value;
+              return SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: !mlkitEnabled || _isFaceIdMlKitLoading
+                      ? null
+                      : _loginWithFaceIdMlKit,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 16),
+                    side: BorderSide(
+                      color:
+                          mlkitEnabled ? Colors.purple : Colors.grey.shade400,
+                    ),
+                    foregroundColor:
+                        mlkitEnabled ? Colors.purple : Colors.grey.shade400,
+                    disabledForegroundColor: Colors.grey.shade400,
+                  ),
+                  child: _isFaceIdMlKitLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2))
+                      : Row(
+                          children: [
+                            Icon(Icons.face_retouching_natural,
+                                size: 26,
+                                color: mlkitEnabled
+                                    ? Colors.purple
+                                    : Colors.grey.shade400),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Face ID ML Kit',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    color: mlkitEnabled
+                                        ? Colors.purple
+                                        : Colors.grey.shade500,
+                                  ),
+                                ),
+                                Text(
+                                  mlkitEnabled
+                                      ? 'Utiliser votre visage enregistré'
+                                      : 'Non configuré',
+                                  style: TextStyle(
+                                      fontSize: 11, color: Colors.grey[600]),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                ),
+              );
+            }),
+
+            // Message d'erreur Face ID ML Kit
+            if (_faceIdMlKitError != null) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning_amber,
+                        size: 16, color: Colors.orange[700]),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(_faceIdMlKitError!,
+                          style: TextStyle(
+                              color: Colors.orange[700], fontSize: 12)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
 
             const SizedBox(height: 12),
             Wrap(

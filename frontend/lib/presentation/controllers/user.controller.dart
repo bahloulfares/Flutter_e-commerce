@@ -4,11 +4,15 @@ import 'package:atelier7/domain/usecases/user.usecase.dart';
 import 'package:atelier7/utils/constants.dart';
 import 'package:atelier7/utils/biometric_service.dart';
 import 'package:atelier7/utils/secure_storage_service.dart';
+import 'package:atelier7/utils/face_id_service.dart';
 
 class AuthController extends GetxController {
   final AuthenticateUserUseCase _userUseCase;
   final IBiometricService _biometricService;
   final ISecureStorageService _secureStorage;
+
+  // Exposé pour les widgets qui ont besoin de vérifier les types biométriques
+  IBiometricService get biometricService => _biometricService;
 
   AuthController({
     required AuthenticateUserUseCase userUseCase,
@@ -25,9 +29,13 @@ class AuthController extends GetxController {
   var userAvatar = ''.obs;
   var userRole = ''.obs;
   var isProfileLoading = false.obs;
-  var isBiometricAvailable = false.obs;  // appareil supporte la biométrie
-  var isBiometricEnabled = false.obs;    // utilisateur a activé la biométrie dans les paramètres
+  var isBiometricAvailable = false.obs; // appareil supporte la biométrie
+  var isBiometricEnabled =
+      false.obs; // utilisateur a activé la biométrie dans les paramètres
   var lastBiometricResult = BiometricResult.success.obs;
+  // ML Kit Face ID
+  var isFaceIdMlKitEnabled = false.obs;
+  final FaceIdService faceIdService = FaceIdService();
 
   @override
   void onInit() {
@@ -45,6 +53,8 @@ class AuthController extends GetxController {
     userAvatar.value = prefs.getString(StorageKeys.avatar) ?? '';
     userRole.value = prefs.getString(StorageKeys.userRole) ?? 'user';
     isBiometricEnabled.value = prefs.getBool('biometric_enabled') ?? false;
+    isFaceIdMlKitEnabled.value =
+        prefs.getBool('face_id_mlkit_enabled') ?? false;
   }
 
   bool get isAdmin => userRole.value == 'admin';
@@ -64,14 +74,12 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
-    // On garde les credentials biométriques pour permettre la reconnexion par biométrie
     final prefs = await SharedPreferences.getInstance();
     final biometricEnabled = prefs.getBool('biometric_enabled') ?? false;
+    final faceIdEnabled = prefs.getBool('face_id_mlkit_enabled') ?? false;
     await prefs.clear();
-    // Restaurer le flag biométrie si elle était activée
-    if (biometricEnabled) {
-      await prefs.setBool('biometric_enabled', true);
-    }
+    if (biometricEnabled) await prefs.setBool('biometric_enabled', true);
+    if (faceIdEnabled) await prefs.setBool('face_id_mlkit_enabled', true);
     isAuthenticated.value = false;
     userName.value = '';
     userEmail.value = '';
@@ -79,6 +87,7 @@ class AuthController extends GetxController {
     userAvatar.value = '';
     userRole.value = 'user';
     isBiometricEnabled.value = biometricEnabled;
+    isFaceIdMlKitEnabled.value = faceIdEnabled;
   }
 
   Future<void> checkBiometricAvailability() async {
@@ -90,7 +99,6 @@ class AuthController extends GetxController {
     final deviceOk = await _biometricService.isAvailable();
     if (!deviceOk) return false;
 
-    // Vérifier les credentials sans toucher à l'état auth courant
     final valid = await _userUseCase.verifyCredentials(email, password);
     if (!valid) return false;
 
@@ -98,6 +106,8 @@ class AuthController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('biometric_enabled', true);
     isBiometricEnabled.value = true;
+    isBiometricAvailable.value =
+        true; // ← fix : mettre à jour aussi isBiometricAvailable
     return true;
   }
 
@@ -107,6 +117,43 @@ class AuthController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('biometric_enabled', false);
     isBiometricEnabled.value = false;
+  }
+
+  // ── ML Kit Face ID ────────────────────────────────────────────────────────
+
+  /// Active Face ID ML Kit après enregistrement du visage
+  Future<bool> enableFaceIdMlKit(String email, String password) async {
+    // Vérifier les credentials d'abord
+    final valid = await _userUseCase.verifyCredentials(email, password);
+    if (!valid) return false;
+    // Stocker les credentials Face ID dans un espace séparé de l'empreinte
+    await _secureStorage.saveFaceIdCredentials(email, password);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('face_id_mlkit_enabled', true);
+    isFaceIdMlKitEnabled.value = true;
+    return true;
+  }
+
+  /// Désactive Face ID ML Kit
+  Future<void> disableFaceIdMlKit() async {
+    await faceIdService.deleteFace();
+    await _secureStorage.deleteFaceIdCredentials();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('face_id_mlkit_enabled', false);
+    isFaceIdMlKitEnabled.value = false;
+  }
+
+  /// Connexion via Face ID ML Kit
+  /// Note: La vérification du visage a déjà été effectuée par FaceCaptureScreen,
+  /// cette méthode effectue juste le login avec les credentials stockés
+  Future<bool> loginWithFaceIdMlKit() async {
+    try {
+      final creds = await _secureStorage.getFaceIdCredentials();
+      if (creds == null) return false;
+      return await login(creds.email, creds.password);
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<bool> loginWithBiometrics() async {

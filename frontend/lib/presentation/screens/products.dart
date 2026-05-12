@@ -4,7 +4,6 @@ import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
 import 'package:atelier7/presentation/controllers/categorie.controller.dart';
 import 'package:atelier7/presentation/widgets/mydrawer.dart';
-import 'package:atelier7/utils/constants.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 
@@ -43,6 +42,13 @@ class _ProductsState extends State<Products> {
 
     return Scaffold(
       drawer: const MyDrawer(),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pushNamed(context, '/chatbot'),
+        icon: const Icon(Icons.smart_toy),
+        label: const Text('Assistant'),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+      ),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: colorScheme.primary,
@@ -492,7 +498,8 @@ class _ProductCard extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.check, size: 16, color: Colors.white),
+                              const Icon(Icons.check,
+                                  size: 16, color: Colors.white),
                               const SizedBox(width: 4),
                               Text(
                                 'retirer'.tr,

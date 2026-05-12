@@ -28,6 +28,8 @@ import 'package:atelier7/presentation/screens/admin_users.screen.dart';
 import 'package:atelier7/presentation/screens/profile.screen.dart';
 import 'package:atelier7/presentation/screens/scan_fusion_screen.dart';
 import 'package:atelier7/presentation/screens/mlkit_diagnostic_screen.dart';
+import 'package:atelier7/presentation/screens/chatbot_screen.dart';
+import 'package:atelier7/presentation/screens/face_capture_screen.dart';
 
 // Widget de protection pour les routes réservées aux admins
 class AdminRouteGuard extends StatelessWidget {
@@ -233,5 +235,12 @@ Map<String, WidgetBuilder> appRoutes() {
         ),
     '/scanFusion': (context) => const ScanFusionScreen(),
     '/mlkitDiag': (context) => const MlkitDiagnosticScreen(),
+    '/chatbot': (context) => const ChatbotScreen(),
+    '/faceCapture': (context) {
+      final mode =
+          ModalRoute.of(context)?.settings.arguments as FaceCaptureMode? ??
+              FaceCaptureMode.verify;
+      return FaceCaptureScreen(mode: mode);
+    },
   };
 }

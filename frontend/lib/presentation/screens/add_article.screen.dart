@@ -56,6 +56,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
           normalized,
     );
   }
+
 /*Appelée après un scan réussi (caméra ou galerie) :
 
 Normalise la valeur scannée
@@ -81,6 +82,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
       ),
     );
   }
+
 //Si l'écran est ouvert avec une référence pré-remplie (depuis ScanFusionScreen), l'injecte dans le champ
   @override
   void initState() {
@@ -403,7 +405,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
               Obx(() {
                 final scats = _scatController.scategoriesList;
                 return DropdownButtonFormField<int>(
-                  value: _selectedScategorieId,
+                  initialValue: _selectedScategorieId,
                   decoration: InputDecoration(
                     labelText: 'Sous-catégorie',
                     prefixIcon: const Icon(Icons.category),
