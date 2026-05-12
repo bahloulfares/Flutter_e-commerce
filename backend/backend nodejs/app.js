@@ -44,6 +44,8 @@ const userRouter =require("./routes/user.route")
 app.use('/api/users', userRouter);
 const orderRouter =require("./routes/order.route")
 app.use('/api/orders', orderRouter);
+const chatbotRouter =require("./routes/chatbot.route")
+app.use('/api/chatbot', chatbotRouter);
 
 
 //Démarrer le serveur

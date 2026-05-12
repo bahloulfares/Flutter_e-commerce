@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
 import 'package:atelier7/utils/chatbot_service.dart';
+import 'package:atelier7/utils/chat_action.dart';
 import 'package:atelier7/data/datasource/services/article_service.dart';
 import 'package:atelier7/data/datasource/models/article.model.dart';
 
@@ -39,18 +41,25 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   void initState() {
     super.initState();
+    developer.log('🤖 CHATBOT: Démarrage', name: 'ChatbotDebug');
     _loadProducts();
     _addWelcomeMessage();
   }
 
   Future<void> _loadProducts() async {
     try {
+      developer.log('📦 CHATBOT: Chargement produits...', name: 'ChatbotDebug');
       final products = await _articleService.getArticles();
+      developer.log('✅ CHATBOT: ${products.length} produits reçus',
+          name: 'ChatbotDebug');
       setState(() {
         _allProducts = products.map((json) => Article.fromJson(json)).toList();
+        developer.log('✅ CHATBOT: ${_allProducts.length} convertis',
+            name: 'ChatbotDebug');
       });
     } catch (e) {
-      // Silent fail - chatbot will work without products
+      developer.log('❌ CHATBOT: Erreur produits - $e',
+          name: 'ChatbotDebug', error: e);
     }
   }
 
@@ -58,58 +67,63 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     setState(() {
       _messages.add(ChatMessage(
         text:
-            "Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui ?",
+            "Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider ?",
         isUser: false,
         timestamp: DateTime.now(),
-        quickReplies: [
-          'Voir les produits',
-          'Aide',
-          'Suivre ma commande',
-        ],
+        quickReplies: ['Voir les produits', 'Aide', 'Suivre ma commande'],
       ));
     });
   }
 
   Future<void> _sendMessage(String text) async {
     if (text.trim().isEmpty) return;
-
-    // Add user message
+    developer.log('💬 CHATBOT: "$text"', name: 'ChatbotDebug');
     setState(() {
-      _messages.add(ChatMessage(
-        text: text,
-        isUser: true,
-        timestamp: DateTime.now(),
-      ));
+      _messages.add(
+          ChatMessage(text: text, isUser: true, timestamp: DateTime.now()));
       _isLoading = true;
     });
-
     _messageController.clear();
     _scrollToBottom();
-
-    // Simulate thinking delay
     await Future.delayed(const Duration(milliseconds: 800));
+    try {
+      final response = await _chatbotService.generateResponse(
+        userMessage: text,
+        products: _allProducts,
+      );
+      developer.log('🤖 CHATBOT: Intent=${response.detectedIntent}',
+          name: 'ChatbotDebug');
 
-    // Generate response
-    final response = await _chatbotService.generateResponse(
-      userMessage: text,
-      products: _allProducts,
-    );
+      // ✅ Ajouter le message du bot
+      setState(() {
+        _messages.add(ChatMessage(
+          text: response.message,
+          isUser: false,
+          timestamp: DateTime.now(),
+          suggestedProducts: response.suggestedProducts,
+          quickReplies: response.suggestedActions,
+        ));
+        _isLoading = false;
+      });
 
-    setState(() {
-      _messages.add(ChatMessage(
-        text: response.message,
-        isUser: false,
-        timestamp: DateTime.now(),
-        suggestedProducts: response.suggestedProducts,
-        quickReplies: response.suggestedActions,
-      ));
-      _isLoading = false;
-    });
-
+      // ✅ Exécuter l'action si elle existe (redirection, etc)
+      if (response.action != null) {
+        await _handleChatAction(response.action!);
+      }
+    } catch (e) {
+      developer.log('❌ CHATBOT: Erreur - $e', name: 'ChatbotDebug', error: e);
+      setState(() {
+        _messages.add(ChatMessage(
+          text: 'Erreur: $e',
+          isUser: false,
+          timestamp: DateTime.now(),
+        ));
+        _isLoading = false;
+      });
+    }
     _scrollToBottom();
   }
 
-  // Mapping des actions rapides vers des messages lisibles
   static const Map<String, String> _quickReplyMessages = {
     'Voir les smartphones': 'Je recherche des smartphones',
     'Voir les ordinateurs': 'Je recherche des ordinateurs',
@@ -129,47 +143,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   };
 
   void _handleQuickReply(String action) {
-    final userMessage = _quickReplyMessages[action] ?? action;
-    _sendMessageWithDisplay(action: action, userMessage: userMessage);
-  }
-
-  Future<void> _sendMessageWithDisplay({
-    required String action,
-    required String userMessage,
-  }) async {
-    // Affiche le label du bouton dans la bulle utilisateur
-    setState(() {
-      _messages.add(ChatMessage(
-        text: action,
-        isUser: true,
-        timestamp: DateTime.now(),
-      ));
-      _isLoading = true;
-    });
-
-    _scrollToBottom();
-
-    // Simulate thinking delay
-    await Future.delayed(const Duration(milliseconds: 800));
-
-    // Génère la réponse avec le message traduit (pour une meilleure détection)
-    final response = await _chatbotService.generateResponse(
-      userMessage: userMessage,
-      products: _allProducts,
-    );
-
-    setState(() {
-      _messages.add(ChatMessage(
-        text: response.message,
-        isUser: false,
-        timestamp: DateTime.now(),
-        suggestedProducts: response.suggestedProducts,
-        quickReplies: response.suggestedActions,
-      ));
-      _isLoading = false;
-    });
-
-    _scrollToBottom();
+    final msg = _quickReplyMessages[action] ?? action;
+    _sendMessage(msg);
   }
 
   void _scrollToBottom() {
@@ -184,6 +159,54 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
   }
 
+  // ✅ Gérer les actions du chatbot (redirections, etc)
+  Future<void> _handleChatAction(ChatAction action) async {
+    developer.log('🎯 Action chatbot: ${action.type} -> ${action.target}',
+        name: 'ChatbotDebug');
+
+    try {
+      switch (action.type) {
+        case ActionType.redirect:
+          // Redirection simple vers une page
+          if (action.target != null) {
+            developer.log('🔀 Redirection vers: ${action.target}',
+                name: 'ChatbotDebug');
+            Navigator.pushNamed(context, action.target!);
+          }
+          break;
+
+        case ActionType.filter:
+          // Navigation vers Products avec filtres
+          if (action.target == '/Products' && action.params != null) {
+            developer.log('🔍 Filtre produits: ${action.params}',
+                name: 'ChatbotDebug');
+            Navigator.pushNamed(context, action.target!);
+          } else if (action.target != null) {
+            Navigator.pushNamed(context, action.target!);
+          }
+          break;
+
+        case ActionType.url:
+          // Ouvrir une URL externe
+          if (action.target != null) {
+            developer.log('🌐 Ouverture URL: ${action.target}',
+                name: 'ChatbotDebug');
+            // Vous pouvez utiliser url_launcher pour ouvrir des URL
+            // launch(action.target!);
+          }
+          break;
+
+        case ActionType.message:
+          // Message seul, aucune action
+          developer.log('💬 Message action', name: 'ChatbotDebug');
+          break;
+      }
+    } catch (e) {
+      developer.log('❌ Erreur execution action: $e',
+          name: 'ChatbotDebug', error: e);
+    }
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
@@ -194,7 +217,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -222,26 +244,33 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       ),
       body: Column(
         children: [
-          // Messages list
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length + (_isLoading ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == _messages.length && _isLoading) {
-                  return _buildTypingIndicator();
-                }
-                return _buildMessageBubble(_messages[index], colorScheme);
-              },
-            ),
+            child: _messages.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.smart_toy,
+                            size: 64, color: colorScheme.primary),
+                        const SizedBox(height: 16),
+                        const Text('Démarrage du chatbot...'),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _messages.length + (_isLoading ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == _messages.length && _isLoading) {
+                        return _buildTypingIndicator();
+                      }
+                      return _buildMessageBubble(_messages[index], colorScheme);
+                    },
+                  ),
           ),
-
-          // Quick replies (if last message has them)
           if (_messages.isNotEmpty && _messages.last.quickReplies.isNotEmpty)
             _buildQuickReplies(_messages.last.quickReplies),
-
-          // Input area
           _buildInputArea(colorScheme),
         ],
       ),
@@ -341,13 +370,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDot(0),
-                const SizedBox(width: 4),
-                _buildDot(1),
-                const SizedBox(width: 4),
-                _buildDot(2),
-              ],
+              children: List.generate(3, (i) => _buildDot(i)),
             ),
           ),
         ],
@@ -362,12 +385,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       builder: (context, double value, child) {
         return Transform.translate(
           offset: Offset(0, -4 * value),
-          child: Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              shape: BoxShape.circle,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: delay == 1 ? 4 : 0),
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
         );
@@ -381,21 +407,22 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: replies.map((reply) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: ActionChip(
-                label: Text(reply),
-                onPressed: () => _handleQuickReply(reply),
-                backgroundColor:
-                    Theme.of(context).colorScheme.secondaryContainer,
-                labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            );
-          }).toList(),
+          children: replies
+              .map((reply) => Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ActionChip(
+                      label: Text(reply),
+                      onPressed: () => _handleQuickReply(reply),
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
+                      labelStyle: TextStyle(
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ))
+              .toList(),
         ),
       ),
     );
@@ -428,10 +455,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   ),
                   filled: true,
                   fillColor: colorScheme.surfaceContainerHighest,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
                 onSubmitted: _sendMessage,
                 textInputAction: TextInputAction.send,
@@ -461,8 +486,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Je suis votre assistant intelligent pour vous aider dans vos achats.',
-            ),
+                'Je suis votre assistant intelligent pour vous aider dans vos achats.'),
             const SizedBox(height: 16),
             const Text('Je peux vous aider avec :'),
             const SizedBox(height: 8),
@@ -475,9 +499,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Fermer'),
-          ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Fermer')),
         ],
       ),
     );
