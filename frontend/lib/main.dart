@@ -27,6 +27,7 @@ import 'package:atelier7/presentation/controllers/user.controller.dart';
 import 'package:atelier7/presentation/controllers/order.controller.dart';
 import 'package:atelier7/presentation/controllers/theme.controller.dart';
 import 'package:atelier7/presentation/controllers/language.controller.dart';
+import 'package:atelier7/presentation/controllers/translation_provider.dart';
 import 'package:atelier7/utils/app_translations.dart';
 import 'package:atelier7/presentation/screens/menu.dart';
 import 'package:atelier7/presentation/widgets/mybottomnavbar.dart';
@@ -82,6 +83,11 @@ void main() async {
   Get.put(ThemeController());
   Get.put(LanguageController());
 
+  // 🎯 Initialiser le TranslationProvider (100% ML Kit)
+  Get.put(TranslationProvider());
+  // Synchroniser ML Kit avec la langue courante du LanguageController
+  await Get.find<LanguageController>().syncMlKitTranslation();
+
   Get.put(OrderService());
   Get.put(OrderRepository(orderService: Get.find()));
   Get.put(OrderUseCase(repository: Get.find()));
@@ -102,6 +108,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
     final langController = Get.find<LanguageController>();
+
     return Obx(
       () => GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -128,13 +135,33 @@ class MyApp extends StatelessWidget {
         themeMode: themeController.themeMode,
         initialRoute: '/',
         routes: appRoutes(),
-        home: const Scaffold(
-          appBar: MyAppBar(),
-          body: Menu(),
-          drawer: MyDrawer(),
-          bottomNavigationBar: Mybottomnavigationbar(),
-        ),
+        // ✅ Enlever const et wrapper dans un widget réactif
+        home: const _AppHome(),
       ),
+    );
+  }
+}
+
+// ✅ Widget réactif qui rebuild quand la langue change
+class _AppHome extends StatelessWidget {
+  const _AppHome();
+
+  @override
+  Widget build(BuildContext context) {
+    final langController = Get.find<LanguageController>();
+
+    return Obx(
+      () {
+        // Forcer rebuild de tout le Scaffold quand la langue change
+        langController.currentLocale.value; // Watch pour changement
+
+        return Scaffold(
+          appBar: const MyAppBar(),
+          body: const Menu(),
+          drawer: const MyDrawer(),
+          bottomNavigationBar: const Mybottomnavigationbar(),
+        );
+      },
     );
   }
 }

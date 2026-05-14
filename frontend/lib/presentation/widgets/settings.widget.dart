@@ -431,6 +431,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
                     final label = entry.value;
                     final isSelected =
                         _langController.currentLocale.value == code;
+                    final isChanging = _langController.isLanguageChanging.value;
                     final downloaded = _modelDownloaded[code] ?? false;
                     final loading = _modelLoading[code] ?? false;
 
@@ -465,16 +466,24 @@ class SettingsWidgetState extends State<SettingsWidget> {
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(strokeWidth: 2))
-                          : isSelected
-                              ? Icon(Icons.check_circle, color: cs.primary)
-                              : downloaded
-                                  ? const Icon(Icons.radio_button_unchecked)
-                                  : IconButton(
-                                      icon: const Icon(Icons.download_outlined),
-                                      tooltip: 'Télécharger le modèle',
-                                      onPressed: () => _downloadModel(code),
-                                    ),
-                      onTap: () => _selectLanguage(code),
+                          : (isSelected && isChanging)
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : isSelected
+                                  ? Icon(Icons.check_circle, color: cs.primary)
+                                  : downloaded
+                                      ? const Icon(Icons.radio_button_unchecked)
+                                      : IconButton(
+                                          icon: const Icon(
+                                              Icons.download_outlined),
+                                          tooltip: 'Télécharger le modèle',
+                                          onPressed: () => _downloadModel(code),
+                                        ),
+                      onTap: isChanging ? null : () => _selectLanguage(code),
                     );
                   }).toList(),
                 );
@@ -563,6 +572,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
                                 } else {
                                   await _authController.disableBiometric();
                                   if (mounted) {
+                                    // ignore: use_build_context_synchronously
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                             content:
@@ -650,6 +660,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
                                 } else {
                                   await _authController.disableFaceIdMlKit();
                                   if (mounted) {
+                                    // ignore: use_build_context_synchronously
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                             content: Text(

@@ -18,7 +18,8 @@ app.use(express.json());
 // Connexion à la base données MySQL avec Sequelize
 sequelize.authenticate().then(() => {
     console.log('MySQL Database Connection Authenticated');
-    return sequelize.sync({ alter: true });
+    const shouldAlterSchema = process.env.DB_SYNC_ALTER === 'true';
+    return sequelize.sync({ alter: shouldAlterSchema });
 })
 .then(() => {
     console.log("DataBase Synchronized Successfully");

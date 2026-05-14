@@ -24,6 +24,28 @@ class _DetailsState extends State<Details> {
   bool _isTranslating = false;
   bool _isTranslated = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // Écouter les changements de langue et relancer traduction auto
+    _langController.addLanguageChangeListener(_onLanguageChanged);
+  }
+
+  void _onLanguageChanged(String newLocale) {
+    // Quand la langue change, vider les traductions précédentes
+    if (mounted) {
+      setState(() {
+        _translatedDesignation = null;
+        _translatedMarque = null;
+        _isTranslated = false;
+      });
+      // Relancer auto traduction si elle était active
+      if (_isTranslated) {
+        Future.delayed(const Duration(milliseconds: 500), _toggleTranslation);
+      }
+    }
+  }
+
   Future<void> _toggleTranslation() async {
     if (_isTranslated) {
       setState(() {
@@ -79,6 +101,7 @@ class _DetailsState extends State<Details> {
 
   @override
   void dispose() {
+    _langController.removeLanguageChangeListener(_onLanguageChanged);
     _translationService.dispose();
     super.dispose();
   }
@@ -114,7 +137,9 @@ class _DetailsState extends State<Details> {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     ),
                   )
                 : IconButton(
@@ -151,15 +176,20 @@ class _DetailsState extends State<Details> {
                     ? Image.network(
                         article.imageart!,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Container(
+                        errorBuilder: (_, _, _) => Container(
                           color: colorScheme.surfaceContainer,
-                          child: Icon(Icons.broken_image,
-                              size: 100,
-                              color: colorScheme.onSurfaceVariant),
+                          child: Icon(
+                            Icons.broken_image,
+                            size: 100,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       )
-                    : Icon(Icons.image_not_supported,
-                        size: 100, color: colorScheme.onSurfaceVariant),
+                    : Icon(
+                        Icons.image_not_supported,
+                        size: 100,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
               ),
             ),
 
@@ -167,28 +197,37 @@ class _DetailsState extends State<Details> {
             if (_isTranslated)
               Container(
                 width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
                 color: colorScheme.secondaryContainer,
                 child: Row(
                   children: [
-                    Icon(Icons.translate,
-                        size: 14, color: colorScheme.onSecondaryContainer),
+                    Icon(
+                      Icons.translate,
+                      size: 14,
+                      color: colorScheme.onSecondaryContainer,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       'Traduit par ML Kit · ${_langController.currentLabel}',
                       style: TextStyle(
-                          fontSize: 12,
-                          color: colorScheme.onSecondaryContainer),
+                        fontSize: 12,
+                        color: colorScheme.onSecondaryContainer,
+                      ),
                     ),
                     const Spacer(),
                     GestureDetector(
                       onTap: _toggleTranslation,
-                      child: Text('Original',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: colorScheme.primary,
-                              decoration: TextDecoration.underline)),
+                      child: Text(
+                        'Original',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colorScheme.primary,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -204,46 +243,57 @@ class _DetailsState extends State<Details> {
                   Text(
                     displayDesignation,
                     style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        height: 1.3),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      height: 1.3,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   if (article.reference != null)
                     Text(
                       '${'reference'.tr}: ${article.reference}',
                       style: TextStyle(
-                          fontSize: 14,
-                          color: colorScheme.onSurfaceVariant),
+                        fontSize: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   if (displayMarque != null)
                     Text(
                       '${'marque'.tr}: $displayMarque',
                       style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w500),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   const SizedBox(height: 20),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer
-                          .withValues(alpha: 0.35),
+                      color: colorScheme.primaryContainer.withValues(
+                        alpha: 0.35,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        Text('${'prix'.tr}:',
-                            style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500)),
+                        Text(
+                          '${'prix'.tr}:',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           '${article.prix?.toStringAsFixed(2) ?? '0.00'} TND',
                           style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.primary),
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
                         ),
                       ],
                     ),
@@ -277,26 +327,32 @@ class _DetailsState extends State<Details> {
                   ),
                   const SizedBox(height: 30),
                   Center(
-                    child: PersistentShoppingCart()
-                        .showAndUpdateCartItemWidget(
+                    child: PersistentShoppingCart().showAndUpdateCartItemWidget(
                       inCartWidget: Container(
                         width: double.infinity,
                         height: 55,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.red),
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.red,
+                        ),
                         child: Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.check,
-                                  color: Colors.white, size: 24),
+                              const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 24,
+                              ),
                               const SizedBox(width: 8),
-                              Text('retirer_panier'.tr,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16)),
+                              Text(
+                                'retirer_panier'.tr,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -305,20 +361,27 @@ class _DetailsState extends State<Details> {
                         width: double.infinity,
                         height: 55,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: colorScheme.primary),
+                          borderRadius: BorderRadius.circular(12),
+                          color: colorScheme.primary,
+                        ),
                         child: Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.shopping_cart_outlined,
-                                  color: Colors.white, size: 24),
+                              const Icon(
+                                Icons.shopping_cart_outlined,
+                                color: Colors.white,
+                                size: 24,
+                              ),
                               const SizedBox(width: 8),
-                              Text('ajouter_panier'.tr,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16)),
+                              Text(
+                                'ajouter_panier'.tr,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ],
                           ),
                         ),

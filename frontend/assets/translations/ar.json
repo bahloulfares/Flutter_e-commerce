@@ -30,6 +30,7 @@
   "about": "حول التطبيق",
   "diagnostic_mlkit": "تشخيص Face ID ML Kit",
   "categories": "الفئات",
+  "manage_categories": "إدارة الفئات",
   "commandes": "الطلبات",
   "utilisateurs": "المستخدمون",
   "enregistrer": "حفظ",
@@ -45,5 +46,13 @@
   "total": "المجموع",
   "quantite": "الكمية",
   "designation": "الاسم",
-  "stock": "المخزون"
+  "stock": "المخزون",
+  "view_catalog": "عرض الكتالوج",
+  "documents": "الوثائق",
+  "my_docs": "وثائقي",
+  "shopping_cart": "سلة التسوق",
+  "register": "إنشاء حساب",
+  "create_account": "إنشاء حساب جديد",
+  "settings": "الإعدادات",
+  "app_preferences": "تفضيلات التطبيق"
 }

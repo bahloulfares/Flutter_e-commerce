@@ -30,6 +30,7 @@
   "about": "About",
   "diagnostic_mlkit": "Face ID ML Kit Diagnostic",
   "categories": "Categories",
+  "manage_categories": "Manage categories",
   "commandes": "Orders",
   "utilisateurs": "Users",
   "enregistrer": "Save",
@@ -45,5 +46,13 @@
   "total": "Total",
   "quantite": "Quantity",
   "designation": "Name",
-  "stock": "Stock"
+  "stock": "Stock",
+  "view_catalog": "View catalog",
+  "documents": "Documents",
+  "my_docs": "My documents",
+  "shopping_cart": "Shopping cart",
+  "register": "Register",
+  "create_account": "Create an account",
+  "settings": "Settings",
+  "app_preferences": "App preferences"
 }

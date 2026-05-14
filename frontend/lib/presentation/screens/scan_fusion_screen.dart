@@ -72,8 +72,13 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
 
       // --- Strategy 1: barcode found → search by reference ---
       if (barcodeValue != null && barcodeValue.isNotEmpty) {
-        setState(() => _statusMessage = 'Code-barres: $barcodeValue\nRecherche produit...');
-        final articleJson = await _articleService.searchByReference(barcodeValue);
+        setState(
+          () => _statusMessage =
+              'Code-barres: $barcodeValue\nRecherche produit...',
+        );
+        final articleJson = await _articleService.searchByReference(
+          barcodeValue,
+        );
         if (articleJson != null) {
           setState(() {
             _foundArticle = Article.fromJson(articleJson);
@@ -104,11 +109,15 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
           : ocrData['marque'] ?? '';
 
       if (searchTerm.isNotEmpty) {
-        setState(() => _statusMessage = 'Recherche par texte OCR: "$searchTerm"...');
+        setState(
+          () => _statusMessage = 'Recherche par texte OCR: "$searchTerm"...',
+        );
         final list = await _articleService.searchByText(searchTerm);
         if (list.isNotEmpty) {
           setState(() {
-            _ocrResults = list.map((j) => Article.fromJson(j as Map<String, dynamic>)).toList();
+            _ocrResults = list
+                .map((j) => Article.fromJson(j as Map<String, dynamic>))
+                .toList();
             _state = _ScanState.ocrResults;
             _statusMessage = '${_ocrResults.length} résultat(s) OCR trouvé(s)';
           });
@@ -162,12 +171,12 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
       body: _state == _ScanState.scanning
           ? _buildScanning(colorScheme)
           : _state == _ScanState.barcodeFound
-              ? _buildArticleFound(colorScheme)
-              : _state == _ScanState.ocrResults
-                  ? _buildOcrResults(colorScheme)
-                  : _state == _ScanState.notFound || _state == _ScanState.error
-                      ? _buildNotFound(colorScheme)
-                      : _buildIdle(colorScheme),
+          ? _buildArticleFound(colorScheme)
+          : _state == _ScanState.ocrResults
+          ? _buildOcrResults(colorScheme)
+          : _state == _ScanState.notFound || _state == _ScanState.error
+          ? _buildNotFound(colorScheme)
+          : _buildIdle(colorScheme),
     );
   }
 
@@ -182,7 +191,11 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
             const SizedBox(height: 24),
             Text(
               'scanner'.tr,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: cs.onSurface),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: cs.onSurface,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -222,13 +235,20 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
           if (_capturedImage != null)
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.file(_capturedImage!, height: 200, fit: BoxFit.cover),
+              child: Image.file(
+                _capturedImage!,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
             ),
           const SizedBox(height: 24),
           CircularProgressIndicator(color: cs.primary),
           const SizedBox(height: 16),
-          Text(_statusMessage, textAlign: TextAlign.center,
-              style: TextStyle(color: cs.onSurfaceVariant)),
+          Text(
+            _statusMessage,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: cs.onSurfaceVariant),
+          ),
         ],
       ),
     );
@@ -253,8 +273,13 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
               children: [
                 Icon(Icons.check_circle, color: Colors.green[700], size: 16),
                 const SizedBox(width: 6),
-                Text(_statusMessage,
-                    style: TextStyle(color: Colors.green[700], fontWeight: FontWeight.w600)),
+                Text(
+                  _statusMessage,
+                  style: TextStyle(
+                    color: Colors.green[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -262,22 +287,29 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
           // Product card
           Card(
             elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (a.imageart != null)
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
                     child: Image.network(
                       a.imageart!,
                       height: 220,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (_, _, _) => Container(
                         height: 120,
                         color: cs.surfaceContainer,
-                        child: Icon(Icons.image_not_supported, color: cs.onSurfaceVariant),
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: cs.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),
@@ -286,30 +318,49 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(a.designation ?? 'Produit',
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(
+                        a.designation ?? 'Produit',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       if (a.reference != null) ...[
                         const SizedBox(height: 4),
-                        Text('Réf: ${a.reference}',
-                            style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
+                        Text(
+                          'Réf: ${a.reference}',
+                          style: TextStyle(
+                            color: cs.onSurfaceVariant,
+                            fontSize: 13,
+                          ),
+                        ),
                       ],
                       if (a.marque != null) ...[
                         const SizedBox(height: 2),
-                        Text('Marque: ${a.marque}',
-                            style: const TextStyle(fontWeight: FontWeight.w500)),
+                        Text(
+                          'Marque: ${a.marque}',
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
                       ],
                       const SizedBox(height: 12),
                       Text(
                         '${a.prix?.toStringAsFixed(2) ?? '0.00'} TND',
                         style: TextStyle(
-                            fontSize: 26, fontWeight: FontWeight.bold, color: cs.primary),
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: cs.primary,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Icon(
-                            (a.qtestock ?? 0) > 0 ? Icons.check_circle : Icons.cancel,
-                            color: (a.qtestock ?? 0) > 0 ? Colors.green : Colors.red,
+                            (a.qtestock ?? 0) > 0
+                                ? Icons.check_circle
+                                : Icons.cancel,
+                            color: (a.qtestock ?? 0) > 0
+                                ? Colors.green
+                                : Colors.red,
                             size: 18,
                           ),
                           const SizedBox(width: 6),
@@ -318,7 +369,9 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
                                 ? 'En stock: ${a.qtestock}'
                                 : 'Rupture de stock',
                             style: TextStyle(
-                              color: (a.qtestock ?? 0) > 0 ? Colors.green[700] : Colors.red[700],
+                              color: (a.qtestock ?? 0) > 0
+                                  ? Colors.green[700]
+                                  : Colors.red[700],
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -332,17 +385,22 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
           ),
           const SizedBox(height: 20),
           FilledButton.icon(
-            onPressed: () => Navigator.pushNamed(context, '/details', arguments: a),
+            onPressed: () =>
+                Navigator.pushNamed(context, '/details', arguments: a),
             icon: const Icon(Icons.info_outline),
             label: const Text('Voir les détails'),
-            style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 52)),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 52),
+            ),
           ),
           const SizedBox(height: 10),
           OutlinedButton.icon(
             onPressed: _reset,
             icon: const Icon(Icons.qr_code_scanner),
             label: const Text('Nouveau scan'),
-            style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 52)),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 52),
+            ),
           ),
         ],
       ),
@@ -359,7 +417,10 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: cs.secondaryContainer,
                   borderRadius: BorderRadius.circular(20),
@@ -367,16 +428,25 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.text_fields, color: cs.onSecondaryContainer, size: 16),
+                    Icon(
+                      Icons.text_fields,
+                      color: cs.onSecondaryContainer,
+                      size: 16,
+                    ),
                     const SizedBox(width: 6),
-                    Text('Résultats OCR', style: TextStyle(color: cs.onSecondaryContainer)),
+                    Text(
+                      'Résultats OCR',
+                      style: TextStyle(color: cs.onSecondaryContainer),
+                    ),
                   ],
                 ),
               ),
               if (_ocrData['designation']?.isNotEmpty == true) ...[
                 const SizedBox(height: 8),
-                Text('Texte détecté: "${_ocrData['designation']}"',
-                    style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
+                Text(
+                  'Texte détecté: "${_ocrData['designation']}"',
+                  style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13),
+                ),
               ],
             ],
           ),
@@ -385,27 +455,47 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: _ocrResults.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (context, i) {
               final a = _ocrResults[i];
               return ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 tileColor: cs.surfaceContainerHighest,
                 leading: a.imageart != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(a.imageart!, width: 56, height: 56,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                Icon(Icons.image_not_supported, color: cs.onSurfaceVariant)),
+                        child: Image.network(
+                          a.imageart!,
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => Icon(
+                            Icons.image_not_supported,
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
                       )
-                    : Icon(Icons.inventory_2_outlined, color: cs.primary, size: 40),
-                title: Text(a.designation ?? 'Produit',
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('${a.prix?.toStringAsFixed(2) ?? '0'} TND  •  ${a.marque ?? ''}'),
+                    : Icon(
+                        Icons.inventory_2_outlined,
+                        color: cs.primary,
+                        size: 40,
+                      ),
+                title: Text(
+                  a.designation ?? 'Produit',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  '${a.prix?.toStringAsFixed(2) ?? '0'} TND  •  ${a.marque ?? ''}',
+                ),
                 trailing: Icon(Icons.chevron_right, color: cs.primary),
-                onTap: () => Navigator.pushNamed(context, '/details', arguments: a),
+                onTap: () =>
+                    Navigator.pushNamed(context, '/details', arguments: a),
               );
             },
           ),
@@ -416,7 +506,9 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
             onPressed: _reset,
             icon: const Icon(Icons.qr_code_scanner),
             label: const Text('Nouveau scan'),
-            style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
           ),
         ),
       ],
@@ -433,13 +525,21 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
             if (_capturedImage != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.file(_capturedImage!, height: 160, fit: BoxFit.cover),
+                child: Image.file(
+                  _capturedImage!,
+                  height: 160,
+                  fit: BoxFit.cover,
+                ),
               ),
             const SizedBox(height: 24),
             Icon(
-              _state == _ScanState.error ? Icons.error_outline : Icons.search_off,
+              _state == _ScanState.error
+                  ? Icons.error_outline
+                  : Icons.search_off,
               size: 64,
-              color: _state == _ScanState.error ? cs.error : cs.onSurfaceVariant,
+              color: _state == _ScanState.error
+                  ? cs.error
+                  : cs.onSurfaceVariant,
             ),
             const SizedBox(height: 16),
             Text(
@@ -447,15 +547,24 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(color: cs.onSurfaceVariant),
             ),
-            if (_ocrData.isNotEmpty && _ocrData['rawText']?.isNotEmpty == true) ...[
+            if (_ocrData.isNotEmpty &&
+                _ocrData['rawText']?.isNotEmpty == true) ...[
               const SizedBox(height: 12),
               ExpansionTile(
-                title: const Text('Texte OCR détecté', style: TextStyle(fontSize: 13)),
+                title: const Text(
+                  'Texte OCR détecté',
+                  style: TextStyle(fontSize: 13),
+                ),
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(12),
-                    child: Text(_ocrData['rawText'] ?? '',
-                        style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+                    child: Text(
+                      _ocrData['rawText'] ?? '',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -465,7 +574,9 @@ class _ScanFusionScreenState extends State<ScanFusionScreen> {
               onPressed: _reset,
               icon: const Icon(Icons.qr_code_scanner),
               label: const Text('Réessayer'),
-              style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 52)),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 52),
+              ),
             ),
           ],
         ),

@@ -108,10 +108,12 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
 
     final ok = await _scatController.updateScategorie(id, data);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok ? 'Modifié avec succès !' : 'Erreur modification'),
-        backgroundColor: ok ? Colors.green : Colors.red,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ok ? 'Modifié avec succès !' : 'Erreur modification'),
+          backgroundColor: ok ? Colors.green : Colors.red,
+        ),
+      );
       if (ok) Navigator.pop(context);
     }
   }
@@ -215,34 +217,34 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
                               ),
                             )
                           : _imageCtrl.text.trim().isNotEmpty
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    _imageCtrl.text.trim(),
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    errorBuilder: (_, __, ___) => const Center(
-                                      child: Icon(
-                                        Icons.image_not_supported,
-                                        size: 40,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : const Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.image_outlined,
-                                        size: 40,
-                                        color: Colors.grey,
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text('Aucune image sélectionnée'),
-                                    ],
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                _imageCtrl.text.trim(),
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                errorBuilder: (_, _, _) => const Center(
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    size: 40,
                                   ),
                                 ),
+                              ),
+                            )
+                          : const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.image_outlined,
+                                    size: 40,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text('Aucune image sélectionnée'),
+                                ],
+                              ),
+                            ),
                     ),
                   ],
                 ),
@@ -260,10 +262,12 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
                     ),
                   ),
                   items: cats
-                      .map((c) => DropdownMenuItem<String>(
-                            value: c.id,
-                            child: Text(c.nomcategorie),
-                          ))
+                      .map(
+                        (c) => DropdownMenuItem<String>(
+                          value: c.id,
+                          child: Text(c.nomcategorie),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _selectedCategorieId = v),
                 );
@@ -271,26 +275,27 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
-                child: Obx(() => ElevatedButton.icon(
-                      onPressed:
-                          _scatController.isLoading.value ? null : _submit,
-                      icon: _scatController.isLoading.value
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.save),
-                      label: const Text('Enregistrer'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                child: Obx(
+                  () => ElevatedButton.icon(
+                    onPressed: _scatController.isLoading.value ? null : _submit,
+                    icon: _scatController.isLoading.value
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.save),
+                    label: const Text('Enregistrer'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    )),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

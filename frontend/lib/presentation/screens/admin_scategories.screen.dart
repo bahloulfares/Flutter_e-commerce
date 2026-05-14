@@ -28,18 +28,22 @@ class _AdminScategoriesScreenState extends State<AdminScategoriesScreen> {
         content: Text('Supprimer "$name" ?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annuler')),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Annuler'),
+          ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               final ok = await _controller.deleteScategorie(id);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content:
-                      Text(ok ? 'Supprimé avec succès' : 'Erreur suppression'),
-                  backgroundColor: ok ? Colors.green : Colors.red,
-                ));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      ok ? 'Supprimé avec succès' : 'Erreur suppression',
+                    ),
+                    backgroundColor: ok ? Colors.green : Colors.red,
+                  ),
+                );
               }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -67,8 +71,8 @@ class _AdminScategoriesScreenState extends State<AdminScategoriesScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () =>
             Navigator.of(context).pushNamed('/admin/addScategorie').then((_) {
-          _controller.fetchAllScategories();
-        }),
+              _controller.fetchAllScategories();
+            }),
         icon: const Icon(Icons.add),
         label: const Text('Ajouter'),
         backgroundColor: Colors.deepPurple,
@@ -84,8 +88,10 @@ class _AdminScategoriesScreenState extends State<AdminScategoriesScreen> {
               children: [
                 Icon(Icons.category, size: 64, color: Colors.grey),
                 SizedBox(height: 12),
-                Text('Aucune sous-catégorie',
-                    style: TextStyle(color: Colors.grey)),
+                Text(
+                  'Aucune sous-catégorie',
+                  style: TextStyle(color: Colors.grey),
+                ),
               ],
             ),
           );
@@ -107,7 +113,7 @@ class _AdminScategoriesScreenState extends State<AdminScategoriesScreen> {
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
+                          errorBuilder: (_, _, _) =>
                               const Icon(Icons.image_not_supported),
                         ),
                       )
@@ -115,12 +121,18 @@ class _AdminScategoriesScreenState extends State<AdminScategoriesScreen> {
                         backgroundColor: Colors.deepPurple,
                         child: Icon(Icons.category, color: Colors.white),
                       ),
-                title: Text(scat.nomscategorie ?? 'Sans nom',
-                    style: const TextStyle(fontWeight: FontWeight.w600)),
+                title: Text(
+                  scat.nomscategorie ?? 'Sans nom',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
                 subtitle: scat.categorie != null
-                    ? Text('Catégorie: ${scat.categorie!.nomcategorie ?? ''}',
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 12))
+                    ? Text(
+                        'Catégorie: ${scat.categorie!.nomcategorie ?? ''}',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      )
                     : null,
                 trailing: Wrap(
                   children: [
@@ -129,8 +141,8 @@ class _AdminScategoriesScreenState extends State<AdminScategoriesScreen> {
                       onPressed: () => Navigator.of(context)
                           .pushNamed('/admin/editScategorie', arguments: scat)
                           .then((_) {
-                        _controller.fetchAllScategories();
-                      }),
+                            _controller.fetchAllScategories();
+                          }),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),

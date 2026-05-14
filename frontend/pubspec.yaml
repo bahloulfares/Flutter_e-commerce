@@ -5,7 +5,7 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.3
+  sdk: ^3.10.0
 
 dependencies:
   flutter:
@@ -73,15 +73,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/tel1.jpg
-    - assets/tel2.png
-    - assets/tel3.jpg
-
-    # Translations
-    - assets/translations/fr.json
-    - assets/translations/en.json
-    - assets/translations/ar.json
-
-    # Environment
+    - assets/
+    - assets/translations/
     - .env.dev
     - .env.prod

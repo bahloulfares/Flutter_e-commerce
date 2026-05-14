@@ -8,7 +8,6 @@ import 'package:atelier7/presentation/screens/addcategorie.screen.dart';
 import 'package:atelier7/presentation/screens/cartview.screen.dart';
 import 'package:atelier7/presentation/screens/categorieslist.screen.dart';
 import 'package:atelier7/presentation/screens/editcategorie.screen.dart';
-import 'package:atelier7/presentation/screens/login.screen.dart';
 import 'package:atelier7/presentation/screens/register.screen.dart';
 import 'package:atelier7/presentation/screens/settings.screen.dart';
 import 'package:atelier7/presentation/screens/details.dart';
@@ -30,6 +29,7 @@ import 'package:atelier7/presentation/screens/scan_fusion_screen.dart';
 import 'package:atelier7/presentation/screens/mlkit_diagnostic_screen.dart';
 import 'package:atelier7/presentation/screens/chatbot_screen.dart';
 import 'package:atelier7/presentation/screens/face_capture_screen.dart';
+import 'package:atelier7/presentation/screens/modern_login.screen.dart';
 
 // Widget de protection pour les routes réservées aux admins
 class AdminRouteGuard extends StatelessWidget {
@@ -55,11 +55,7 @@ class AdminRouteGuard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.lock,
-                size: 80,
-                color: Colors.red,
-              ),
+              const Icon(Icons.lock, size: 80, color: Colors.red),
               const SizedBox(height: 20),
               const Text(
                 'Accès réservé aux administrateurs',
@@ -108,11 +104,7 @@ class AuthRouteGuard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.lock_outline,
-                size: 80,
-                color: Colors.orange,
-              ),
+              const Icon(Icons.lock_outline, size: 80, color: Colors.orange),
               const SizedBox(height: 20),
               const Text(
                 'Veuillez vous connecter',
@@ -147,11 +139,9 @@ class AuthRouteGuard extends StatelessWidget {
 Map<String, WidgetBuilder> appRoutes() {
   return {
     '/Documents': (context) => Scaffold(
-          appBar: AppBar(
-            title: const Text('My Products'),
-          ),
-          body: const Myproducts(),
-        ),
+      appBar: AppBar(title: const Text('My Products')),
+      body: const Myproducts(),
+    ),
     '/Subscribe': (context) => const Register(),
     '/Products': (context) => const Products(), // Route pour l'écran Products
     '/details': (context) {
@@ -170,24 +160,21 @@ Map<String, WidgetBuilder> appRoutes() {
           ),
         );
       }
-      return const Scaffold(
-        body: Center(child: Text('Article invalide')),
-      );
+      return const Scaffold(body: Center(child: Text('Article invalide')));
     },
     '/Categories': (context) => const AdminRouteGuard(
-          child: Categorieslist(),
-        ), // Route pour l'écran Categories (admin seulement)
+      child: Categorieslist(),
+    ), // Route pour l'écran Categories (admin seulement)
     '/addcategories': (context) => const AdminRouteGuard(
-          child: Addcategorie(),
-        ), // Route pour l'écran Addategorie (admin seulement)
+      child: Addcategorie(),
+    ), // Route pour l'écran Addategorie (admin seulement)
     '/editcategories': (context) {
       final categorie =
           ModalRoute.of(context)!.settings.arguments as CategorieEntity;
-      return AdminRouteGuard(
-        child: Editcategorie(categorie: categorie),
-      );
+      return AdminRouteGuard(child: Editcategorie(categorie: categorie));
     }, // Route pour l'écran Editcategorie (admin seulement)
-    '/Settings': (context) => const Login(), // Route pour l'écran login
+    '/Settings': (context) =>
+        const ModernLoginScreen(), // Route pour l'écran login moderne
     '/register': (context) => const Register(), // Route pour l'écran register
     '/settingsDetails': (context) =>
         const AuthRouteGuard(child: SettingsScreen()),
@@ -198,12 +185,10 @@ Map<String, WidgetBuilder> appRoutes() {
     '/orderConfirmation': (context) =>
         const AuthRouteGuard(child: OrderConfirmationScreen()),
     // Admin routes
-    '/admin/orders': (context) => const AdminRouteGuard(
-          child: AdminOrdersScreen(),
-        ),
-    '/admin/articles': (context) => const AdminRouteGuard(
-          child: AdminArticlesScreen(),
-        ),
+    '/admin/orders': (context) =>
+        const AdminRouteGuard(child: AdminOrdersScreen()),
+    '/admin/articles': (context) =>
+        const AdminRouteGuard(child: AdminArticlesScreen()),
     '/admin/addArticle': (context) {
       final arg = ModalRoute.of(context)?.settings.arguments;
       final initialReference = arg is String ? arg : null;
@@ -214,32 +199,25 @@ Map<String, WidgetBuilder> appRoutes() {
     '/admin/editArticle': (context) {
       final article =
           ModalRoute.of(context)!.settings.arguments as ArticleEntity;
-      return AdminRouteGuard(
-        child: EditArticleScreen(article: article),
-      );
+      return AdminRouteGuard(child: EditArticleScreen(article: article));
     },
-    '/admin/scategories': (context) => const AdminRouteGuard(
-          child: AdminScategoriesScreen(),
-        ),
-    '/admin/addScategorie': (context) => const AdminRouteGuard(
-          child: AddScategorieScreen(),
-        ),
+    '/admin/scategories': (context) =>
+        const AdminRouteGuard(child: AdminScategoriesScreen()),
+    '/admin/addScategorie': (context) =>
+        const AdminRouteGuard(child: AddScategorieScreen()),
     '/admin/editScategorie': (context) {
       final scat = ModalRoute.of(context)!.settings.arguments as Scategorie;
-      return AdminRouteGuard(
-        child: EditScategorieScreen(scategorie: scat),
-      );
+      return AdminRouteGuard(child: EditScategorieScreen(scategorie: scat));
     },
-    '/admin/users': (context) => const AdminRouteGuard(
-          child: AdminUsersScreen(),
-        ),
+    '/admin/users': (context) =>
+        const AdminRouteGuard(child: AdminUsersScreen()),
     '/scanFusion': (context) => const ScanFusionScreen(),
     '/mlkitDiag': (context) => const MlkitDiagnosticScreen(),
     '/chatbot': (context) => const ChatbotScreen(),
     '/faceCapture': (context) {
       final mode =
           ModalRoute.of(context)?.settings.arguments as FaceCaptureMode? ??
-              FaceCaptureMode.verify;
+          FaceCaptureMode.verify;
       return FaceCaptureScreen(mode: mode);
     },
   };

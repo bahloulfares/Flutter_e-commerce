@@ -83,9 +83,11 @@ class VoiceSearchService {
         onResult: _onSpeechResult,
         listenFor: listenFor,
         pauseFor: pauseFor,
-        partialResults: true,
-        cancelOnError: cancelOnError,
-        listenMode: stt.ListenMode.confirmation,
+        listenOptions: stt.SpeechListenOptions(
+          partialResults: true,
+          cancelOnError: cancelOnError,
+          listenMode: stt.ListenMode.confirmation,
+        ),
         localeId: localeId,
       );
 

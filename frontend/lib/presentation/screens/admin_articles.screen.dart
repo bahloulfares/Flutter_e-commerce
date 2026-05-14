@@ -34,9 +34,9 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
   }
 
   Future<void> _scanAndFindArticle() async {
-    final scannedRef = await Navigator.of(context).push<String>(
-      MaterialPageRoute(builder: (_) => const ScanScreen()),
-    );
+    final scannedRef = await Navigator.of(
+      context,
+    ).push<String>(MaterialPageRoute(builder: (_) => const ScanScreen()));
 
     await _handleScannedReference(scannedRef, source: 'caméra');
   }
@@ -92,8 +92,10 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
     }
   }
 
-  Future<void> _handleScannedReference(String? scannedRef,
-      {required String source}) async {
+  Future<void> _handleScannedReference(
+    String? scannedRef, {
+    required String source,
+  }) async {
     if (!mounted || scannedRef == null || scannedRef.trim().isEmpty) return;
 
     final cleanedRef = scannedRef.trim();
@@ -158,23 +160,29 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
         content: Text('Supprimer "$name" ?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annuler')),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Annuler'),
+          ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               final ok = await _controller.deleteArticle(id);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(ok ? 'Article supprimé' : 'Erreur suppression'),
-                  backgroundColor: ok
-                      ? Theme.of(context).colorScheme.tertiary
-                      : Theme.of(context).colorScheme.error,
-                ));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      ok ? 'Article supprimé' : 'Erreur suppression',
+                    ),
+                    backgroundColor: ok
+                        ? Theme.of(context).colorScheme.tertiary
+                        : Theme.of(context).colorScheme.error,
+                  ),
+                );
               }
             },
             style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.error),
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: const Text('Supprimer'),
           ),
         ],
@@ -206,8 +214,8 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () =>
             Navigator.of(context).pushNamed('/admin/addArticle').then((_) {
-          _controller.fetchAllArticles();
-        }),
+              _controller.fetchAllArticles();
+            }),
         icon: const Icon(Icons.add),
         label: const Text('Ajouter'),
         backgroundColor: colorScheme.primary,
@@ -221,8 +229,9 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
               decoration: InputDecoration(
                 hintText: 'Rechercher un article...',
                 prefixIcon: const Icon(Icons.search),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 filled: true,
                 fillColor: colorScheme.surfaceContainerHighest,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -236,16 +245,21 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                 return const Center(child: CircularProgressIndicator());
               }
               final articles = _controller.articlesList
-                  .where((a) =>
-                      _search.isEmpty ||
-                      (a.designation.toLowerCase().contains(_search)) ||
-                      (a.marque?.toLowerCase().contains(_search) ?? false))
+                  .where(
+                    (a) =>
+                        _search.isEmpty ||
+                        (a.designation.toLowerCase().contains(_search)) ||
+                        (a.marque?.toLowerCase().contains(_search) ?? false),
+                  )
                   .toList();
 
               if (articles.isEmpty) {
                 return const Center(
-                    child: Text('Aucun article trouvé',
-                        style: TextStyle(color: Colors.grey)));
+                  child: Text(
+                    'Aucun article trouvé',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                );
               }
 
               return ListView.builder(
@@ -264,34 +278,45 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                                 width: 56,
                                 height: 56,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const Icon(
-                                    Icons.image_not_supported,
-                                    size: 40),
+                                errorBuilder: (_, _, _) => const Icon(
+                                  Icons.image_not_supported,
+                                  size: 40,
+                                ),
                               ),
                             )
                           : const Icon(Icons.inventory_2, size: 40),
-                      title: Text(art.designation,
-                          style: const TextStyle(fontWeight: FontWeight.w600)),
+                      title: Text(
+                        art.designation,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (art.marque != null)
-                            Text('Marque: ${art.marque}',
-                                style: const TextStyle(fontSize: 12)),
+                            Text(
+                              'Marque: ${art.marque}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
                           Wrap(
                             spacing: 10,
                             runSpacing: 2,
                             children: [
-                              Text('${art.prix} DT',
-                                  style: TextStyle(
-                                      color: colorScheme.primary,
-                                      fontWeight: FontWeight.bold)),
-                              Text('Stock: ${art.qtestock ?? 0}',
-                                  style: TextStyle(
-                                      color: (art.qtestock ?? 0) > 0
-                                          ? colorScheme.tertiary
-                                          : colorScheme.error,
-                                      fontSize: 12)),
+                              Text(
+                                '${art.prix} DT',
+                                style: TextStyle(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'Stock: ${art.qtestock ?? 0}',
+                                style: TextStyle(
+                                  color: (art.qtestock ?? 0) > 0
+                                      ? colorScheme.tertiary
+                                      : colorScheme.error,
+                                  fontSize: 12,
+                                ),
+                              ),
                             ],
                           ),
                         ],
