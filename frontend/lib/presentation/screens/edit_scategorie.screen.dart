@@ -71,8 +71,8 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Image uploadée avec succès'),
+          SnackBar(
+            content: Text('image_uploaded_success'.tr),
             backgroundColor: Colors.green,
           ),
         );
@@ -81,7 +81,7 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur upload image: $error'),
+            content: Text('${'image_upload_error'.tr}: $error'),
             backgroundColor: Colors.red,
           ),
         );
@@ -110,7 +110,11 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ok ? 'Modifié avec succès !' : 'Erreur modification'),
+          content: Text(
+            ok
+                ? 'subcategory_updated_success'.tr
+                : 'subcategory_update_error'.tr,
+          ),
           backgroundColor: ok ? Colors.green : Colors.red,
         ),
       );
@@ -122,7 +126,7 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Modifier sous-catégorie'),
+        title: Text('edit_subcategory_title'.tr),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
       ),
@@ -135,20 +139,21 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
               TextFormField(
                 controller: _nomCtrl,
                 decoration: InputDecoration(
-                  labelText: 'Nom *',
+                  labelText: 'name_required'.tr,
                   prefixIcon: const Icon(Icons.label),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Champ requis' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'required_field'.tr
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _imageCtrl,
                 decoration: InputDecoration(
-                  labelText: 'URL Image',
+                  labelText: 'image_url'.tr,
                   prefixIcon: const Icon(Icons.image),
                   suffixIcon: _imageCtrl.text.trim().isNotEmpty
                       ? IconButton(
@@ -177,14 +182,14 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
                         ? null
                         : () => _pickImage(ImageSource.gallery),
                     icon: const Icon(Icons.photo_library_outlined),
-                    label: const Text('Choisir image'),
+                    label: Text('choose_image'.tr),
                   ),
                   OutlinedButton.icon(
                     onPressed: _isUploadingImage
                         ? null
                         : () => _pickImage(ImageSource.camera),
                     icon: const Icon(Icons.camera_alt_outlined),
-                    label: const Text('Caméra'),
+                    label: Text('camera'.tr),
                   ),
                 ],
               ),
@@ -231,7 +236,7 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
                                 ),
                               ),
                             )
-                          : const Center(
+                          : Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -241,7 +246,7 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
                                     color: Colors.grey,
                                   ),
                                   SizedBox(height: 8),
-                                  Text('Aucune image sélectionnée'),
+                                  Text('no_image_selected'.tr),
                                 ],
                               ),
                             ),
@@ -255,7 +260,7 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
                 return DropdownButtonFormField<String>(
                   initialValue: _selectedCategorieId,
                   decoration: InputDecoration(
-                    labelText: 'Catégorie parente',
+                    labelText: 'parent_category'.tr,
                     prefixIcon: const Icon(Icons.category),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -285,7 +290,7 @@ class _EditScategorieScreenState extends State<EditScategorieScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.save),
-                    label: const Text('Enregistrer'),
+                    label: Text('enregistrer'.tr),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepPurple,
                       foregroundColor: Colors.white,

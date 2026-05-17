@@ -42,8 +42,9 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
     return _articleController.articlesList.any((article) {
       final sameArticle = article.id == widget.article.id;
       if (sameArticle) return false;
-      final articleRef =
-          _normalizeReference(article.reference ?? '').toLowerCase();
+      final articleRef = _normalizeReference(
+        article.reference ?? '',
+      ).toLowerCase();
       return articleRef == normalized;
     });
   }
@@ -61,8 +62,12 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
       SnackBar(
         content: Text(
           duplicate
-              ? 'Référence déjà utilisée ($sourceLabel): $normalized'
-              : 'Référence détectée ($sourceLabel): $normalized',
+              ? 'article_reference_duplicate'.tr
+                    .replaceAll('{source}', sourceLabel)
+                    .replaceAll('{ref}', normalized)
+              : 'article_reference_detected'.tr
+                    .replaceAll('{source}', sourceLabel)
+                    .replaceAll('{ref}', normalized),
         ),
         backgroundColor: duplicate
             ? Theme.of(context).colorScheme.secondary
@@ -77,9 +82,9 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
     });
 
     try {
-      final result = await Navigator.of(context).push<String>(
-        MaterialPageRoute(builder: (_) => const ScanScreen()),
-      );
+      final result = await Navigator.of(
+        context,
+      ).push<String>(MaterialPageRoute(builder: (_) => const ScanScreen()));
 
       if (!mounted) return;
 
@@ -104,8 +109,9 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
     });
 
     try {
-      final scannedValue =
-          await _barcodeScannerService.scanFromFilePath(picked.path);
+      final scannedValue = await _barcodeScannerService.scanFromFilePath(
+        picked.path,
+      );
 
       if (!mounted) return;
 
@@ -114,9 +120,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
-              'Aucun code-barres valide détecté (EAN/UPC/Code128/Code39/QR).',
-            ),
+            content: Text('barcode_no_valid_result'.tr),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
@@ -125,7 +129,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur scan ML Kit: $error'),
+          content: Text('${'mlkit_scan_error'.tr}: $error'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -174,8 +178,8 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
     _referenceCtrl.text = reference;
     if (reference.isNotEmpty && _referenceExistsForAnotherArticle(reference)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cette référence existe déjà pour un autre article.'),
+        SnackBar(
+          content: Text('article_reference_exists_other'.tr),
           backgroundColor: Colors.orange,
         ),
       );
@@ -194,16 +198,20 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
 
     final ok = await _articleController.updateArticle(widget.article.id, data);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok
-            ? 'Article modifié avec succès !'
-            : _articleController.errorMessage.value.isNotEmpty
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ok
+                ? 'article_updated_success'.tr
+                : _articleController.errorMessage.value.isNotEmpty
                 ? _articleController.errorMessage.value
-                : 'Erreur'),
-        backgroundColor: ok
-            ? Theme.of(context).colorScheme.tertiary
-            : Theme.of(context).colorScheme.error,
-      ));
+                : 'error_generic'.tr,
+          ),
+          backgroundColor: ok
+              ? Theme.of(context).colorScheme.tertiary
+              : Theme.of(context).colorScheme.error,
+        ),
+      );
       if (ok) Navigator.pop(context);
     }
   }
@@ -214,7 +222,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Modifier l\'article'),
+        title: Text('edit_article_title'.tr),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
       ),
@@ -224,35 +232,53 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
           key: _formKey,
           child: Column(
             children: [
-              _buildField(_designationCtrl, 'Désignation *', Icons.label,
-                  required: true),
+              _buildField(
+                _designationCtrl,
+                'designation_required'.tr,
+                Icons.label,
+                required: true,
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
-                      child: _buildField(_prixCtrl, 'Prix (DT) *', Icons.euro,
-                          keyboard: TextInputType.number, required: true)),
+                    child: _buildField(
+                      _prixCtrl,
+                      'price_required'.tr,
+                      Icons.euro,
+                      keyboard: TextInputType.number,
+                      required: true,
+                    ),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
-                      child: _buildField(
-                          _qtestockCtrl, 'Stock *', Icons.inventory,
-                          keyboard: TextInputType.number, required: true)),
+                    child: _buildField(
+                      _qtestockCtrl,
+                      'stock_required'.tr,
+                      Icons.inventory,
+                      keyboard: TextInputType.number,
+                      required: true,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
-              _buildField(_marqueCtrl, 'Marque', Icons.branding_watermark),
+              _buildField(_marqueCtrl, 'brand'.tr, Icons.branding_watermark),
               const SizedBox(height: 12),
-              _buildField(_referenceCtrl, 'Référence', Icons.qr_code),
+              _buildField(_referenceCtrl, 'reference'.tr, Icons.qr_code),
               const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed:
-                          _isScanningReference ? null : _scanReferenceLive,
+                      onPressed: _isScanningReference
+                          ? null
+                          : _scanReferenceLive,
                       icon: const Icon(Icons.camera_alt),
                       label: Text(
-                        _isScanningReference ? 'Scan...' : 'Scanner caméra',
+                        _isScanningReference
+                            ? 'scan_in_progress'.tr
+                            : 'scan_camera'.tr,
                       ),
                     ),
                   ),
@@ -263,31 +289,36 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
                           ? null
                           : _scanReferenceFromGallery,
                       icon: const Icon(Icons.photo_library),
-                      label: const Text('Scanner galerie'),
+                      label: Text('scan_gallery'.tr),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              _buildField(_imageCtrl, 'URL Image', Icons.image),
+              _buildField(_imageCtrl, 'image_url'.tr, Icons.image),
               const SizedBox(height: 12),
               Obx(() {
                 final scats = _scatController.scategoriesList;
                 return DropdownButtonFormField<int>(
                   initialValue: _selectedScategorieId,
                   decoration: InputDecoration(
-                    labelText: 'Sous-catégorie',
+                    labelText: 'subcategory'.tr,
                     prefixIcon: const Icon(Icons.category),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   items: [
-                    const DropdownMenuItem<int>(
-                        value: null, child: Text('--- Aucune ---')),
-                    ...scats.map((s) => DropdownMenuItem<int>(
-                          value: int.tryParse(s.id ?? ''),
-                          child: Text(s.nomscategorie ?? 'Sans nom'),
-                        )),
+                    DropdownMenuItem<int>(
+                      value: null,
+                      child: Text('none_option'.tr),
+                    ),
+                    ...scats.map(
+                      (s) => DropdownMenuItem<int>(
+                        value: int.tryParse(s.id ?? ''),
+                        child: Text(s.nomscategorie ?? 'without_name'.tr),
+                      ),
+                    ),
                   ],
                   onChanged: (v) => setState(() => _selectedScategorieId = v),
                 );
@@ -295,24 +326,29 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
-                child: Obx(() => ElevatedButton.icon(
-                      onPressed:
-                          _articleController.isLoading.value ? null : _submit,
-                      icon: _articleController.isLoading.value
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.save),
-                      label: const Text('Enregistrer'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
+                child: Obx(
+                  () => ElevatedButton.icon(
+                    onPressed: _articleController.isLoading.value
+                        ? null
+                        : _submit,
+                    icon: _articleController.isLoading.value
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.save),
+                    label: Text('enregistrer'.tr),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    )),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -337,7 +373,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
       validator: required
-          ? (v) => (v == null || v.trim().isEmpty) ? 'Champ requis' : null
+          ? (v) => (v == null || v.trim().isEmpty) ? 'required_field'.tr : null
           : null,
     );
   }

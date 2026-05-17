@@ -14,6 +14,7 @@ dependencies:
   # UI
   cupertino_icons: ^1.0.8
   get: ^4.6.6
+  google_fonts: ^6.2.1
 
   # HTTP & Config
   dio: ^5.7.0

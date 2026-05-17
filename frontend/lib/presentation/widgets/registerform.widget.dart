@@ -13,9 +13,9 @@ class Registerform extends StatefulWidget {
 
 class _Registerform extends State<Registerform> {
   // Initialisation du contrôleur
-  final AuthController _controller = Get.put(AuthController(
-    userUseCase: Get.find(),
-  ));
+  final AuthController _controller = Get.put(
+    AuthController(userUseCase: Get.find()),
+  );
 
   final _formKey = GlobalKey<FormState>();
 
@@ -49,28 +49,32 @@ class _Registerform extends State<Registerform> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const SizedBox(height: 16),
-            const Text(
-              'Créer un compte',
+            Text(
+              'create_account'.tr,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Inscrivez-vous pour accéder à toutes les fonctionnalités',
+            Text(
+              'register_subtitle'.tr,
               style: TextStyle(color: Colors.black54),
             ),
             const SizedBox(height: 20),
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                  icon: Icon(Icons.person), hintText: "Nom", labelText: "Nom"),
+              decoration: InputDecoration(
+                icon: Icon(Icons.person),
+                hintText: "name".tr,
+                labelText: "name".tr,
+              ),
               validator: FormValidators.validateUsername,
             ),
             TextFormField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                  icon: Icon(Icons.email_outlined),
-                  hintText: "Email",
-                  labelText: "Email"),
+              decoration: InputDecoration(
+                icon: Icon(Icons.email_outlined),
+                hintText: "email".tr,
+                labelText: "email".tr,
+              ),
               validator: FormValidators.validateEmail,
             ),
             TextFormField(
@@ -78,17 +82,19 @@ class _Registerform extends State<Registerform> {
               controller: _passwordController,
               decoration: InputDecoration(
                 icon: const Icon(Icons.key_rounded),
-                hintText: "Password",
-                labelText: "Password",
+                hintText: "password".tr,
+                labelText: "password".tr,
                 // this button is used to toggle the password visibility
                 suffixIcon: IconButton(
-                    icon: Icon(
-                        _isObscure ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    }),
+                  icon: Icon(
+                    _isObscure ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isObscure = !_isObscure;
+                    });
+                  },
+                ),
               ),
               validator: FormValidators.validatePassword,
             ),
@@ -97,17 +103,19 @@ class _Registerform extends State<Registerform> {
               controller: _passwordController2,
               decoration: InputDecoration(
                 icon: const Icon(Icons.key_outlined),
-                hintText: "Retape Password",
-                labelText: "Retape Password",
+                hintText: "password_confirm_hint".tr,
+                labelText: "password_confirm_hint".tr,
                 // this button is used to toggle the password visibility
                 suffixIcon: IconButton(
-                    icon: Icon(
-                        _isObscure2 ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure2 = !_isObscure2;
-                      });
-                    }),
+                  icon: Icon(
+                    _isObscure2 ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isObscure2 = !_isObscure2;
+                    });
+                  },
+                ),
               ),
               validator: (value) {
                 return FormValidators.validatePasswordConfirmation(
@@ -124,14 +132,17 @@ class _Registerform extends State<Registerform> {
                     : () async {
                         if (_formKey.currentState!.validate()) {
                           developer.log(
-                              'Register name: ${_nameController.text}',
-                              name: 'Registerform');
+                            'Register name: ${_nameController.text}',
+                            name: 'Registerform',
+                          );
                           developer.log(
-                              'Register email: ${_emailController.text}',
-                              name: 'Registerform');
+                            'Register email: ${_emailController.text}',
+                            name: 'Registerform',
+                          );
                           developer.log(
-                              'Register password length: ${_passwordController.text.length}',
-                              name: 'Registerform');
+                            'Register password length: ${_passwordController.text.length}',
+                            name: 'Registerform',
+                          );
 
                           try {
                             setState(() => _isLoading = true);
@@ -145,22 +156,18 @@ class _Registerform extends State<Registerform> {
 
                             if (success) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Compte créé avec succès')),
+                                SnackBar(content: Text('register_success'.tr)),
                               );
                               Navigator.of(context).pushNamed('/Settings');
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text('Échec de création du compte')),
+                                SnackBar(content: Text('register_failed'.tr)),
                               );
                             }
                           } catch (error) {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Error adding user: $error')),
+                              SnackBar(content: Text('${'erreur'.tr}: $error')),
                             );
                           } finally {
                             if (mounted) {
@@ -175,8 +182,10 @@ class _Registerform extends State<Registerform> {
                   ),
                 ),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                   child: _isLoading
                       ? const SizedBox(
                           height: 18,
@@ -186,7 +195,7 @@ class _Registerform extends State<Registerform> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text("S'inscrire"),
+                      : Text("register_action".tr),
                 ),
               ),
             ),

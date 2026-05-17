@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/data/datasource/models/article.model.dart';
 import 'package:atelier7/presentation/controllers/language.controller.dart';
@@ -123,7 +124,13 @@ class _DetailsState extends State<Details> {
         iconTheme: IconThemeData(color: colorScheme.onPrimary),
         title: Text(
           displayDesignation,
-          style: TextStyle(color: colorScheme.onPrimary),
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onPrimary,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         actions: [
           // Bouton traduction ML Kit
@@ -242,56 +249,63 @@ class _DetailsState extends State<Details> {
                 children: [
                   Text(
                     displayDesignation,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
                       height: 1.3,
+                      color: colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   if (article.reference != null)
                     Text(
                       '${'reference'.tr}: ${article.reference}',
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   if (displayMarque != null)
                     Text(
                       '${'marque'.tr}: $displayMarque',
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                   const SizedBox(height: 20),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
-                      vertical: 12,
+                      vertical: 14,
                     ),
                     decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer.withValues(
-                        alpha: 0.35,
+                      color: colorScheme.primary.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: colorScheme.primary.withValues(alpha: 0.15),
                       ),
-                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
+                        Icon(Icons.sell_rounded,
+                            color: colorScheme.primary, size: 20),
+                        const SizedBox(width: 10),
                         Text(
                           '${'prix'.tr}:',
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
                             fontWeight: FontWeight.w500,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           '${article.prix?.toStringAsFixed(2) ?? '0.00'} TND',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
+                          style: GoogleFonts.poppins(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w700,
                             color: colorScheme.primary,
                           ),
                         ),
@@ -301,26 +315,46 @@ class _DetailsState extends State<Details> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      Icon(
-                        (article.qtestock ?? 0) > 0
-                            ? Icons.check_circle
-                            : Icons.cancel,
-                        color: (article.qtestock ?? 0) > 0
-                            ? Colors.green
-                            : Colors.red,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        (article.qtestock ?? 0) > 0
-                            ? '${'en_stock'.tr}: ${article.qtestock}'
-                            : 'rupture'.tr,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
                           color: (article.qtestock ?? 0) > 0
-                              ? Colors.green[700]
-                              : Colors.red[700],
+                              ? const Color(0xFF10B981).withValues(alpha: 0.1)
+                              : const Color(0xFFEF4444).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: (article.qtestock ?? 0) > 0
+                                ? const Color(0xFF10B981).withValues(alpha: 0.3)
+                                : const Color(0xFFEF4444).withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              (article.qtestock ?? 0) > 0
+                                  ? Icons.check_circle_rounded
+                                  : Icons.cancel_rounded,
+                              color: (article.qtestock ?? 0) > 0
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFFEF4444),
+                              size: 15,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              (article.qtestock ?? 0) > 0
+                                  ? '${'en_stock'.tr}: ${article.qtestock}'
+                                  : 'rupture'.tr,
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: (article.qtestock ?? 0) > 0
+                                    ? const Color(0xFF10B981)
+                                    : const Color(0xFFEF4444),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -330,27 +364,27 @@ class _DetailsState extends State<Details> {
                     child: PersistentShoppingCart().showAndUpdateCartItemWidget(
                       inCartWidget: Container(
                         width: double.infinity,
-                        height: 55,
+                        height: 52,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(13),
+                          color: const Color(0xFFEF4444).withValues(alpha: 0.08),
+                          border: Border.all(
+                            color: const Color(0xFFEF4444).withValues(alpha: 0.4),
+                          ),
                         ),
                         child: Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 24,
-                              ),
+                              const Icon(Icons.check_rounded,
+                                  color: Color(0xFFEF4444), size: 20),
                               const SizedBox(width: 8),
                               Text(
                                 'retirer_panier'.tr,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                style: GoogleFonts.poppins(
+                                  color: const Color(0xFFEF4444),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
                                 ),
                               ),
                             ],
@@ -359,27 +393,24 @@ class _DetailsState extends State<Details> {
                       ),
                       notInCartWidget: Container(
                         width: double.infinity,
-                        height: 55,
+                        height: 52,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(13),
                           color: colorScheme.primary,
                         ),
                         child: Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
-                                Icons.shopping_cart_outlined,
-                                color: Colors.white,
-                                size: 24,
-                              ),
+                              const Icon(Icons.add_shopping_cart_rounded,
+                                  color: Colors.white, size: 20),
                               const SizedBox(width: 8),
                               Text(
                                 'ajouter_panier'.tr,
-                                style: const TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
                                 ),
                               ),
                             ],

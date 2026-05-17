@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/widgets/cart/carttitle.widget.dart';
 import 'package:atelier7/presentation/widgets/cart/emptycart.widget.dart';
@@ -60,16 +61,18 @@ class _CartViewState extends State<CartViewItem> {
                         children: [
                           Text(
                             tr('Total'),
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               color: colorScheme.onSurfaceVariant,
-                              fontSize: 22,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           Text(
-                            "$totalAmount ${tr('TND')}",
-                            style: TextStyle(
-                              color: colorScheme.onSurface,
+                            "${totalAmount.toStringAsFixed(2)} ${tr('TND')}",
+                            style: GoogleFonts.poppins(
+                              color: colorScheme.primary,
                               fontSize: 22,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
@@ -77,24 +80,25 @@ class _CartViewState extends State<CartViewItem> {
                       const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
-                        height: 50,
+                        height: 52,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.pushNamed(context, '/checkout');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: colorScheme.primary,
-                            foregroundColor: colorScheme.onPrimary,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                           child: Text(
                             tr('Passer la commande'),
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onPrimary,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                           ),
                         ),

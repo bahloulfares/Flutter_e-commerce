@@ -47,8 +47,9 @@ class SettingsWidgetState extends State<SettingsWidget> {
       (camera) => camera.lensDirection == CameraLensDirection.front,
     );
     developer.log(
-        '🔍 fp=$fp faceCamera=$faceCameraAvailable available=${_authController.isBiometricAvailable.value}',
-        name: 'SettingsWidget');
+      '🔍 fp=$fp faceCamera=$faceCameraAvailable available=${_authController.isBiometricAvailable.value}',
+      name: 'SettingsWidget',
+    );
     if (mounted) {
       setState(() {
         _faceAvailable = faceCameraAvailable;
@@ -60,17 +61,21 @@ class SettingsWidgetState extends State<SettingsWidget> {
     }
   }
 
-  Future<void> _showEnableBiometricDialog(ColorScheme cs,
-      {String type = 'biometrie'}) async {
+  Future<void> _showEnableBiometricDialog(
+    ColorScheme cs, {
+    String type = 'biometrie',
+  }) async {
     final emailCtrl = TextEditingController();
     final passwordCtrl = TextEditingController();
     bool obscure = true;
 
     final icon = type == 'face' ? Icons.face : Icons.fingerprint;
-    final title = type == 'face' ? 'Activer Face ID' : 'Activer l\'empreinte';
-    final instruction = type == 'face'
-        ? '⚠️ Assurez-vous d\'avoir configuré la reconnaissance faciale dans Paramètres Android → Sécurité → Reconnaissance faciale.'
-        : '⚠️ Assurez-vous d\'avoir enregistré votre empreinte dans Paramètres Android → Sécurité → Empreinte digitale.';
+    final titleKey = type == 'face'
+        ? 'enable_face_id_title'
+        : 'enable_fingerprint_title';
+    final instructionKey = type == 'face'
+        ? 'face_id_setup_warning'
+        : 'fingerprint_setup_warning';
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -80,7 +85,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
             children: [
               Icon(icon, color: Colors.purple),
               const SizedBox(width: 8),
-              Text(title),
+              Text(titleKey.tr),
             ],
           ),
           content: Column(
@@ -93,16 +98,21 @@ class SettingsWidgetState extends State<SettingsWidget> {
                   color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(instruction, style: const TextStyle(fontSize: 12)),
+                child: Text(
+                  instructionKey.tr,
+                  style: const TextStyle(fontSize: 12),
+                ),
               ),
               const SizedBox(height: 12),
-              const Text('Entrez vos identifiants pour confirmer :',
-                  style: TextStyle(fontSize: 13)),
+              Text(
+                'enter_credentials_confirm'.tr,
+                style: const TextStyle(fontSize: 13),
+              ),
               const SizedBox(height: 12),
               TextField(
                 controller: emailCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
+                decoration: InputDecoration(
+                  labelText: 'Email'.tr,
                   prefixIcon: Icon(Icons.person_outline),
                   border: OutlineInputBorder(),
                 ),
@@ -113,12 +123,13 @@ class SettingsWidgetState extends State<SettingsWidget> {
                 controller: passwordCtrl,
                 obscureText: obscure,
                 decoration: InputDecoration(
-                  labelText: 'Mot de passe',
+                  labelText: 'Mot de passe'.tr,
                   prefixIcon: const Icon(Icons.lock_outline),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon:
-                        Icon(obscure ? Icons.visibility : Icons.visibility_off),
+                    icon: Icon(
+                      obscure ? Icons.visibility : Icons.visibility_off,
+                    ),
                     onPressed: () => setDialogState(() => obscure = !obscure),
                   ),
                 ),
@@ -127,11 +138,13 @@ class SettingsWidgetState extends State<SettingsWidget> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Annuler')),
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('cancel'.tr),
+            ),
             FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Activer')),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text('activate'.tr),
+            ),
           ],
         ),
       ),
@@ -140,15 +153,23 @@ class SettingsWidgetState extends State<SettingsWidget> {
     if (confirmed != true || !mounted) return;
 
     final ok = await _authController.enableBiometric(
-        emailCtrl.text.trim(), passwordCtrl.text);
+      emailCtrl.text.trim(),
+      passwordCtrl.text,
+    );
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(ok
-          ? '✅ ${type == 'face' ? 'Face ID' : 'Empreinte'} activé(e) avec succès'
-          : '❌ Identifiants invalides ou biométrie non disponible'),
-      backgroundColor: ok ? Colors.green[700] : Colors.red[700],
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok
+              ? (type == 'face'
+                    ? 'face_id_enabled_success'.tr
+                    : 'fingerprint_enabled_success'.tr)
+              : 'biometric_credentials_or_unavailable'.tr,
+        ),
+        backgroundColor: ok ? Colors.green[700] : Colors.red[700],
+      ),
+    );
   }
 
   /// Dialog spécifique pour activation Face ID ML Kit avec capture caméra
@@ -161,11 +182,11 @@ class SettingsWidgetState extends State<SettingsWidget> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.face, color: Colors.purple),
-              SizedBox(width: 8),
-              Text('Activer Face ID ML Kit'),
+              const Icon(Icons.face, color: Colors.purple),
+              const SizedBox(width: 8),
+              Text('face_id_mlkit_title'.tr),
             ],
           ),
           content: Column(
@@ -178,21 +199,24 @@ class SettingsWidgetState extends State<SettingsWidget> {
                   color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
-                  '✅ Recognition précise basée sur les landmarks du visage\n'
-                  '📸 Vous verrez un écran de capture pour enregistrer votre visage\n'
-                  '🔐 Les données du visage sont stockées localement sécurisé',
-                  style: TextStyle(fontSize: 12),
+                child: Text(
+                  'face_id_mlkit_description'.tr,
+                  style: const TextStyle(fontSize: 12),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Vérifiez vos identifiants :',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              Text(
+                'verify_credentials'.tr,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 12),
               TextField(
                 controller: emailCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
+                decoration: InputDecoration(
+                  labelText: 'email'.tr,
                   prefixIcon: Icon(Icons.person_outline),
                   border: OutlineInputBorder(),
                 ),
@@ -203,12 +227,13 @@ class SettingsWidgetState extends State<SettingsWidget> {
                 controller: passwordCtrl,
                 obscureText: obscure,
                 decoration: InputDecoration(
-                  labelText: 'Mot de passe',
+                  labelText: 'password'.tr,
                   prefixIcon: const Icon(Icons.lock_outline),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon:
-                        Icon(obscure ? Icons.visibility : Icons.visibility_off),
+                    icon: Icon(
+                      obscure ? Icons.visibility : Icons.visibility_off,
+                    ),
                     onPressed: () => setDialogState(() => obscure = !obscure),
                   ),
                 ),
@@ -217,11 +242,13 @@ class SettingsWidgetState extends State<SettingsWidget> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Annuler')),
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('cancel'.tr),
+            ),
             FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Continuer')),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text('continue'.tr),
+            ),
           ],
         ),
       ),
@@ -240,8 +267,8 @@ class SettingsWidgetState extends State<SettingsWidget> {
 
       if (!credOk) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ Identifiants invalides'),
+          SnackBar(
+            content: Text('invalid_credentials'.tr),
             backgroundColor: Colors.red,
           ),
         );
@@ -250,16 +277,15 @@ class SettingsWidgetState extends State<SettingsWidget> {
 
       // Credentials OK → lancer la capture du visage pour l'enregistrement
       if (!mounted) return;
-      final enrolled = await Navigator.of(context).pushNamed(
-        '/faceCapture',
-        arguments: FaceCaptureMode.enroll,
-      );
+      final enrolled = await Navigator.of(
+        context,
+      ).pushNamed('/faceCapture', arguments: FaceCaptureMode.enroll);
 
       if (mounted) {
         if (enrolled == true) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Face ID ML Kit activé avec succès'),
+            SnackBar(
+              content: Text('face_id_mlkit_enabled_success'.tr),
               backgroundColor: Colors.green,
             ),
           );
@@ -268,8 +294,8 @@ class SettingsWidgetState extends State<SettingsWidget> {
           await _authController.disableFaceIdMlKit();
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Enregistrement du visage annulé'),
+              SnackBar(
+                content: Text('face_capture_cancelled'.tr),
                 backgroundColor: Colors.orange,
               ),
             );
@@ -280,7 +306,7 @@ class SettingsWidgetState extends State<SettingsWidget> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur: $e'),
+            content: Text('${'erreur'.tr}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -301,22 +327,31 @@ class SettingsWidgetState extends State<SettingsWidget> {
     setState(() => _modelLoading[langCode] = true);
     try {
       // Snackbar d'info pendant le téléchargement
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(
-          children: [
-            const SizedBox(
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const SizedBox(
                 width: 18,
                 height: 18,
                 child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white)),
-            const SizedBox(width: 12),
-            Text(
-                'Téléchargement ${LanguageController.supportedLanguages[langCode]}... (30 Mo, patientez)'),
-          ],
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'downloading_model'.tr.replaceAll(
+                  '{lang}',
+                  LanguageController.supportedLanguages[langCode] ?? langCode,
+                ),
+              ),
+            ],
+          ),
+          duration: const Duration(seconds: 60),
+          backgroundColor: Colors.blueGrey[700],
         ),
-        duration: const Duration(seconds: 60),
-        backgroundColor: Colors.blueGrey[700],
-      ));
+      );
 
       final ok = await _translationService.downloadModel(langCode);
 
@@ -327,23 +362,33 @@ class SettingsWidgetState extends State<SettingsWidget> {
 
       if (mounted) {
         setState(() => _modelDownloaded[langCode] = ok);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(ok
-              ? '✅ Modèle ${LanguageController.supportedLanguages[langCode]} prêt'
-              : '❌ Échec — vérifiez votre connexion internet'),
-          backgroundColor: ok ? Colors.green[700] : Colors.red[700],
-          duration: const Duration(seconds: 4),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              ok
+                  ? 'model_ready'.tr.replaceAll(
+                      '{lang}',
+                      LanguageController.supportedLanguages[langCode] ??
+                          langCode,
+                    )
+                  : 'model_failed'.tr,
+            ),
+            backgroundColor: ok ? Colors.green[700] : Colors.red[700],
+            duration: const Duration(seconds: 4),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Erreur: $e'),
-          backgroundColor: Colors.red[700],
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${'erreur'.tr}: $e'),
+            backgroundColor: Colors.red[700],
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _modelLoading[langCode] = false);
@@ -362,14 +407,16 @@ class SettingsWidgetState extends State<SettingsWidget> {
       final confirm = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Télécharger le modèle'),
+          title: Text('download_model_prompt'.tr),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Le modèle "${LanguageController.supportedLanguages[langCode]}" '
-                'doit être téléchargé (~30 Mo).',
+                'model_download_required'.tr.replaceAll(
+                  '{lang}',
+                  LanguageController.supportedLanguages[langCode] ?? langCode,
+                ),
               ),
               const SizedBox(height: 8),
               Container(
@@ -379,21 +426,22 @@ class SettingsWidgetState extends State<SettingsWidget> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.orange),
                 ),
-                child: const Text(
-                  '⚠️ Nécessite un VPN si vous êtes en Tunisie.\n'
-                  'Recommandé: ProtonVPN ou Windscribe (gratuits)',
-                  style: TextStyle(fontSize: 12),
+                child: Text(
+                  'vpn_required_note'.tr,
+                  style: const TextStyle(fontSize: 12),
                 ),
               ),
             ],
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Annuler')),
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('annuler'.tr),
+            ),
             FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Télécharger quand même')),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text('download_anyway'.tr),
+            ),
           ],
         ),
       );
@@ -415,18 +463,24 @@ class SettingsWidgetState extends State<SettingsWidget> {
             children: [
               // --- Langue ---
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text('langue'.tr,
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: cs.onSurfaceVariant)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Text(
+                  'langue'.tr,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
               ),
               Obx(() {
                 return Column(
-                  children: LanguageController.supportedLanguages.entries
-                      .map((entry) {
+                  children: LanguageController.supportedLanguages.entries.map((
+                    entry,
+                  ) {
                     final code = entry.key;
                     final label = entry.value;
                     final isSelected =
@@ -446,43 +500,46 @@ class SettingsWidgetState extends State<SettingsWidget> {
                           style: const TextStyle(fontSize: 16),
                         ),
                       ),
-                      title: Text(label,
-                          style: TextStyle(
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal)),
+                      title: Text(
+                        label,
+                        style: TextStyle(
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
                       subtitle: Text(
                         downloaded
-                            ? 'Modèle disponible'
-                            : 'Modèle non téléchargé',
+                            ? 'model_available'.tr
+                            : 'model_not_downloaded'.tr,
                         style: TextStyle(
-                            fontSize: 11,
-                            color: downloaded
-                                ? Colors.green
-                                : cs.onSurfaceVariant),
+                          fontSize: 11,
+                          color: downloaded
+                              ? Colors.green
+                              : cs.onSurfaceVariant,
+                        ),
                       ),
                       trailing: loading
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2))
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : (isSelected && isChanging)
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : isSelected
-                                  ? Icon(Icons.check_circle, color: cs.primary)
-                                  : downloaded
-                                      ? const Icon(Icons.radio_button_unchecked)
-                                      : IconButton(
-                                          icon: const Icon(
-                                              Icons.download_outlined),
-                                          tooltip: 'Télécharger le modèle',
-                                          onPressed: () => _downloadModel(code),
-                                        ),
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : isSelected
+                          ? Icon(Icons.check_circle, color: cs.primary)
+                          : downloaded
+                          ? const Icon(Icons.radio_button_unchecked)
+                          : IconButton(
+                              icon: const Icon(Icons.download_outlined),
+                              tooltip: 'download_model'.tr,
+                              onPressed: () => _downloadModel(code),
+                            ),
                       onTap: isChanging ? null : () => _selectLanguage(code),
                     );
                   }).toList(),
@@ -499,17 +556,22 @@ class SettingsWidgetState extends State<SettingsWidget> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Text('Empreinte digitale',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: cs.onSurfaceVariant)),
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: Text(
+                        'fingerprint_section_title'.tr,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
                     ),
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'L\'empreinte utilise la biométrie native Android, séparée de Face ID ML Kit.',
+                        'fingerprint_section_description'.tr,
                         style: TextStyle(fontSize: 11, color: Colors.black54),
                       ),
                     ),
@@ -527,12 +589,15 @@ class SettingsWidgetState extends State<SettingsWidget> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.info_outline,
-                                  color: Colors.orange[700], size: 18),
+                              Icon(
+                                Icons.info_outline,
+                                color: Colors.orange[700],
+                                size: 18,
+                              ),
                               const SizedBox(width: 8),
-                              const Expanded(
+                              Expanded(
                                 child: Text(
-                                  'Empreinte native non détectée automatiquement.\nSi votre téléphone a un capteur, le mode empreinte peut quand même fonctionner.',
+                                  'fingerprint_native_hint'.tr,
                                   style: TextStyle(fontSize: 12),
                                 ),
                               ),
@@ -541,25 +606,27 @@ class SettingsWidgetState extends State<SettingsWidget> {
                         ),
                       ),
                     ListTile(
-                      leading: Icon(Icons.fingerprint,
-                          color: _fingerprintAvailable
-                              ? (enabled ? cs.primary : cs.onSurfaceVariant)
-                              : Colors.grey,
-                          size: 28),
-                      title: const Text('Connexion par empreinte'),
+                      leading: Icon(
+                        Icons.fingerprint,
+                        color: _fingerprintAvailable
+                            ? (enabled ? cs.primary : cs.onSurfaceVariant)
+                            : Colors.grey,
+                        size: 28,
+                      ),
+                      title: Text('fingerprint_connection_title'.tr),
                       subtitle: Text(
                         !_fingerprintAvailable
-                            ? 'Non disponible — enregistrez une empreinte dans Android'
+                            ? 'fingerprint_not_available_status'.tr
                             : enabled
-                                ? 'Activée ✓'
-                                : 'Désactivée',
+                            ? 'fingerprint_enabled_status'.tr
+                            : 'fingerprint_disabled_status'.tr,
                         style: TextStyle(
                           fontSize: 12,
                           color: !_fingerprintAvailable
                               ? Colors.grey
                               : enabled
-                                  ? Colors.green
-                                  : cs.onSurfaceVariant,
+                              ? Colors.green
+                              : cs.onSurfaceVariant,
                         ),
                       ),
                       trailing: Switch(
@@ -567,16 +634,21 @@ class SettingsWidgetState extends State<SettingsWidget> {
                         onChanged: _fingerprintAvailable
                             ? (value) async {
                                 if (value) {
-                                  await _showEnableBiometricDialog(cs,
-                                      type: 'empreinte');
+                                  await _showEnableBiometricDialog(
+                                    cs,
+                                    type: 'empreinte',
+                                  );
                                 } else {
                                   await _authController.disableBiometric();
                                   if (mounted) {
                                     // ignore: use_build_context_synchronously
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content:
-                                                Text('Empreinte désactivée')));
+                                      SnackBar(
+                                        content: Text(
+                                          'fingerprint_disabled_snackbar'.tr,
+                                        ),
+                                      ),
+                                    );
                                   }
                                 }
                               }
@@ -596,12 +668,17 @@ class SettingsWidgetState extends State<SettingsWidget> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Text('Face ID ML Kit',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: cs.onSurfaceVariant)),
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: Text(
+                        'face_section_title'.tr,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
                     ),
                     // Explication
                     if (!_faceAvailable)
@@ -616,12 +693,15 @@ class SettingsWidgetState extends State<SettingsWidget> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.info_outline,
-                                  color: Colors.blue[700], size: 18),
+                              Icon(
+                                Icons.info_outline,
+                                color: Colors.blue[700],
+                                size: 18,
+                              ),
                               const SizedBox(width: 8),
-                              const Expanded(
+                              Expanded(
                                 child: Text(
-                                  'Face ID ML Kit nécessite la caméra frontale.\nSi elle est indisponible, vérifiez les permissions caméra.',
+                                  'face_section_description'.tr,
                                   style: TextStyle(fontSize: 12),
                                 ),
                               ),
@@ -630,25 +710,27 @@ class SettingsWidgetState extends State<SettingsWidget> {
                         ),
                       ),
                     ListTile(
-                      leading: Icon(Icons.face,
-                          color: _faceAvailable
-                              ? (enabled ? cs.primary : cs.onSurfaceVariant)
-                              : Colors.grey,
-                          size: 28),
-                      title: const Text('Face ID ML Kit'),
+                      leading: Icon(
+                        Icons.face,
+                        color: _faceAvailable
+                            ? (enabled ? cs.primary : cs.onSurfaceVariant)
+                            : Colors.grey,
+                        size: 28,
+                      ),
+                      title: Text('face_connection_title'.tr),
                       subtitle: Text(
                         !_faceAvailable
-                            ? 'Non disponible — caméra frontale requise'
+                            ? 'face_not_available_status'.tr
                             : enabled
-                                ? 'Activé ✓'
-                                : 'Désactivé',
+                            ? 'face_enabled_status'.tr
+                            : 'face_disabled_status'.tr,
                         style: TextStyle(
                           fontSize: 12,
                           color: !_faceAvailable
                               ? Colors.grey
                               : enabled
-                                  ? Colors.green
-                                  : cs.onSurfaceVariant,
+                              ? Colors.green
+                              : cs.onSurfaceVariant,
                         ),
                       ),
                       trailing: Switch(
@@ -662,9 +744,12 @@ class SettingsWidgetState extends State<SettingsWidget> {
                                   if (mounted) {
                                     // ignore: use_build_context_synchronously
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Face ID ML Kit désactivé')));
+                                      SnackBar(
+                                        content: Text(
+                                          'face_disabled_snackbar'.tr,
+                                        ),
+                                      ),
+                                    );
                                   }
                                 }
                               }
@@ -719,19 +804,14 @@ class SettingsWidgetState extends State<SettingsWidget> {
               ListTile(
                 leading: const Icon(Icons.bug_report, color: Colors.orange),
                 title: Text('diagnostic_mlkit'.tr),
-                subtitle: const Text('Tester le téléchargement des modèles'),
+                subtitle: Text('mlkit_download_test_subtitle'.tr),
                 onTap: () => Navigator.pushNamed(context, '/mlkitDiag'),
               ),
             ],
           ),
         ),
         if (locationEnabled)
-          const Expanded(
-            child: SizedBox(
-              height: 300,
-              child: MapScreen(),
-            ),
-          ),
+          const Expanded(child: SizedBox(height: 300, child: MapScreen())),
       ],
     );
   }

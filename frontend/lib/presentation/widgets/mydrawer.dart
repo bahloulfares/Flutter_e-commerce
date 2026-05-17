@@ -110,7 +110,12 @@ class MyDrawer extends StatelessWidget {
                       textColor: Colors.blueGrey,
                       title: Row(
                         children: [
-                          Text(tr(choice.title)),
+                          Flexible(
+                            child: Text(
+                              tr(choice.title),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                           if (choice.adminOnly)
                             Container(
                               margin: const EdgeInsets.only(left: 8),

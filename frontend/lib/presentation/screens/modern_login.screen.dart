@@ -432,25 +432,30 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Row(
-                                      children: [
-                                        Checkbox(
-                                          value: _rememberMe,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _rememberMe = value ?? false;
-                                            });
-                                          },
-                                          activeColor: Color(0xFF667EEA),
-                                        ),
-                                        Text(
-                                          'Se souvenir de moi',
-                                          style: TextStyle(
-                                            color: Colors.grey.shade700,
-                                            fontSize: 13,
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Checkbox(
+                                            value: _rememberMe,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _rememberMe = value ?? false;
+                                              });
+                                            },
+                                            activeColor: Color(0xFF667EEA),
                                           ),
-                                        ),
-                                      ],
+                                          Expanded(
+                                            child: Text(
+                                              'Se souvenir de moi',
+                                              style: TextStyle(
+                                                color: Colors.grey.shade700,
+                                                fontSize: 13,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                     GestureDetector(
                                       onTap: () {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
 
   bool _isHandlingResult = false;
   bool _isTorchOn = false;
-  String _statusMessage = 'Placez le code-barres dans le cadre';
+  String _statusMessage = 'place_barcode_in_frame'.tr;
 
   @override
   void initState() {
@@ -59,7 +60,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
       if (raw != null && raw.isNotEmpty) {
         _isHandlingResult = true;
         setState(() {
-          _statusMessage = 'Code détecté: $raw';
+          _statusMessage = 'code_detected'.tr.replaceAll('{code}', raw);
         });
         Navigator.of(context).pop(raw);
         return;
@@ -68,7 +69,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
 
     if (!_isHandlingResult && mounted) {
       setState(() {
-        _statusMessage = 'Aucun code lisible. Rapprochez-vous et réessayez.';
+        _statusMessage = 'no_readable_code_retry'.tr;
       });
     }
   }
@@ -79,7 +80,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan code-barres (ML Kit)'),
+        title: Text('barcode_scan_title'.tr),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
         actions: [
@@ -91,12 +92,12 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
               });
             },
             icon: Icon(_isTorchOn ? Icons.flash_on : Icons.flash_off),
-            tooltip: 'Flash',
+            tooltip: 'flash'.tr,
           ),
           IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(Icons.close),
-            tooltip: 'Fermer',
+            tooltip: 'close'.tr,
           ),
         ],
       ),
@@ -119,7 +120,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Impossible d\'accéder à la caméra.',
+                        'camera_access_unavailable'.tr,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -130,7 +131,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                       const SizedBox(height: 8),
                       Text(
                         error.errorDetails?.message ??
-                            'Vérifiez les permissions caméra puis réessayez.',
+                            'camera_permissions_retry'.tr,
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.center,
                       ),
@@ -138,7 +139,7 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                       ElevatedButton.icon(
                         onPressed: () => _controller.start(),
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Réessayer'),
+                        label: Text('reessayer'.tr),
                       ),
                     ],
                   ),

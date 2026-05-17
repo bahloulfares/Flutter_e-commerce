@@ -1,13 +1,14 @@
-import 'dart:io';
 import 'dart:developer' as developer;
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'dart:io';
+
 import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/controllers/scategorie.controller.dart';
 import 'package:atelier7/presentation/screens/scan_screen.dart';
 import 'package:atelier7/utils/barcode_scanner_service.dart';
 import 'package:atelier7/utils/ocr_service.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 
@@ -27,8 +28,11 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   final ImagePicker _imagePicker = ImagePicker();
   final BarcodeScannerService _barcodeScannerService = BarcodeScannerService();
   final OcrService _ocrService = OcrService();
-  final CloudinaryPublic _cloudinary =
-      CloudinaryPublic('dymt4nyul', 'koyuqu3d', cache: false);
+  final CloudinaryPublic _cloudinary = CloudinaryPublic(
+    'dymt4nyul',
+    'koyuqu3d',
+    cache: false,
+  );
 
   final _designationCtrl = TextEditingController();
   final _prixCtrl = TextEditingController();
@@ -36,17 +40,16 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   final _marqueCtrl = TextEditingController();
   final _referenceCtrl = TextEditingController();
   final _imageCtrl = TextEditingController();
+
   int? _selectedScategorieId;
   String? _selectedImagePath;
   bool _isUploadingImage = false;
   bool _isScanningReference = false;
 
-//Supprime les espaces avant/après et dans la référence.
   String _normalizeReference(String value) {
     return value.trim().replaceAll(' ', '');
   }
 
-//Vérifie si une référence existe déjà
   bool _referenceExists(String value) {
     final normalized = _normalizeReference(value).toLowerCase();
     if (normalized.isEmpty) return false;
@@ -57,24 +60,24 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
     );
   }
 
-/*Appelée après un scan réussi (caméra ou galerie) :
-
-Normalise la valeur scannée
-Met à jour le champ _referenceCtrl
-Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si nouvelle)*/
   void _applyScannedReference(String scannedValue, String sourceLabel) {
     final normalized = _normalizeReference(scannedValue);
     if (normalized.isEmpty) return;
     setState(() {
       _referenceCtrl.text = normalized;
     });
+
     final duplicate = _referenceExists(normalized);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           duplicate
-              ? 'Référence déjà existante ($sourceLabel): $normalized'
-              : 'Référence détectée ($sourceLabel): $normalized',
+              ? 'article_reference_duplicate'.tr
+                    .replaceAll('{source}', sourceLabel)
+                    .replaceAll('{ref}', normalized)
+              : 'article_reference_detected'.tr
+                    .replaceAll('{source}', sourceLabel)
+                    .replaceAll('{ref}', normalized),
         ),
         backgroundColor: duplicate
             ? Theme.of(context).colorScheme.secondary
@@ -83,7 +86,6 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
     );
   }
 
-//Si l'écran est ouvert avec une référence pré-remplie (depuis ScanFusionScreen), l'injecte dans le champ
   @override
   void initState() {
     super.initState();
@@ -130,7 +132,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Texte extrait par OCR.'),
+            content: Text('ocr_text_extracted'.tr),
             backgroundColor: Theme.of(context).colorScheme.tertiary,
           ),
         );
@@ -139,7 +141,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur OCR: $e'),
+            content: Text('${'ocr_error'.tr}: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -155,7 +157,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
     if (reference.isNotEmpty && _referenceExists(reference)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Cette référence existe déjà.'),
+          content: Text('article_reference_exists'.tr),
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),
       );
@@ -173,19 +175,23 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
     };
 
     final ok = await _articleController.createArticle(data);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok
-            ? 'Article créé avec succès !'
-            : _articleController.errorMessage.value.isNotEmpty
-                ? _articleController.errorMessage.value
-                : 'Erreur création'),
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok
+              ? 'article_created_success'.tr
+              : _articleController.errorMessage.value.isNotEmpty
+              ? _articleController.errorMessage.value
+              : 'article_create_error'.tr,
+        ),
         backgroundColor: ok
             ? Theme.of(context).colorScheme.tertiary
             : Theme.of(context).colorScheme.error,
-      ));
-      if (ok) Navigator.pop(context);
-    }
+      ),
+    );
+    if (ok) Navigator.pop(context);
   }
 
   Future<void> _pickExistingImage() async {
@@ -197,7 +203,6 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
       _isUploadingImage = true;
     });
 
-    // OCR automatique après sélection image
     await _runOcrOnImage(picked.path);
 
     try {
@@ -213,20 +218,24 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Image uploadée avec succès'),
+            content: Text('image_uploaded_success'.tr),
             backgroundColor: Theme.of(context).colorScheme.tertiary,
           ),
         );
       }
-      developer.log('Cloudinary URL: ${response.secureUrl}',
-          name: 'AddArticleScreen');
+      developer.log(
+        'Cloudinary URL: ${response.secureUrl}',
+        name: 'AddArticleScreen',
+      );
     } on CloudinaryException catch (error) {
-      developer.log('Cloudinary error: ${error.message}',
-          name: 'AddArticleScreen');
+      developer.log(
+        'Cloudinary error: ${error.message}',
+        name: 'AddArticleScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur upload image: ${error.message}'),
+            content: Text('${'image_upload_error'.tr}: ${error.message}'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -235,7 +244,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur upload image: $error'),
+            content: Text('${'image_upload_error'.tr}: $error'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -255,15 +264,15 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
 
     setState(() => _isScanningReference = true);
     try {
-      final scannedValue =
-          await _barcodeScannerService.scanFromFilePath(picked.path);
+      final scannedValue = await _barcodeScannerService.scanFromFilePath(
+        picked.path,
+      );
       if (scannedValue != null && mounted) {
         _applyScannedReference(scannedValue, 'galerie');
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
-                'Aucun code-barres valide détecté (formats autorisés: EAN/UPC/Code128/Code39/QR).'),
+            content: Text('barcode_no_valid_result'.tr),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
@@ -272,7 +281,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur scan ML Kit: $error'),
+            content: Text('${'mlkit_scan_error'.tr}: $error'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -285,9 +294,9 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
   Future<void> _scanReferenceLive() async {
     setState(() => _isScanningReference = true);
     try {
-      final result = await Navigator.of(context).push<String>(
-        MaterialPageRoute(builder: (_) => const ScanScreen()),
-      );
+      final result = await Navigator.of(
+        context,
+      ).push<String>(MaterialPageRoute(builder: (_) => const ScanScreen()));
       if (!mounted) return;
       if (result != null && result.trim().isNotEmpty) {
         _applyScannedReference(result, 'caméra');
@@ -303,7 +312,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter un article'),
+        title: Text('add_article_title'.tr),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
       ),
@@ -313,35 +322,54 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
           key: _formKey,
           child: Column(
             children: [
-              _buildField(_designationCtrl, 'Désignation *', Icons.label,
-                  required: true),
+              _buildField(
+                _designationCtrl,
+                'designation_required'.tr,
+                Icons.label,
+                required: true,
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
-                      child: _buildField(_prixCtrl, 'Prix (DT) *', Icons.euro,
-                          keyboard: TextInputType.number, required: true)),
+                    child: _buildField(
+                      _prixCtrl,
+                      'price_required'.tr,
+                      Icons.euro,
+                      keyboard: TextInputType.number,
+                      required: true,
+                    ),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
-                      child: _buildField(
-                          _qtestockCtrl, 'Stock *', Icons.inventory,
-                          keyboard: TextInputType.number, required: true)),
+                    child: _buildField(
+                      _qtestockCtrl,
+                      'stock_required'.tr,
+                      Icons.inventory,
+                      keyboard: TextInputType.number,
+                      required: true,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
-              _buildField(_marqueCtrl, 'Marque', Icons.branding_watermark),
+              _buildField(_marqueCtrl, 'brand'.tr, Icons.branding_watermark),
               const SizedBox(height: 12),
-              _buildField(_referenceCtrl, 'Référence', Icons.qr_code),
+              _buildField(_referenceCtrl, 'reference'.tr, Icons.qr_code),
               const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed:
-                          _isScanningReference ? null : _scanReferenceLive,
+                      onPressed: _isScanningReference
+                          ? null
+                          : _scanReferenceLive,
                       icon: const Icon(Icons.camera_alt),
                       label: Text(
-                          _isScanningReference ? 'Scan...' : 'Scanner caméra'),
+                        _isScanningReference
+                            ? 'scan_in_progress'.tr
+                            : 'scan_camera'.tr,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -351,30 +379,32 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
                           ? null
                           : _scanReferenceFromGallery,
                       icon: const Icon(Icons.photo_library),
-                      label: const Text('Scanner galerie'),
+                      label: Text('scan_gallery'.tr),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 6),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Formats ML Kit autorisés: EAN-13, EAN-8, UPC-A, UPC-E, Code128, Code39, QR',
-                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                  'barcode_formats_hint'.tr,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
                 ),
               ),
               const SizedBox(height: 12),
-              _buildField(_imageCtrl, 'URL Image', Icons.image),
+              _buildField(_imageCtrl, 'image_url'.tr, Icons.image),
               const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _isUploadingImage ? null : _pickExistingImage,
                   icon: const Icon(Icons.attach_file),
-                  label: Text(_isUploadingImage
-                      ? 'Upload en cours...'
-                      : 'Choisir un fichier existant (+ OCR auto)'),
+                  label: Text(
+                    _isUploadingImage
+                        ? 'upload_in_progress'.tr
+                        : 'choose_existing_file_ocr'.tr,
+                  ),
                 ),
               ),
               if (_selectedImagePath != null) ...[
@@ -382,7 +412,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Fichier: ${p.basename(_selectedImagePath!)}',
+                    '${'file'.tr}: ${p.basename(_selectedImagePath!)}',
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ),
@@ -392,7 +422,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'URL Cloudinary prête',
+                    'cloudinary_url_ready'.tr,
                     style: TextStyle(
                       fontSize: 12,
                       color: colorScheme.tertiary,
@@ -407,18 +437,23 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
                 return DropdownButtonFormField<int>(
                   initialValue: _selectedScategorieId,
                   decoration: InputDecoration(
-                    labelText: 'Sous-catégorie',
+                    labelText: 'subcategory'.tr,
                     prefixIcon: const Icon(Icons.category),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   items: [
-                    const DropdownMenuItem<int>(
-                        value: null, child: Text('--- Aucune ---')),
-                    ...scats.map((s) => DropdownMenuItem<int>(
-                          value: int.tryParse(s.id ?? ''),
-                          child: Text(s.nomscategorie ?? 'Sans nom'),
-                        )),
+                    DropdownMenuItem<int>(
+                      value: null,
+                      child: Text('none_option'.tr),
+                    ),
+                    ...scats.map(
+                      (s) => DropdownMenuItem<int>(
+                        value: int.tryParse(s.id ?? ''),
+                        child: Text(s.nomscategorie ?? 'without_name'.tr),
+                      ),
+                    ),
                   ],
                   onChanged: (v) => setState(() => _selectedScategorieId = v),
                 );
@@ -426,24 +461,29 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
-                child: Obx(() => ElevatedButton.icon(
-                      onPressed:
-                          _articleController.isLoading.value ? null : _submit,
-                      icon: _articleController.isLoading.value
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.save),
-                      label: const Text('Enregistrer'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
+                child: Obx(
+                  () => ElevatedButton.icon(
+                    onPressed: _articleController.isLoading.value
+                        ? null
+                        : _submit,
+                    icon: _articleController.isLoading.value
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.save),
+                    label: Text('enregistrer'.tr),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    )),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -468,7 +508,7 @@ Vérifie si doublon → affiche un SnackBar coloré (orange si doublon, vert si 
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
       validator: required
-          ? (v) => (v == null || v.trim().isEmpty) ? 'Champ requis' : null
+          ? (v) => (v == null || v.trim().isEmpty) ? 'required_field'.tr : null
           : null,
     );
   }

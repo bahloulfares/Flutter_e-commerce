@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/controllers/order.controller.dart';
 
@@ -16,9 +17,10 @@ class OrderConfirmationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final orderController = Get.find<OrderController>();
     final order = orderController.currentOrder.value;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -55,11 +57,12 @@ class OrderConfirmationScreen extends StatelessWidget {
               const SizedBox(height: 30),
 
               // Success Message
-              const Text(
+              Text(
                 'Commande confirmée !',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.poppins(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                  color: colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -68,9 +71,9 @@ class OrderConfirmationScreen extends StatelessWidget {
 
               Text(
                 'Merci pour votre commande',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
+                style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  color: colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -83,34 +86,38 @@ class OrderConfirmationScreen extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
+                    color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey[200]!),
+                    border: Border.all(color: colorScheme.outline.withValues(alpha: 0.5)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Détails de la commande',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                        style: GoogleFonts.poppins(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 16),
                       _buildDetailRow(
+                        context,
                         'Numéro de commande',
                         '#${order['id']?.toString() ?? 'N/A'}',
                         Icons.receipt_long,
                       ),
                       const Divider(height: 24),
                       _buildDetailRow(
+                        context,
                         'Montant total',
                         '${_safeToDouble(order['total']).toStringAsFixed(2)} TND',
                         Icons.payments,
                       ),
                       const Divider(height: 24),
                       _buildDetailRow(
+                        context,
                         'Statut',
                         order['status'] ?? 'Not processed',
                         Icons.info_outline,
@@ -119,6 +126,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                       ),
                       const Divider(height: 24),
                       _buildDetailRow(
+                        context,
                         'Date',
                         _formatDate(order['createdAt']),
                         Icons.calendar_today,
@@ -133,19 +141,19 @@ class OrderConfirmationScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: colorScheme.secondary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.blue[700]),
+                    Icon(Icons.info_outline, color: colorScheme.secondary),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Nous traiterons votre commande dans les plus brefs délais.',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 14,
-                          color: Colors.blue[900],
+                          color: colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -158,21 +166,23 @@ class OrderConfirmationScreen extends StatelessWidget {
               // Action Buttons
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 52,
                 child: ElevatedButton(
                   onPressed: () => Get.offAllNamed('/Products'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6C63FF),
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Continuer mes achats',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -182,22 +192,22 @@ class OrderConfirmationScreen extends StatelessWidget {
 
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 52,
                 child: OutlinedButton(
                   onPressed: () =>
                       Navigator.of(context).popUntil((route) => route.isFirst),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF6C63FF)),
+                    side: BorderSide(color: colorScheme.primary),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Retour à l\'accueil',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF6C63FF),
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.primary,
                     ),
                   ),
                 ),
@@ -209,7 +219,7 @@ class OrderConfirmationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value, IconData icon,
+  Widget _buildDetailRow(BuildContext context, String label, String value, IconData icon,
       {Color? statusColor}) {
     return Row(
       children: [
@@ -221,18 +231,20 @@ class OrderConfirmationScreen extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 12,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Theme.of(context).colorScheme.onSurfaceVariant
+                      : Colors.grey[600],
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: statusColor ?? Colors.black,
+                style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: statusColor ?? Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/domain/entities/article.entity.dart';
 import 'package:atelier7/presentation/controllers/article.controller.dart';
@@ -52,7 +53,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur scan galerie: $e'),
+          content: Text('${'gallery_scan_error'.tr}: $e'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -71,12 +72,12 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
-              title: const Text('Scanner avec la caméra'),
+              title: Text('scan_with_camera'.tr),
               onTap: () => Navigator.pop(ctx, 'camera'),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Scanner depuis la galerie'),
+              title: Text('scan_from_gallery'.tr),
               onTap: () => Navigator.pop(ctx, 'gallery'),
             ),
           ],
@@ -101,7 +102,11 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
     final cleanedRef = scannedRef.trim();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Référence détectée ($source): $cleanedRef'),
+        content: Text(
+          'article_reference_detected'.tr
+              .replaceAll('{source}', source)
+              .replaceAll('{ref}', cleanedRef),
+        ),
         backgroundColor: Theme.of(context).colorScheme.tertiary,
       ),
     );
@@ -120,18 +125,18 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
     final create = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Article introuvable'),
+        title: Text('article_not_found'.tr),
         content: Text(
-          'Aucun article avec la référence "$cleanedRef".\nCréer un nouvel article prérempli ?',
+          'no_article_with_reference'.tr.replaceAll('{ref}', cleanedRef),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler'),
+            child: Text('annuler'.tr),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Créer'),
+            child: Text('create'.tr),
           ),
         ],
       ),
@@ -156,12 +161,12 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer l\'article ?'),
-        content: Text('Supprimer "$name" ?'),
+        title: Text('delete_article_question'.tr),
+        content: Text('delete_named_item'.tr.replaceAll('{name}', name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annuler'),
+            child: Text('annuler'.tr),
           ),
           TextButton(
             onPressed: () async {
@@ -171,7 +176,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      ok ? 'Article supprimé' : 'Erreur suppression',
+                      ok ? 'article_deleted_success'.tr : 'delete_error'.tr,
                     ),
                     backgroundColor: ok
                         ? Theme.of(context).colorScheme.tertiary
@@ -183,7 +188,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Supprimer'),
+            child: Text('delete'.tr),
           ),
         ],
       ),
@@ -196,13 +201,22 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestion des articles'),
+        title: Text(
+          'manage_articles'.tr,
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onPrimary,
+          ),
+        ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
+        elevation: 0,
+        centerTitle: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.qr_code_scanner),
-            tooltip: 'Scanner une référence',
+            tooltip: 'scan_reference'.tr,
             onPressed: _showScanOptionsSheet,
           ),
           IconButton(
@@ -217,23 +231,30 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
               _controller.fetchAllArticles();
             }),
         icon: const Icon(Icons.add),
-        label: const Text('Ajouter'),
+        label: Text(
+          'ajouter'.tr,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
+        elevation: 3,
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(12),
             child: TextField(
+              style: GoogleFonts.poppins(fontSize: 14),
               decoration: InputDecoration(
-                hintText: 'Rechercher un article...',
+                hintText: 'search_article'.tr,
+                hintStyle: GoogleFonts.poppins(color: colorScheme.onSurfaceVariant),
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: colorScheme.surfaceContainerHighest,
+                fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
               ),
               onChanged: (v) => setState(() => _search = v.toLowerCase()),
@@ -254,10 +275,13 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                   .toList();
 
               if (articles.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
-                    'Aucun article trouvé',
-                    style: TextStyle(color: Colors.grey),
+                    'no_article_found'.tr,
+                    style: GoogleFonts.poppins(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 15,
+                    ),
                   ),
                 );
               }
@@ -267,73 +291,127 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen> {
                 itemCount: articles.length,
                 itemBuilder: (ctx, i) {
                   final art = articles[i];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colorScheme.shadow.withValues(alpha: 0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? colorScheme.outline
+                            : const Color(0xFFE2E8F0),
+                      ),
+                    ),
                     child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       leading: art.imageart != null && art.imageart!.isNotEmpty
                           ? ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(8),
                               child: Image.network(
                                 art.imageart!,
                                 width: 56,
                                 height: 56,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) => const Icon(
-                                  Icons.image_not_supported,
-                                  size: 40,
+                                errorBuilder: (_, _, _) => Container(
+                                  width: 56,
+                                  height: 56,
+                                  color: colorScheme.surfaceContainer,
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    size: 24,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                               ),
                             )
-                          : const Icon(Icons.inventory_2, size: 40),
+                          : Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(Icons.inventory_2, color: colorScheme.onSurfaceVariant),
+                            ),
                       title: Text(
                         art.designation,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (art.marque != null)
-                            Text(
-                              'Marque: ${art.marque}',
-                              style: const TextStyle(fontSize: 12),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (art.marque != null)
+                              Text(
+                                '${'marque'.tr}: ${art.marque}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            const SizedBox(height: 6),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 4,
+                              children: [
+                                Text(
+                                  '${art.prix} DT',
+                                  style: GoogleFonts.poppins(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: (art.qtestock ?? 0) > 0
+                                        ? const Color(0xFF10B981).withValues(alpha: 0.1)
+                                        : colorScheme.error.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    '${'stock'.tr}: ${art.qtestock ?? 0}',
+                                    style: GoogleFonts.poppins(
+                                      color: (art.qtestock ?? 0) > 0
+                                          ? const Color(0xFF10B981)
+                                          : colorScheme.error,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 2,
-                            children: [
-                              Text(
-                                '${art.prix} DT',
-                                style: TextStyle(
-                                  color: colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                'Stock: ${art.qtestock ?? 0}',
-                                style: TextStyle(
-                                  color: (art.qtestock ?? 0) > 0
-                                      ? colorScheme.tertiary
-                                      : colorScheme.error,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             visualDensity: VisualDensity.compact,
-                            icon: const Icon(Icons.edit, color: Colors.blue),
+                            icon: const Icon(Icons.edit_outlined, color: Colors.blue),
                             onPressed: () => Navigator.of(context)
                                 .pushNamed('/admin/editArticle', arguments: art)
                                 .then((_) => _controller.fetchAllArticles()),
                           ),
                           IconButton(
                             visualDensity: VisualDensity.compact,
-                            icon: Icon(Icons.delete, color: colorScheme.error),
+                            icon: Icon(Icons.delete_outline, color: colorScheme.error),
                             onPressed: () =>
                                 _confirmDelete(art.id, art.designation),
                           ),

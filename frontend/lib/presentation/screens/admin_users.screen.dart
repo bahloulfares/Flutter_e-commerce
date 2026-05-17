@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
 
@@ -25,17 +26,23 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Modifier le rôle de ${user['name']}'),
+        title: Text('edit_role_of'.tr.replaceAll('{name}', '${user['name']}')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.admin_panel_settings,
-                  color: Color.fromARGB(255, 175, 30, 124)),
-              title: const Text('Admin'),
+              leading: const Icon(
+                Icons.admin_panel_settings,
+                color: Color.fromARGB(255, 175, 30, 124),
+              ),
+              title: Text('admin_role'.tr),
               selected: currentRole == 'admin',
-              selectedTileColor: const Color.fromARGB(255, 175, 30, 124)
-                  .withValues(alpha: 0.1),
+              selectedTileColor: const Color.fromARGB(
+                255,
+                175,
+                30,
+                124,
+              ).withValues(alpha: 0.1),
               onTap: () async {
                 Navigator.pop(ctx);
                 if (currentRole != 'admin') {
@@ -44,12 +51,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.person,
-                  color: Color.fromARGB(255, 30, 175, 124)),
-              title: const Text('Utilisateur'),
+              leading: const Icon(
+                Icons.person,
+                color: Color.fromARGB(255, 30, 175, 124),
+              ),
+              title: Text('user_role'.tr),
               selected: currentRole == 'user',
-              selectedTileColor: const Color.fromARGB(255, 30, 175, 124)
-                  .withValues(alpha: 0.1),
+              selectedTileColor: const Color.fromARGB(
+                255,
+                30,
+                175,
+                124,
+              ).withValues(alpha: 0.1),
               onTap: () async {
                 Navigator.pop(ctx);
                 if (currentRole != 'user') {
@@ -61,8 +74,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annuler')),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('annuler'.tr),
+          ),
         ],
       ),
     );
@@ -71,41 +85,57 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Future<void> _changeRole(Map<String, dynamic> user, String role) async {
     final ok = await _authController.updateUserRole(user['id'] as int, role);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok
-            ? '${user['name']} : rôle changé à "$role"'
-            : 'Erreur changement de rôle'),
-        backgroundColor: ok ? Colors.green : Colors.red,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ok
+                ? 'role_changed_to'.tr
+                      .replaceAll('{name}', '${user['name']}')
+                      .replaceAll(
+                        '{role}',
+                        role == 'admin' ? 'admin_role'.tr : 'user_role'.tr,
+                      )
+                : 'role_change_error'.tr,
+          ),
+          backgroundColor: ok ? Colors.green : Colors.red,
+        ),
+      );
     }
   }
 
   void _confirmDelete(Map<String, dynamic> user) {
     // Prevent deleting yourself
     if (user['email'] == _authController.userEmail.value) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Vous ne pouvez pas supprimer votre propre compte.'),
-        backgroundColor: Colors.orange,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('cannot_delete_self'.tr),
+          backgroundColor: Colors.orange,
+        ),
+      );
       return;
     }
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer l\'utilisateur ?'),
-        content: Text('Supprimer "${user['name']}" (${user['email']}) ?'),
+        title: Text('delete_user_question'.tr),
+        content: Text(
+          'delete_user_content'.tr
+              .replaceAll('{name}', '${user['name']}')
+              .replaceAll('{email}', '${user['email']}'),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annuler')),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('annuler'.tr),
+          ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               await _authController.deleteUser(user['id'] as int);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Supprimer'),
+            child: Text('delete'.tr),
           ),
         ],
       ),
@@ -114,11 +144,23 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Gestion des utilisateurs'),
-        backgroundColor: const Color.fromARGB(255, 175, 30, 124),
-        foregroundColor: Colors.white,
+        title: Text(
+          'manage_users'.tr,
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onPrimary,
+          ),
+        ),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        elevation: 0,
+        centerTitle: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -131,13 +173,19 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           return const Center(child: CircularProgressIndicator());
         }
         if (_authController.usersList.isEmpty) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.people, size: 64, color: Colors.grey),
-                SizedBox(height: 12),
-                Text('Aucun utilisateur', style: TextStyle(color: Colors.grey)),
+                Icon(Icons.people_outline, size: 64, color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+                const SizedBox(height: 16),
+                Text(
+                  'no_users'.tr,
+                  style: GoogleFonts.poppins(
+                    color: colorScheme.onSurfaceVariant,
+                    fontSize: 15,
+                  ),
+                ),
               ],
             ),
           );
@@ -153,9 +201,26 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             final isAdmin = role == 'admin';
             final isSelf = user['email'] == _authController.userEmail.value;
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.shadow.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? colorScheme.outline
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
               child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 leading: CircleAvatar(
                   backgroundColor: isAdmin
                       ? const Color.fromARGB(255, 175, 30, 124)
@@ -167,20 +232,32 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 ),
                 title: Row(
                   children: [
-                    Text(user['name']?.toString() ?? 'Inconnu',
-                        style: const TextStyle(fontWeight: FontWeight.w600)),
+                    Text(
+                      user['name']?.toString() ?? 'unknown'.tr,
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
                     if (isSelf) ...[
                       const SizedBox(width: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.blue,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text('Vous',
-                            style:
-                                TextStyle(fontSize: 10, color: Colors.white)),
+                        child: Text(
+                          'you'.tr,
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ],
                   ],
@@ -188,23 +265,39 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(user['email']?.toString() ?? '',
-                        style: const TextStyle(fontSize: 12)),
+                    Text(
+                      user['email']?.toString() ?? '',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
                     Container(
                       margin: const EdgeInsets.only(top: 3),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: isAdmin
-                            ? const Color.fromARGB(255, 175, 30, 124)
-                                .withValues(alpha: 0.15)
-                            : const Color.fromARGB(255, 30, 175, 124)
-                                .withValues(alpha: 0.15),
+                            ? const Color.fromARGB(
+                                255,
+                                175,
+                                30,
+                                124,
+                              ).withValues(alpha: 0.15)
+                            : const Color.fromARGB(
+                                255,
+                                30,
+                                175,
+                                124,
+                              ).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        isAdmin ? 'Admin' : 'Utilisateur',
-                        style: TextStyle(
+                        isAdmin ? 'admin_role'.tr : 'user_role'.tr,
+                        style: GoogleFonts.poppins(
                           fontSize: 11,
                           color: isAdmin
                               ? const Color.fromARGB(255, 175, 30, 124)
@@ -227,13 +320,13 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                               color: Colors.blue,
                             ),
                             tooltip: isAdmin
-                                ? 'Rétrograder en utilisateur'
-                                : 'Promouvoir en admin',
+                                ? 'demote_to_user'.tr
+                                : 'promote_to_admin'.tr,
                             onPressed: () => _showRoleDialog(user),
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
-                            tooltip: 'Supprimer',
+                            tooltip: 'delete'.tr,
                             onPressed: () => _confirmDelete(user),
                           ),
                         ],

@@ -46,62 +46,84 @@ class ChatbotService {
   // ── Patterns d'intention ──────────────────────────────────────────────────
   static final Map<ChatIntent, List<RegExp>> _patterns = {
     ChatIntent.greeting: [
-      RegExp(r'\b(bonjour|salut|coucou|hello|hi|bonsoir)\b',
-          caseSensitive: false),
+      RegExp(
+        r'\b(bonjour|salut|coucou|hello|hi|bonsoir)\b',
+        caseSensitive: false,
+      ),
     ],
     ChatIntent.productSearch: [
-      RegExp(r'\b(cherche|recherche|trouver|veux|voudrais|besoin)\b',
-          caseSensitive: false),
       RegExp(
-          r'\b(samsung|apple|iphone|huawei|xiaomi|sony|lg|nokia|asus|lenovo|dell|hp)\b',
-          caseSensitive: false),
+        r'\b(cherche|recherche|trouver|veux|voudrais|besoin)\b',
+        caseSensitive: false,
+      ),
       RegExp(
-          r'\b(smartphone|téléphone|telephone|portable|mobile|ordinateur|laptop|tablette|casque|écran|ecran)\b',
-          caseSensitive: false),
+        r'\b(samsung|apple|iphone|huawei|xiaomi|sony|lg|nokia|asus|lenovo|dell|hp)\b',
+        caseSensitive: false,
+      ),
       RegExp(
-          r'\b(vêtement|vetement|chaussure|chemise|pantalon|robe|sport|fitness)\b',
-          caseSensitive: false),
+        r'\b(smartphone|téléphone|telephone|portable|mobile|ordinateur|laptop|tablette|casque|écran|ecran)\b',
+        caseSensitive: false,
+      ),
       RegExp(
-          r'\b(montrez?|voir|afficher)\s+(les?|vos?|des?)?\s*(produits?|articles?)\b',
-          caseSensitive: false),
+        r'\b(vêtement|vetement|chaussure|chemise|pantalon|robe|sport|fitness)\b',
+        caseSensitive: false,
+      ),
+      RegExp(
+        r'\b(montrez?|voir|afficher)\s+(les?|vos?|des?)?\s*(produits?|articles?)\b',
+        caseSensitive: false,
+      ),
     ],
     ChatIntent.priceInquiry: [
       RegExp(
-          r'\b(combien|prix|coûte|coute|tarif|cher|pas\s+cher|moins\s+cher)\b',
-          caseSensitive: false),
+        r'\b(combien|prix|coûte|coute|tarif|cher|pas\s+cher|moins\s+cher)\b',
+        caseSensitive: false,
+      ),
     ],
     ChatIntent.availabilityCheck: [
-      RegExp(r'\b(disponible|en\s+stock|rupture|reste)\b',
-          caseSensitive: false),
+      RegExp(
+        r'\b(disponible|en\s+stock|rupture|reste)\b',
+        caseSensitive: false,
+      ),
     ],
     ChatIntent.orderStatus: [
-      RegExp(r'\b(commande|colis|livraison|suivi|suivre|tracking)\b',
-          caseSensitive: false),
+      RegExp(
+        r'\b(commande|colis|livraison|suivi|suivre|tracking)\b',
+        caseSensitive: false,
+      ),
     ],
     ChatIntent.recommendation: [
       RegExp(
-          r'\b(promotion|promo|réduction|reduction|solde|offre|rabais|remise)\b',
-          caseSensitive: false),
-      RegExp(r'\b(recommand|conseil|meilleur|populaire|tendance|nouveauté)\b',
-          caseSensitive: false),
+        r'\b(promotion|promo|réduction|reduction|solde|offre|rabais|remise)\b',
+        caseSensitive: false,
+      ),
+      RegExp(
+        r'\b(recommand|conseil|meilleur|populaire|tendance|nouveauté)\b',
+        caseSensitive: false,
+      ),
     ],
     ChatIntent.categoryBrowse: [
       RegExp(
-          r'\b(catégorie|categorie|catalogue|liste|tous\s+les?\s+produits?)\b',
-          caseSensitive: false),
+        r'\b(catégorie|categorie|catalogue|liste|tous\s+les?\s+produits?)\b',
+        caseSensitive: false,
+      ),
     ],
     ChatIntent.delivery: [
-      RegExp(r'\b(livraison|livrer|délai|frais\s+de\s+port|expédition)\b',
-          caseSensitive: false),
+      RegExp(
+        r'\b(livraison|livrer|délai|frais\s+de\s+port|expédition)\b',
+        caseSensitive: false,
+      ),
     ],
     ChatIntent.help: [
       RegExp(
-          r'\b(aide|aider|assistance|support|help|comment|problème|probleme)\b',
-          caseSensitive: false),
+        r'\b(aide|aider|assistance|support|help|comment|problème|probleme)\b',
+        caseSensitive: false,
+      ),
     ],
     ChatIntent.goodbye: [
-      RegExp(r'\b(au\s+revoir|bye|à\s+bientôt|bonne\s+journée|merci|ciao)\b',
-          caseSensitive: false),
+      RegExp(
+        r'\b(au\s+revoir|bye|à\s+bientôt|bonne\s+journée|merci|ciao)\b',
+        caseSensitive: false,
+      ),
     ],
   };
 
@@ -161,7 +183,7 @@ class ChatbotService {
     ChatIntent.productSearch: [
       'Voir les smartphones',
       'Voir les ordinateurs',
-      'Voir les vêtements'
+      'Voir les vêtements',
     ],
     ChatIntent.priceInquiry: ['Voir les promotions', 'Produits populaires'],
     ChatIntent.availabilityCheck: ['Voir les produits', 'Nouveautés'],
@@ -169,18 +191,18 @@ class ChatbotService {
     ChatIntent.recommendation: [
       'Voir les promotions',
       'Nouveautés',
-      'Produits populaires'
+      'Produits populaires',
     ],
     ChatIntent.categoryBrowse: [
       'Voir les smartphones',
       'Voir les ordinateurs',
-      'Voir les vêtements'
+      'Voir les vêtements',
     ],
     ChatIntent.delivery: ['Frais de livraison', 'Délais de livraison'],
     ChatIntent.help: [
       'Comment commander ?',
       'Frais de livraison',
-      'Contacter le support'
+      'Contacter le support',
     ],
     ChatIntent.goodbye: ['Voir les produits', 'Aide'],
     ChatIntent.unknown: ['Voir les produits', 'Aide', 'Contacter le support'],
@@ -250,26 +272,26 @@ class ChatbotService {
   Future<Map<String, dynamic>?> _callBackendChatbot(String userMessage) async {
     try {
       // Configuration de l'URL
-      const String apiUrl = 'http://192.168.1.15:3001/api/chatbot/process';
+      const String apiUrl = 'http://192.168.100.139:3001/api/chatbot/process';
 
       developer.log('🌐 Appel backend: $apiUrl avec message: "$userMessage"');
 
       final response = await http
           .post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({'userMessage': userMessage}),
-      )
+            Uri.parse(apiUrl),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({'userMessage': userMessage}),
+          )
           .timeout(
-        const Duration(seconds: 5),
-        onTimeout: () {
-          developer.log('⏱️ Timeout backend chatbot');
-          throw Exception('Backend timeout');
-        },
-      );
+            const Duration(seconds: 5),
+            onTimeout: () {
+              developer.log('⏱️ Timeout backend chatbot');
+              throw Exception('Backend timeout');
+            },
+          );
 
       developer.log('📡 Réponse backend: ${response.statusCode}');
 
@@ -301,7 +323,9 @@ class ChatbotService {
 
   // ── Fallback locale en cas d'erreur backend ──────────────────────────────
   ChatResponse _buildLocalResponse(
-      String userMessage, List<dynamic>? products) {
+    String userMessage,
+    List<dynamic>? products,
+  ) {
     final intent = detectIntent(userMessage);
     final responses = _responses[intent] ?? _responses[ChatIntent.unknown]!;
     final message = responses[Random().nextInt(responses.length)];
@@ -327,7 +351,10 @@ class ChatbotService {
 
   // 🔥 NOUVEAU: Construire un message avec les détails des produits
   String _buildMessageWithProducts(
-      String baseMessage, List<dynamic> products, ChatIntent intent) {
+    String baseMessage,
+    List<dynamic> products,
+    ChatIntent intent,
+  ) {
     if (products.isEmpty) return baseMessage;
 
     StringBuffer sb = StringBuffer();
@@ -354,7 +381,10 @@ class ChatbotService {
 
   // 🔥 AMÉLIORATION: Filtrage intelligent des produits
   List<dynamic> _filterProducts(
-      ChatIntent intent, String message, List<dynamic> products) {
+    ChatIntent intent,
+    String message,
+    List<dynamic> products,
+  ) {
     if (products.isEmpty) return [];
     final lower = message.toLowerCase();
 
@@ -367,7 +397,7 @@ class ChatbotService {
       'xiaomi',
       'sony',
       'lg',
-      'nokia'
+      'nokia',
     ];
     for (final brand in brands) {
       if (lower.contains(brand)) {
@@ -390,7 +420,7 @@ class ChatbotService {
         'pantalon',
         'robe',
         'tee',
-        't-shirt'
+        't-shirt',
       ],
       'sport': ['sport', 'football', 'running', 'basket'],
       'accessoire': ['casque', 'ecran', 'écran', 'cable', 'chargeur'],

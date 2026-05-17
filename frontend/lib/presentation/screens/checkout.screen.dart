@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
 import 'package:atelier7/presentation/controllers/order.controller.dart';
@@ -54,8 +55,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     if (cartItemsList.isEmpty) {
       Get.snackbar(
-        'Panier vide',
-        'Ajoutez des articles avant de passer commande',
+        'cart_empty'.tr,
+        'add_items_before_order'.tr,
         backgroundColor: Colors.orange,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
@@ -87,10 +88,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       Get.offNamed('/orderConfirmation');
     } else {
       Get.snackbar(
-        'Erreur',
+        'erreur'.tr,
         orderController.errorMessage.value.isNotEmpty
             ? orderController.errorMessage.value
-            : 'Impossible de passer la commande',
+            : 'cannot_place_order'.tr,
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
@@ -110,9 +111,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         backgroundColor: colorScheme.primary,
         iconTheme: IconThemeData(color: colorScheme.onPrimary),
         title: Text(
-          'Finaliser la commande',
-          style: TextStyle(color: colorScheme.onPrimary),
+          'checkout_finalize_title'.tr,
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onPrimary,
+          ),
         ),
+        centerTitle: false,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -121,10 +127,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             PersistentShoppingCart().showCartItems(
               cartItemsBuilder: (context, cartItems) {
                 if (cartItems.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Text('Votre panier est vide'),
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        'your_cart_is_empty'.tr,
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     ),
                   );
                 }
@@ -137,7 +149,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     final data = cartItems[index];
                     return Container(
                       margin: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: colorScheme.surfaceContainerLow,
@@ -163,11 +177,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
-                                width: 60,
-                                height: 60,
-                                color: colorScheme.surfaceContainer,
-                                child: const Icon(Icons.image_not_supported),
-                              ),
+                                    width: 60,
+                                    height: 60,
+                                    color: colorScheme.surfaceContainer,
+                                    child: const Icon(
+                                      Icons.image_not_supported,
+                                    ),
+                                  ),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -177,9 +193,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               children: [
                                 Text(
                                   data.productName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600,
                                     fontSize: 14,
+                                    color: colorScheme.onSurface,
+                                    height: 1.2,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -187,8 +205,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   '${_toDouble(data.unitPrice).toStringAsFixed(2)} TND × ${data.quantity}',
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 12,
+                                    fontWeight: FontWeight.w500,
                                     color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
@@ -197,8 +216,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           Text(
                             '${(_toDouble(data.unitPrice) * data.quantity).toStringAsFixed(2)} TND',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w700,
                               fontSize: 14,
                               color: colorScheme.primary,
                             ),
@@ -223,18 +242,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 cartTotalAmountWidgetBuilder: (totalAmount) => Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Total:',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Text(
                       '${_toDouble(totalAmount).toStringAsFixed(2)} TND',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.poppins(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
                         color: colorScheme.primary,
                       ),
                     ),
@@ -265,11 +285,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Informations de livraison',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -371,39 +392,42 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             // Place Order Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Obx(() => SizedBox(
-                    width: double.infinity,
-                    height: 55,
-                    child: ElevatedButton(
-                      onPressed:
-                          orderController.isLoading.value ? null : _placeOrder,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 2,
+              child: Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: orderController.isLoading.value
+                        ? null
+                        : _placeOrder,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: orderController.isLoading.value
-                          ? SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                color: colorScheme.onPrimary,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Text(
-                              'Confirmer la commande',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.onPrimary,
-                              ),
-                            ),
+                      elevation: 2,
                     ),
-                  )),
+                    child: orderController.isLoading.value
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: colorScheme.onPrimary,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            'Confirmer la commande',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
             ),
 
             const SizedBox(height: 30),

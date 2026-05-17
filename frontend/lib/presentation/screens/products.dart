@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/controllers/article.controller.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
@@ -240,12 +241,7 @@ class _ProductsState extends State<Products> {
                             );
                           }),
                           const SizedBox(height: 8),
-                          // Debug info
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(),
-                            child: const SizedBox.shrink(),
-                          ),
+
                         ],
                       ),
                     ),
@@ -423,43 +419,81 @@ class _ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final bool inStock = (article.qtestock ?? 0) > 0;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/details', arguments: article),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? colorScheme.surfaceContainerLow : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? colorScheme.outline : const Color(0xFFE2E8F0),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── Zone image avec badge stock ─────────────────────
             Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
-                  color: colorScheme.surfaceContainerHighest,
-                ),
-                child: ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: Image.network(
-                    article.imageart ?? 'https://via.placeholder.com/200',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: colorScheme.surfaceContainer,
-                      child: Icon(
-                        Icons.image_not_supported,
-                        color: colorScheme.onSurfaceVariant,
-                        size: 40,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(15)),
+                    child: Container(
+                      width: double.infinity,
+                      color: colorScheme.surfaceContainerHighest,
+                      child: Image.network(
+                        article.imageart ?? '',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Center(
+                          child: Icon(
+                            Icons.image_not_supported_rounded,
+                            color: colorScheme.onSurfaceVariant,
+                            size: 36,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  // Badge stock
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: inStock
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFFEF4444),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        inStock ? '${article.qtestock}' : '—',
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
+            // ── Infos produit ────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(11, 10, 11, 11),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -467,108 +501,43 @@ class _ProductCard extends StatelessWidget {
                     article.designation ?? 'Produit',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.bold, height: 1.2),
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurface,
+                      height: 1.25,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '${article.prix?.toStringAsFixed(2) ?? '0'} TND',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF6C63FF)),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                              color: Colors.green[100],
-                              borderRadius: BorderRadius.circular(8)),
-                          child: Text(
-                            'Stock: ${article.qtestock ?? 0}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.green[700],
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 5),
+                  Text(
+                    '${article.prix?.toStringAsFixed(2) ?? '0.00'} TND',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.primary,
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: PersistentShoppingCart().showAndUpdateCartItemWidget(
-                      inCartWidget: Container(
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.red,
-                        ),
-                        child: Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.check,
-                                  size: 16, color: Colors.white),
-                              const SizedBox(width: 4),
-                              Text(
-                                tr('retirer'),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      notInCartWidget: Container(
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: const Color(0xFF6C63FF),
-                        ),
-                        child: Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.shopping_cart_outlined,
-                                  size: 16, color: Colors.white),
-                              const SizedBox(width: 4),
-                              Text(
-                                tr('ajouter'),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      product: PersistentShoppingCartItem(
-                        productId: article.id,
-                        productName: article.designation ?? 'Produit',
-                        unitPrice: article.prix?.toDouble() ?? 0.0,
-                        productImages: [article.imageart ?? ''],
-                        quantity: 1,
-                      ),
+                  const SizedBox(height: 9),
+                  // ── Bouton panier ────────────────────────────
+                  PersistentShoppingCart().showAndUpdateCartItemWidget(
+                    inCartWidget: _CartActionBtn(
+                      label: tr('retirer'),
+                      icon: Icons.check_rounded,
+                      isInCart: true,
+                      primaryColor: colorScheme.primary,
+                    ),
+                    notInCartWidget: _CartActionBtn(
+                      label: tr('ajouter'),
+                      icon: Icons.add_shopping_cart_rounded,
+                      isInCart: false,
+                      primaryColor: colorScheme.primary,
+                    ),
+                    product: PersistentShoppingCartItem(
+                      productId: article.id,
+                      productName: article.designation ?? 'Produit',
+                      unitPrice: article.prix?.toDouble() ?? 0.0,
+                      productImages: [article.imageart ?? ''],
+                      quantity: 1,
                     ),
                   ),
                 ],
@@ -580,3 +549,59 @@ class _ProductCard extends StatelessWidget {
     );
   }
 }
+
+// ── Bouton panier réutilisable ────────────────────────────────────────
+class _CartActionBtn extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isInCart;
+  final Color primaryColor;
+
+  const _CartActionBtn({
+    required this.label,
+    required this.icon,
+    required this.isInCart,
+    required this.primaryColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 34,
+      decoration: BoxDecoration(
+        color: isInCart
+            ? const Color(0xFFEF4444).withValues(alpha: 0.08)
+            : primaryColor,
+        borderRadius: BorderRadius.circular(8),
+        border: isInCart
+            ? Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.4))
+            : null,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: 13,
+            color: isInCart ? const Color(0xFFEF4444) : Colors.white,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: isInCart ? const Color(0xFFEF4444) : Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+

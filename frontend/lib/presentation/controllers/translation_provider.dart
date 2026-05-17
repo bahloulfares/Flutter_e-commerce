@@ -24,124 +24,127 @@ class TranslationProvider extends GetxController {
   // Ensemble de textes à traduire
   final Set<String> _textSet = {
     // ===== MENU PRINCIPAL (Sidebar) =====
-    'accueil', // Home
-    'categories', // Categories
-    'Sous-catégories', // SubCategories
-    'Articles (admin)', // Admin Articles
-    'commandes', // Orders
-    'utilisateurs', // Users
-    'produits', // Products
-    'panier', // Cart
-    'profil', // Profile
-    'parametres', // Settings
-    'inscription', // Register
-    'connexion', // Login
-    'deconnexion', // Logout
-    'ADMIN', // Admin badge
-    'Utilisateur', // User label
-    'About app', // About section
+    'accueil',
+    'categories',
+    'Sous-catégories',
+    'Articles (admin)',
+    'commandes',
+    'utilisateurs',
+    'produits',
+    'panier',
+    'profil',
+    'parametres',
+    'inscription',
+    'connexion',
+    'deconnexion',
+    'ADMIN',
+    'Utilisateur',
+    'About app',
 
-    // ===== APPBAR =====
-    'boutique', // Shop
-    'Panier', // Cart (uppercase variant)
-    'shopping_cart', // Shopping cart
+    // ===== APPBAR / NAV =====
+    'boutique',
+    'Assistant',
+    'shopping_cart',
 
     // ===== SHOPPING / CART =====
-    'Ajouter au panier', // Add to cart
-    'Supprimer', // Remove
-    'Total', // Total
-    'Panier vide', // Empty cart
-    'Shop now', // Shop now
-    'Passer la commande', // Checkout
+    'Ajouter au panier',
+    'Supprimer',
+    'Total',
+    'Panier vide',
+    'Shop now',
+    'Passer la commande',
     'Product removed from cart',
     'Product not found in the cart',
 
+    // Currency / misc
+    'TND',
+    'Scanner un produit',
+    'bienvenue',
+    'client',
+
     // ===== SETTINGS =====
-    'Theme', // Theme
-    'Language', // Language
-    'Notifications', // Notifications
-    'Biometric', // Biometric
-    'Face ID', // Face ID
-    'Activer Face ID', // Enable Face ID
-    'Activer l\'empreinte', // Enable fingerprint
-    'Entrez vos identifiants pour confirmer :', // Enter credentials to confirm
-    'Face ID activé(e) avec succès', // Face ID enabled successfully
-    'Identifiants invalides ou biométrie non disponible', // Invalid credentials or biometry unavailable
+    'Theme',
+    'Language',
+    'Notifications',
+    'Biometric',
+    'Face ID',
+    'Activer Face ID',
+    'Activer l\'empreinte',
+    'Entrez vos identifiants pour confirmer :',
+    'Face ID activé(e) avec succès',
+    'Identifiants invalides ou biométrie non disponible',
 
     // ===== PRODUITS / ARTICLES =====
-    'Scanner un produit', // Scan a product
-    'Scanner avec la caméra', // Scan with camera
-    'Scanner depuis la galerie', // Scan from gallery
-    'Assistant', // Assistant
-    'Référence détectée', // Reference detected
-    'Référence déjà existante', // Reference already exists
-    'Erreur scan galerie', // Gallery scan error
-    'Image uploadée avec succès', // Image uploaded successfully
-    'Erreur upload image', // Image upload error    'bienvenue',              // Welcome
-    'rechercher', // Search
-    'tout', // All
-    'client', // Client
-    'aucun_produit', // No products
-    'retirer', // Remove/Withdraw
-    'ajouter', // Add
+    'Scanner avec la caméra',
+    'Scanner depuis la galerie',
+    'Référence détectée',
+    'Référence déjà existante',
+    'Erreur scan galerie',
+    'Image uploadée avec succès',
+    'Erreur upload image',
+    'rechercher',
+    'tout',
+    'aucun_produit',
+    'retirer',
+    'ajouter',
+
     // ===== COMMANDES / ORDERS =====
-    'Commande #', // Order #
-    'Commande confirmée !', // Order confirmed!
-    'Merci pour votre commande', // Thank you for your order
-    'Changer le statut :', // Change status:
-    'Not processed', // Not processed
-    'Processing', // Processing
-    'Shipped', // Shipped
-    'Delivered', // Delivered
-    'Cancelled', // Cancelled
-    'Statut mis à jour', // Status updated
-    'Erreur mise à jour', // Update error
-    'Supprimer la commande ?', // Delete order?
+    'Commande #',
+    'Commande confirmée !',
+    'Merci pour votre commande',
+    'Changer le statut :',
+    'Not processed',
+    'Processing',
+    'Shipped',
+    'Delivered',
+    'Cancelled',
+    'Statut mis à jour',
+    'Erreur mise à jour',
+    'Supprimer la commande ?',
+
     // ===== GESTION ADMIN =====
-    'Aucune sous-catégorie', // No subcategories
-    'Supprimer la sous-catégorie ?', // Delete subcategory?
-    'Supprimé avec succès', // Deleted successfully
-    'Erreur suppression', // Deletion error
-    'Modifier le rôle de', // Change role of
-    'Annuler', // Cancel
-    'Vous ne pouvez pas supprimer votre propre compte', // Cannot delete own account
-    'Supprimer l\'utilisateur ?', // Delete user?
-    'rôle changé à', // role changed to
+    'Aucune sous-catégorie',
+    'Supprimer la sous-catégorie ?',
+    'Supprimé avec succès',
+    'Erreur suppression',
+    'Modifier le rôle de',
+    'Annuler',
+    'Vous ne pouvez pas supprimer votre propre compte',
+    'Supprimer l\'utilisateur ?',
+    'rôle changé à',
 
     // ===== FORMULAIRES =====
-    'Category name', // Category name
-    'Créer un compte', // Create account
-    'Inscrivez-vous pour accéder à toutes les fonctionnalités', // Register to access features
-    'Nom', // Name
-    'Email', // Email
-    'Password', // Password
-    'Retape Password', // Confirm Password
-    'Compte créé avec succès', // Account created successfully
-    'Placez votre visage dans le cadre et appuyez sur le bouton', // Place face in frame
-    'Regardez la caméra pour vous connecter', // Look at camera to login
-    'Visage reconnu', // Face recognized
-    'Trop de tentatives', // Too many attempts
-    'Permission biométrique refusée', // Biometric permission denied
-    'Biométrie non disponible', // Biometry not available
-    'Authentification échouée', // Authentication failed
+    'Category name',
+    'Créer un compte',
+    'Inscrivez-vous pour accéder à toutes les fonctionnalités',
+    'Nom',
+    'Email',
+    'Password',
+    'Retape Password',
+    'Compte créé avec succès',
+    'Placez votre visage dans le cadre et appuyez sur le bouton',
+    'Regardez la caméra pour vous connecter',
+    'Visage reconnu',
+    'Trop de tentatives',
+    'Permission biométrique refusée',
+    'Biométrie non disponible',
+    'Authentification échouée',
 
     // ===== MESSAGES COMMUNS =====
-    'Placez le code-barres dans le cadre', // Place barcode in frame
-    'Détails de la commande', // Order details
-    'Mot de passe', // Password
-    'TND', // Currency (Tunisian Dinar)
-    'loading', // Loading
-    'error', // Error
-    'success', // Success
-    'ok', // OK
-    'cancel', // Cancel
-    'done', // Done
-    'Ajouter', // Add
-    'Modifier', // Edit
-    'Accueil', // Home (alternate form)
-    'PICK FROM GALLERY', // Pick from gallery
-    'PICK FROM CAMERA', // Pick from camera
-    'Image non disponible', // Image not available
+    'Placez le code-barres dans le cadre',
+    'Détails de la commande',
+    'loading',
+    'error',
+    'success',
+    'ok',
+    'cancel',
+    'done',
+    'Ajouter',
+    'Modifier',
+    'Accueil',
+    'PICK FROM GALLERY',
+    'PICK FROM CAMERA',
+    'Image non disponible',
   };
 
   @override
@@ -208,8 +211,10 @@ class TranslationProvider extends GetxController {
         name: 'TranslationProvider',
       );
 
-      final translatedTexts =
-          await _mlkitManager.translateMultiple(textList, newLanguage);
+      final translatedTexts = await _mlkitManager.translateMultiple(
+        textList,
+        newLanguage,
+      );
 
       // Étape 4: Mettre à jour la map réactive
       translations.clear(); // Vider l'ancienne map
@@ -250,8 +255,10 @@ class TranslationProvider extends GetxController {
   /// ✅ Ajouter un nouveau texte à traduire (dynamique)
   /// Utile pour les descriptions ou textes personnalisés
   Future<String> translateText(String text) async {
-    final translated =
-        await _mlkitManager.translate(text, currentLanguage.value);
+    final translated = await _mlkitManager.translate(
+      text,
+      currentLanguage.value,
+    );
     return translated;
   }
 

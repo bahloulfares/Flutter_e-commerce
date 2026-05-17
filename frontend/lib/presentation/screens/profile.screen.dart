@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:atelier7/presentation/controllers/user.controller.dart';
@@ -69,8 +70,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _isUploadingImage = true;
       });
 
-      final url =
-          await CloudinaryUploadHelper.uploadImage(picked, bytes: bytes);
+      final url = await CloudinaryUploadHelper.uploadImage(
+        picked,
+        bytes: bytes,
+      );
       setState(() {
         _avatarCtrl.text = url;
         _isUploadingImage = false;
@@ -80,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Erreur upload image: $e"),
+            content: Text('${'image_upload_error'.tr}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -102,9 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          ok
-              ? 'Profil mis à jour avec succès'
-              : 'Erreur lors de la mise à jour du profil',
+          ok ? 'profile_updated_success'.tr : 'profile_update_error'.tr,
         ),
         backgroundColor: ok ? Colors.green : Colors.red,
       ),
@@ -113,11 +114,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Mon profil'),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
+        title: Text(
+          'my_profile'.tr,
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onPrimary,
+          ),
+        ),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        elevation: 0,
+        centerTitle: false,
       ),
       body: Obx(() {
         final isLoading = _authController.isProfileLoading.value;
@@ -136,20 +149,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Center(
                           child: CircleAvatar(
-                            radius: 42,
-                            backgroundColor:
-                                Colors.indigo.withValues(alpha: 0.12),
+                            radius: 46,
+                            backgroundColor: colorScheme.primary.withValues(
+                              alpha: 0.12,
+                            ),
                             backgroundImage: _selectedImageBytes != null
                                 ? MemoryImage(_selectedImageBytes!)
                                 : (_avatarCtrl.text.trim().isNotEmpty
-                                    ? NetworkImage(_avatarCtrl.text.trim())
-                                        as ImageProvider
-                                    : null),
-                            child: (_selectedImageBytes == null &&
+                                      ? NetworkImage(_avatarCtrl.text.trim())
+                                            as ImageProvider
+                                      : null),
+                            child:
+                                (_selectedImageBytes == null &&
                                     _avatarCtrl.text.trim().isEmpty)
-                                ? const Icon(Icons.person,
-                                    size: 42, color: Colors.indigo)
-                                : null,
+                                  ? Icon(
+                                      Icons.person,
+                                      size: 46,
+                                      color: colorScheme.primary,
+                                    )
+                                  : null,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -166,46 +184,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 onPressed: () =>
                                     _pickImage(ImageSource.gallery),
                                 icon: const Icon(Icons.photo_library, size: 18),
-                                label: const Text('Galerie'),
+                                label: Text(
+                                  'gallery'.tr,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
                               const SizedBox(width: 10),
                               if (!kIsWeb)
-                                OutlinedButton.icon(
-                                  onPressed: () =>
-                                      _pickImage(ImageSource.camera),
-                                  icon: const Icon(Icons.camera_alt, size: 18),
-                                  label: const Text('Caméra'),
-                                ),
+                                  OutlinedButton.icon(
+                                    onPressed: () =>
+                                        _pickImage(ImageSource.camera),
+                                    icon: const Icon(Icons.camera_alt, size: 18),
+                                    label: Text(
+                                      'camera'.tr,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
                             ],
                           ),
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _nameCtrl,
-                          decoration: const InputDecoration(
-                            labelText: 'Nom complet',
-                            prefixIcon: Icon(Icons.person_outline),
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: 'full_name'.tr,
+                            prefixIcon: const Icon(Icons.person_outline),
                           ),
                           validator: (value) =>
                               value == null || value.trim().isEmpty
-                                  ? 'Nom requis'
-                                  : null,
+                              ? 'name_required_validation'.tr
+                              : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _emailCtrl,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email_outlined),
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: 'email'.tr,
+                            prefixIcon: const Icon(Icons.email_outlined),
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Email requis';
+                              return 'email_required_validation'.tr;
                             }
                             if (!GetUtils.isEmail(value.trim())) {
-                              return 'Email invalide';
+                              return 'email_invalid_validation'.tr;
                             }
                             return null;
                           },
@@ -213,26 +241,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _avatarCtrl,
-                          decoration: const InputDecoration(
-                            labelText: 'URL avatar',
-                            prefixIcon: Icon(Icons.image_outlined),
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: 'avatar_url'.tr,
+                            prefixIcon: const Icon(Icons.image_outlined),
                           ),
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: 16),
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.indigo.withValues(alpha: 0.06),
+                            color: colorScheme.secondaryContainer.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Rôle: ${_authController.userRole.value}'),
-                              const SizedBox(height: 4),
-                              Text('ID: ${_authController.userId.value}'),
+                              Text(
+                                '${'role'.tr}: ${_authController.userRole.value}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                '${'id'.tr}: ${_authController.userId.value}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -240,19 +280,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ElevatedButton.icon(
                           onPressed: isLoading ? null : _submit,
                           icon: isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 18,
                                   height: 18,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
+                                    color: colorScheme.onPrimary,
                                   ),
                                 )
                               : const Icon(Icons.save_outlined),
-                          label: const Text('Enregistrer'),
+                          label: Text(
+                            'enregistrer'.tr,
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.indigo,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.onPrimary,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ],

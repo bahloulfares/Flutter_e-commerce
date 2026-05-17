@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/controllers/order.controller.dart';
 
@@ -28,6 +29,23 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
     'Cancelled': Colors.red,
   };
 
+  String _statusLabel(String status) {
+    switch (status) {
+      case 'Not processed':
+        return 'order_status_not_processed'.tr;
+      case 'Processing':
+        return 'order_status_processing'.tr;
+      case 'Shipped':
+        return 'order_status_shipped'.tr;
+      case 'Delivered':
+        return 'order_status_delivered'.tr;
+      case 'Cancelled':
+        return 'order_status_cancelled'.tr;
+      default:
+        return status;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -40,39 +58,47 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Commande #${order['id']}'),
+        title: Text('order_number'.tr.replaceAll('{id}', '${order['id']}')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Changer le statut :'),
+            Text('change_status'.tr),
             const SizedBox(height: 12),
-            ..._statuses.map((s) => ListTile(
-                  dense: true,
-                  leading: CircleAvatar(
-                    backgroundColor: _statusColors[s] ?? Colors.grey,
-                    radius: 8,
-                  ),
-                  title: Text(s),
-                  selected: order['status'] == s,
-                  onTap: () async {
-                    Navigator.pop(ctx);
-                    final ok = await _controller.updateOrderStatus(
-                        order['id'] as int, s);
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            ..._statuses.map(
+              (s) => ListTile(
+                dense: true,
+                leading: CircleAvatar(
+                  backgroundColor: _statusColors[s] ?? Colors.grey,
+                  radius: 8,
+                ),
+                title: Text(_statusLabel(s)),
+                selected: order['status'] == s,
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final ok = await _controller.updateOrderStatus(
+                    order['id'] as int,
+                    s,
+                  );
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
                         content: Text(
-                            ok ? 'Statut mis à jour' : 'Erreur mise à jour'),
+                          ok ? 'status_updated'.tr : 'status_update_error'.tr,
+                        ),
                         backgroundColor: ok ? Colors.green : Colors.red,
-                      ));
-                    }
-                  },
-                )),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
           ],
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annuler')),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('annuler'.tr),
+          ),
         ],
       ),
     );
@@ -82,19 +108,24 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer la commande ?'),
-        content: Text('Commande #${order['id']} de ${order['client']}'),
+        title: Text('delete_order_question'.tr),
+        content: Text(
+          'order_of_client'.tr
+              .replaceAll('{id}', '${order['id']}')
+              .replaceAll('{client}', '${order['client']}'),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annuler')),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('annuler'.tr),
+          ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               await _controller.deleteOrder(order['id'] as int);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Supprimer'),
+            child: Text('delete'.tr),
           ),
         ],
       ),
@@ -103,16 +134,28 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Gestion des commandes'),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
+        title: Text(
+          'manage_orders'.tr,
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onPrimary,
+          ),
+        ),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        elevation: 0,
+        centerTitle: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _controller.fetchAllOrders,
-          )
+          ),
         ],
       ),
       body: Obx(() {
@@ -120,13 +163,19 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
           return const Center(child: CircularProgressIndicator());
         }
         if (_controller.ordersList.isEmpty) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.inbox, size: 64, color: Colors.grey),
-                SizedBox(height: 12),
-                Text('Aucune commande', style: TextStyle(color: Colors.grey)),
+                Icon(Icons.inbox_outlined, size: 64, color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+                const SizedBox(height: 16),
+                Text(
+                  'no_orders'.tr,
+                  style: GoogleFonts.poppins(
+                    color: colorScheme.onSurfaceVariant,
+                    fontSize: 15,
+                  ),
+                ),
               ],
             ),
           );
@@ -140,61 +189,88 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
             final statusColor = _statusColors[status] ?? Colors.grey;
             final lines = (order['lineOrder'] as List<dynamic>?) ?? [];
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 10),
-              elevation: 2,
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.shadow.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? colorScheme.outline
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
               child: ExpansionTile(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 leading: CircleAvatar(
                   backgroundColor: statusColor.withValues(alpha: 0.15),
                   child: Text(
                     '#${order['id']}',
-                    style: TextStyle(
-                        color: statusColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 11),
+                    style: GoogleFonts.poppins(
+                      color: statusColor,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 11,
+                    ),
                   ),
                 ),
                 title: Text(
-                  order['client']?.toString() ?? 'Client inconnu',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  order['client']?.toString() ?? 'unknown_client'.tr,
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 15),
                 ),
-                subtitle: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        status,
-                        style: TextStyle(
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          _statusLabel(status),
+                          style: GoogleFonts.poppins(
                             color: statusColor,
                             fontSize: 11,
-                            fontWeight: FontWeight.w600),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${_controller.getOrderTotal(order).toStringAsFixed(2)} DT',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.indigo),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Text(
+                        '${_controller.getOrderTotal(order).toStringAsFixed(2)} DT',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.primary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      icon: const Icon(Icons.edit_outlined, color: Colors.blue),
                       onPressed: () => _showStatusDialog(order),
-                      tooltip: 'Changer statut',
+                      tooltip: 'change_status_tooltip'.tr,
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
+                      icon: Icon(Icons.delete_outline, color: colorScheme.error),
                       onPressed: () => _confirmDelete(order),
-                      tooltip: 'Supprimer',
+                      tooltip: 'delete'.tr,
                     ),
                   ],
                 ),
@@ -202,21 +278,43 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                   if (lines.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Articles :',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(
+                            'articles_label'.tr,
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           ...lines.map((line) {
                             final article = line['article'];
-                            return ListTile(
-                              dense: true,
-                              title: Text(
-                                  article?['designation'] ?? 'Article inconnu'),
-                              trailing: Text(
-                                'x${line['quantity']}  —  ${_controller.getLineTotal(Map<String, dynamic>.from(line)).toStringAsFixed(2)} DT',
-                                style: const TextStyle(color: Colors.indigo),
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      article?['designation'] ?? 'unknown_article'.tr,
+                                      style: GoogleFonts.poppins(fontSize: 13),
+                                    ),
+                                  ),
+                                  Text(
+                                    'x${line['quantity']}  —  ${_controller.getLineTotal(Map<String, dynamic>.from(line)).toStringAsFixed(2)} DT',
+                                    style: GoogleFonts.poppins(
+                                      color: colorScheme.primary,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           }),

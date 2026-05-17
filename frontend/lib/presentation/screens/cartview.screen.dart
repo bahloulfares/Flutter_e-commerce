@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:atelier7/presentation/widgets/cart/showcartitem.widget.dart';
 import 'package:atelier7/presentation/controllers/language.controller.dart';
@@ -23,9 +24,18 @@ class CartView extends StatelessWidget {
       id: 'language',
       builder: (_) => Scaffold(
         appBar: AppBar(
-          title: Text(tr('panier')),
+          title: Text(
+            tr('panier'),
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: colorScheme.onPrimary,
+            ),
+          ),
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
+          elevation: 0,
+          centerTitle: false,
         ),
         body: const CartViewItem(),
       ),

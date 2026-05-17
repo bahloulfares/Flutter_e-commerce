@@ -64,8 +64,8 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Image uploadée avec succès'),
+          SnackBar(
+            content: Text('image_uploaded_success'.tr),
             backgroundColor: Colors.green,
           ),
         );
@@ -74,7 +74,7 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur upload image: $error'),
+            content: Text('${'image_upload_error'.tr}: $error'),
             backgroundColor: Colors.red,
           ),
         );
@@ -102,7 +102,9 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ok ? 'Sous-catégorie créée !' : 'Erreur création'),
+          content: Text(
+            ok ? 'subcategory_created_success'.tr : 'article_create_error'.tr,
+          ),
           backgroundColor: ok ? Colors.green : Colors.red,
         ),
       );
@@ -114,7 +116,7 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter une sous-catégorie'),
+        title: Text('add_subcategory_title'.tr),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
       ),
@@ -127,20 +129,21 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
               TextFormField(
                 controller: _nomCtrl,
                 decoration: InputDecoration(
-                  labelText: 'Nom *',
+                  labelText: 'name_required'.tr,
                   prefixIcon: const Icon(Icons.label),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Champ requis' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'required_field'.tr
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _imageCtrl,
                 decoration: InputDecoration(
-                  labelText: 'URL Image',
+                  labelText: 'image_url'.tr,
                   prefixIcon: const Icon(Icons.image),
                   suffixIcon: _imageCtrl.text.trim().isNotEmpty
                       ? IconButton(
@@ -169,14 +172,14 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
                         ? null
                         : () => _pickImage(ImageSource.gallery),
                     icon: const Icon(Icons.photo_library_outlined),
-                    label: const Text('Choisir image'),
+                    label: Text('choose_image'.tr),
                   ),
                   OutlinedButton.icon(
                     onPressed: _isUploadingImage
                         ? null
                         : () => _pickImage(ImageSource.camera),
                     icon: const Icon(Icons.camera_alt_outlined),
-                    label: const Text('Caméra'),
+                    label: Text('camera'.tr),
                   ),
                 ],
               ),
@@ -223,7 +226,7 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
                                 ),
                               ),
                             )
-                          : const Center(
+                          : Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -233,7 +236,7 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
                                     color: Colors.grey,
                                   ),
                                   SizedBox(height: 8),
-                                  Text('Aucune image sélectionnée'),
+                                  Text('no_image_selected'.tr),
                                 ],
                               ),
                             ),
@@ -247,7 +250,7 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
                 return DropdownButtonFormField<String>(
                   initialValue: _selectedCategorieId,
                   decoration: InputDecoration(
-                    labelText: 'Catégorie parente *',
+                    labelText: 'parent_category_required'.tr,
                     prefixIcon: const Icon(Icons.category),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -262,8 +265,7 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
                       )
                       .toList(),
                   onChanged: (v) => setState(() => _selectedCategorieId = v),
-                  validator: (v) =>
-                      v == null ? 'Sélectionner une catégorie' : null,
+                  validator: (v) => v == null ? 'select_category'.tr : null,
                 );
               }),
               const SizedBox(height: 24),
@@ -279,7 +281,7 @@ class _AddScategorieScreenState extends State<AddScategorieScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.save),
-                    label: const Text('Enregistrer'),
+                    label: Text('enregistrer'.tr),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepPurple,
                       foregroundColor: Colors.white,

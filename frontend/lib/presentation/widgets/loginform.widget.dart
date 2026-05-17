@@ -59,7 +59,7 @@ class _Loginform extends State<Loginform> {
     super.dispose();
   }
 
-//Biometrics
+  //Biometrics
   Future<void> _loginWithBiometrics() async {
     setState(() {
       _isBiometricLoading = true;
@@ -71,8 +71,9 @@ class _Loginform extends State<Loginform> {
       if (!mounted) return;
 
       if (result) {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil('/Products', (route) => false);
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/Products', (route) => false);
         return;
       }
 
@@ -104,8 +105,10 @@ class _Loginform extends State<Loginform> {
       });
     } catch (_) {
       if (mounted) {
-        setState(() =>
-            _biometricError = 'Erreur biométrique. Utilisez email/password.');
+        setState(
+          () =>
+              _biometricError = 'Erreur biométrique. Utilisez email/password.',
+        );
       }
     } finally {
       if (mounted) setState(() => _isBiometricLoading = false);
@@ -133,10 +136,9 @@ class _Loginform extends State<Loginform> {
 
       // Lancer l'écran de capture pour la vérification
       if (!mounted) return;
-      final verifyResult = await Navigator.of(context).pushNamed(
-        '/faceCapture',
-        arguments: FaceCaptureMode.verify,
-      );
+      final verifyResult = await Navigator.of(
+        context,
+      ).pushNamed('/faceCapture', arguments: FaceCaptureMode.verify);
 
       if (!mounted) return;
 
@@ -147,8 +149,9 @@ class _Loginform extends State<Loginform> {
         if (!mounted) return;
 
         if (loginResult) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/Products', (route) => false);
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil('/Products', (route) => false);
           return;
         } else {
           setState(() {
@@ -184,13 +187,13 @@ class _Loginform extends State<Loginform> {
 
     if (!available) {
       borderColor = Colors.grey.shade400;
-      subtitle = 'Non disponible — configurez dans Android';
+      subtitle = 'fingerprint_not_available'.tr;
     } else if (!enabled) {
       borderColor = Colors.orange;
-      subtitle = 'Désactivé — activez dans Paramètres';
+      subtitle = 'fingerprint_disabled'.tr;
     } else {
       borderColor = Colors.purple;
-      subtitle = 'Appuyez pour vous connecter';
+      subtitle = 'press_to_login'.tr;
     }
 
     return SizedBox(
@@ -207,26 +210,31 @@ class _Loginform extends State<Loginform> {
             ? const SizedBox(
                 height: 20,
                 width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2))
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
             : Row(
                 children: [
-                  Icon(icon,
-                      size: 26,
-                      color: canUse ? Colors.purple : Colors.grey.shade400),
+                  Icon(
+                    icon,
+                    size: 26,
+                    color: canUse ? Colors.purple : Colors.grey.shade400,
+                  ),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(label,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: canUse
-                                  ? Colors.purple
-                                  : Colors.grey.shade500)),
-                      Text(subtitle,
-                          style:
-                              TextStyle(fontSize: 11, color: Colors.grey[600])),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: canUse ? Colors.purple : Colors.grey.shade500,
+                        ),
+                      ),
+                      Text(
+                        subtitle,
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
                     ],
                   ),
                 ],
@@ -246,19 +254,20 @@ class _Loginform extends State<Loginform> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            const Text('Connexion',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+            Text(
+              'connexion'.tr,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 6),
-            const Text('Entrez vos informations pour continuer',
-                style: TextStyle(color: Colors.black54)),
+            Text('login_subtitle'.tr, style: TextStyle(color: Colors.black54)),
             const SizedBox(height: 20),
 
             // Email
             TextFormField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                hintText: 'Email',
-                labelText: 'Email',
+              decoration: InputDecoration(
+                hintText: 'email'.tr,
+                labelText: 'email'.tr,
                 prefixIcon: Icon(Icons.person_outline),
                 border: OutlineInputBorder(),
               ),
@@ -271,13 +280,14 @@ class _Loginform extends State<Loginform> {
               obscureText: _isObscure,
               controller: _passwordController,
               decoration: InputDecoration(
-                hintText: 'Password',
-                labelText: 'Password',
+                hintText: 'password'.tr,
+                labelText: 'password'.tr,
                 prefixIcon: const Icon(Icons.lock_outline),
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off),
+                    _isObscure ? Icons.visibility : Icons.visibility_off,
+                  ),
                   onPressed: () => setState(() => _isObscure = !_isObscure),
                 ),
               ),
@@ -302,18 +312,18 @@ class _Loginform extends State<Loginform> {
                           if (!context.mounted) return;
                           if (success) {
                             Navigator.of(context).pushNamedAndRemoveUntil(
-                                '/Products', (route) => false);
+                              '/Products',
+                              (route) => false,
+                            );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                      Text('Email ou mot de passe invalide')),
+                              SnackBar(content: Text('invalid_credentials'.tr)),
                             );
                           }
                         } catch (e) {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Erreur: $e')),
+                            SnackBar(content: Text('${'erreur'.tr}: $e')),
                           );
                         } finally {
                           if (mounted) setState(() => _isLoading = false);
@@ -328,10 +338,14 @@ class _Loginform extends State<Loginform> {
                         height: 18,
                         width: 18,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
-                    : const Text('Se connecter',
-                        style: TextStyle(color: Colors.white)),
+                    : Text(
+                        'login_button'.tr,
+                        style: TextStyle(color: Colors.white),
+                      ),
               ),
             ),
 
@@ -343,7 +357,10 @@ class _Loginform extends State<Loginform> {
                 const Expanded(child: Divider()),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text('ou', style: TextStyle(color: Colors.grey[600])),
+                  child: Text(
+                    'or'.tr,
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
                 ),
                 const Expanded(child: Divider()),
               ],
@@ -361,7 +378,7 @@ class _Loginform extends State<Loginform> {
                   // Bouton Empreinte digitale
                   _buildBiometricButton(
                     icon: Icons.fingerprint,
-                    label: 'Empreinte digitale',
+                    label: 'fingerprint'.tr,
                     available: _fingerprintAvailable,
                     enabled: enabled,
                     canUse: canUse && _fingerprintAvailable,
@@ -377,13 +394,20 @@ class _Loginform extends State<Loginform> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline,
-                              size: 16, color: Colors.red[700]),
+                          Icon(
+                            Icons.error_outline,
+                            size: 16,
+                            color: Colors.red[700],
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text(_biometricError!,
-                                style: TextStyle(
-                                    color: Colors.red[700], fontSize: 12)),
+                            child: Text(
+                              _biometricError!,
+                              style: TextStyle(
+                                color: Colors.red[700],
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -406,33 +430,40 @@ class _Loginform extends State<Loginform> {
                       : _loginWithFaceIdMlKit,
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 16),
-                    side: BorderSide(
-                      color:
-                          mlkitEnabled ? Colors.purple : Colors.grey.shade400,
+                      vertical: 12,
+                      horizontal: 16,
                     ),
-                    foregroundColor:
-                        mlkitEnabled ? Colors.purple : Colors.grey.shade400,
+                    side: BorderSide(
+                      color: mlkitEnabled
+                          ? Colors.purple
+                          : Colors.grey.shade400,
+                    ),
+                    foregroundColor: mlkitEnabled
+                        ? Colors.purple
+                        : Colors.grey.shade400,
                     disabledForegroundColor: Colors.grey.shade400,
                   ),
                   child: _isFaceIdMlKitLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2))
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : Row(
                           children: [
-                            Icon(Icons.face_retouching_natural,
-                                size: 26,
-                                color: mlkitEnabled
-                                    ? Colors.purple
-                                    : Colors.grey.shade400),
+                            Icon(
+                              Icons.face_retouching_natural,
+                              size: 26,
+                              color: mlkitEnabled
+                                  ? Colors.purple
+                                  : Colors.grey.shade400,
+                            ),
                             const SizedBox(width: 12),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Face ID ML Kit',
+                                  'faceid_label'.tr,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 14,
@@ -443,10 +474,12 @@ class _Loginform extends State<Loginform> {
                                 ),
                                 Text(
                                   mlkitEnabled
-                                      ? 'Utiliser votre visage enregistré'
-                                      : 'Non configuré',
+                                      ? 'use_registered_face'.tr
+                                      : 'not_configured'.tr,
                                   style: TextStyle(
-                                      fontSize: 11, color: Colors.grey[600]),
+                                    fontSize: 11,
+                                    color: Colors.grey[600],
+                                  ),
                                 ),
                               ],
                             ),
@@ -467,13 +500,20 @@ class _Loginform extends State<Loginform> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.warning_amber,
-                        size: 16, color: Colors.orange[700]),
+                    Icon(
+                      Icons.warning_amber,
+                      size: 16,
+                      color: Colors.orange[700],
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(_faceIdMlKitError!,
-                          style: TextStyle(
-                              color: Colors.orange[700], fontSize: 12)),
+                      child: Text(
+                        _faceIdMlKitError!,
+                        style: TextStyle(
+                          color: Colors.orange[700],
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -484,11 +524,13 @@ class _Loginform extends State<Loginform> {
             Wrap(
               alignment: WrapAlignment.center,
               children: [
-                const Text("Vous n'avez pas de compte ? "),
+                Text('no_account'.tr),
                 TextButton(
                   onPressed: () => Navigator.pushNamed(context, '/register'),
-                  child: const Text('Créer un compte',
-                      style: TextStyle(color: Colors.purple)),
+                  child: Text(
+                    'create_account'.tr,
+                    style: TextStyle(color: Colors.purple),
+                  ),
                 ),
               ],
             ),

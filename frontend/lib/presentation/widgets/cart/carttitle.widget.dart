@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:persistent_shopping_cart/model/cart_model.dart';
 import 'package:persistent_shopping_cart/persistent_shopping_cart.dart';
@@ -27,12 +28,26 @@ class CartTitleWidget extends StatelessWidget {
       id: 'language',
       builder: (_) => SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.all(10),
-          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 12),
           width: double.infinity,
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withValues(alpha: .5),
-            borderRadius: BorderRadius.circular(10),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? colorScheme.surfaceContainerLow
+                : Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? colorScheme.outline
+                  : const Color(0xFFE2E8F0),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -49,23 +64,25 @@ class CartTitleWidget extends StatelessWidget {
                   children: [
                     Text(
                       data.productName,
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: colorScheme.onSurface,
+                        height: 1.2,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
                           child: Text(
-                            '${data.unitPrice} ${tr('TND')}',
-                            style: TextStyle(
-                              fontSize: 16,
+                            '${data.unitPrice.toStringAsFixed(2)} ${tr('TND')}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: colorScheme.onSurface,
+                              color: colorScheme.primary,
                             ),
                           ),
                         ),
@@ -81,21 +98,23 @@ class CartTitleWidget extends StatelessWidget {
                             });
                           },
                           child: Container(
-                            height: 30,
-                            width: 70,
+                            height: 32,
+                            width: 80,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: colorScheme.error),
+                              color: colorScheme.error.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: colorScheme.error.withValues(alpha: 0.3),
+                              ),
                             ),
                             child: Center(
                               child: Text(
                                 tr('Supprimer'),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: colorScheme.error,
-                                    ),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.error,
+                                ),
                               ),
                             ),
                           ),
@@ -112,31 +131,38 @@ class CartTitleWidget extends StatelessWidget {
                       _shoppingCart.incrementCartItemQuantity(data.productId);
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(2),
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainer,
+                        color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child:
-                          Icon(Icons.add, color: colorScheme.onSurfaceVariant),
+                      child: Icon(Icons.add_rounded,
+                          color: colorScheme.primary, size: 18),
                     ),
                   ),
-                  Text(
-                    data.quantity.toString(),
-                    style: Theme.of(context).textTheme.bodyLarge,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      data.quantity.toString(),
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
                   ),
                   InkWell(
                     onTap: () {
                       _shoppingCart.decrementCartItemQuantity(data.productId);
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(2),
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainer,
+                        color: colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Icon(Icons.remove,
-                          color: colorScheme.onSurfaceVariant),
+                      child: Icon(Icons.remove_rounded,
+                          color: colorScheme.onSurfaceVariant, size: 18),
                     ),
                   ),
                 ],

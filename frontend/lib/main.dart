@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -123,13 +124,122 @@ class MyApp extends StatelessWidget {
         ],
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+          fontFamily: GoogleFonts.poppins().fontFamily,
+          textTheme: GoogleFonts.poppinsTextTheme(),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF4F46E5),
+            brightness: Brightness.light,
+          ).copyWith(
+            primary: const Color(0xFF4F46E5),
+            onPrimary: Colors.white,
+            primaryContainer: const Color(0xFFEDE9FE),
+            onPrimaryContainer: const Color(0xFF3730A3),
+            secondary: const Color(0xFF0EA5E9),
+            surface: const Color(0xFFF8FAFC),
+            onSurface: const Color(0xFF1E293B),
+            onSurfaceVariant: const Color(0xFF64748B),
+            surfaceContainerHighest: const Color(0xFFF1F5F9),
+            surfaceContainer: const Color(0xFFF1F5F9),
+            surfaceContainerLow: const Color(0xFFFFFFFF),
+            outline: const Color(0xFFCBD5E1),
+            error: const Color(0xFFEF4444),
+          ),
+          appBarTheme: AppBarTheme(
+            elevation: 0,
+            scrolledUnderElevation: 1,
+            backgroundColor: const Color(0xFF4F46E5),
+            foregroundColor: Colors.white,
+            centerTitle: false,
+            titleTextStyle: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          cardTheme: CardThemeData(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: Color(0xFFE2E8F0)),
+            ),
+            color: Colors.white,
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF4F46E5), width: 2),
+            ),
+            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4F46E5),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              elevation: 0,
+            ),
+          ),
+          chipTheme: ChipThemeData(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            side: const BorderSide(color: Color(0xFFE2E8F0)),
+            backgroundColor: Colors.white,
+            selectedColor: const Color(0xFF4F46E5),
+            labelStyle: GoogleFonts.poppins(fontSize: 13),
+          ),
+          dividerTheme: const DividerThemeData(
+            color: Color(0xFFE2E8F0),
+            thickness: 1,
+          ),
         ),
         darkTheme: ThemeData(
           useMaterial3: true,
+          fontFamily: GoogleFonts.poppins().fontFamily,
+          textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.indigo,
+            seedColor: const Color(0xFF4F46E5),
             brightness: Brightness.dark,
+          ).copyWith(
+            primary: const Color(0xFF818CF8),
+            onPrimary: const Color(0xFF1E1B4B),
+            primaryContainer: const Color(0xFF3730A3),
+            onPrimaryContainer: const Color(0xFFEDE9FE),
+            surface: const Color(0xFF0F172A),
+            onSurface: const Color(0xFFF1F5F9),
+            onSurfaceVariant: const Color(0xFF94A3B8),
+            surfaceContainerHighest: const Color(0xFF1E293B),
+            surfaceContainer: const Color(0xFF1E293B),
+            surfaceContainerLow: const Color(0xFF1E293B),
+            outline: const Color(0xFF334155),
+          ),
+          appBarTheme: AppBarTheme(
+            elevation: 0,
+            backgroundColor: const Color(0xFF1E1B4B),
+            foregroundColor: const Color(0xFFF1F5F9),
+            titleTextStyle: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFFF1F5F9),
+            ),
+          ),
+          cardTheme: CardThemeData(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: Color(0xFF1E293B)),
+            ),
+            color: const Color(0xFF1E293B),
           ),
         ),
         themeMode: themeController.themeMode,
