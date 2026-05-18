@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
-import 'chat_action.dart';
 import 'package:atelier7/utils/config.dart'; // baseUrl défini ici
 
 /// Types d'intentions pour le chatbot e-commerce
@@ -27,7 +26,6 @@ class ChatResponse {
   final List<String> suggestedActions;
   final List<dynamic> suggestedProducts;
   final double confidence;
-  final ChatAction? action; // Optional action for navigation/redirects
 
   ChatResponse({
     required this.message,
@@ -35,7 +33,6 @@ class ChatResponse {
     this.suggestedActions = const [],
     this.suggestedProducts = const [],
     this.confidence = 0.0,
-    this.action,
   });
 }
 
@@ -224,7 +221,6 @@ class ChatbotService {
   // ── Génération de réponse (appel backend) ────────────────────────────────
   Future<ChatResponse> generateResponse({
     required String userMessage,
-    List<dynamic>? products,
   }) async {
     _history.add(_ChatMsg(text: userMessage, isUser: true));
 
@@ -233,24 +229,14 @@ class ChatbotService {
       final response = await _callBackendChatbot(userMessage);
 
       if (response == null) {
-        // Fallback en cas d'erreur
-        return _buildLocalResponse(userMessage, products);
+        return _buildLocalResponse(userMessage);
       }
 
       // Parser la réponse
       final intent = _stringToIntent(response['intent'] ?? 'unknown');
       final message = response['message'] ?? 'Désolé, je n\'ai pas compris.';
-      final responseProducts = response['products'] ?? [];
-
-      // Parse l'action si elle existe
-      ChatAction? action;
-      if (response['action'] != null) {
-        try {
-          action = ChatAction.fromJson(response['action']);
-        } catch (e) {
-          developer.log('❌ Erreur parsing action: $e');
-        }
-      }
+      // Les produits viennent du backend sous forme de List<Map>
+      final responseProducts = (response['products'] as List<dynamic>?) ?? [];
 
       final chatResponse = ChatResponse(
         message: message,
@@ -258,15 +244,13 @@ class ChatbotService {
         suggestedActions: [],
         suggestedProducts: responseProducts,
         confidence: intent == ChatIntent.unknown ? 0.3 : 0.85,
-        action: action,
       );
 
       _history.add(_ChatMsg(text: message, isUser: false));
       return chatResponse;
     } catch (e) {
       developer.log('❌ Erreur generateResponse: $e');
-      // Fallback à la logique locale
-      return _buildLocalResponse(userMessage, products);
+      return _buildLocalResponse(userMessage);
     }
   }
 
@@ -331,122 +315,19 @@ class ChatbotService {
   }
 
   // ── Fallback locale en cas d'erreur backend ──────────────────────────────
-  ChatResponse _buildLocalResponse(
-    String userMessage,
-    List<dynamic>? products,
-  ) {
+  ChatResponse _buildLocalResponse(String userMessage) {
     final intent = detectIntent(userMessage);
     final responses = _responses[intent] ?? _responses[ChatIntent.unknown]!;
     final message = responses[Random().nextInt(responses.length)];
     final actions = List<String>.from(_actions[intent] ?? []);
 
-    final suggested = _filterProducts(intent, userMessage, products ?? []);
-
-    String finalMessage = message;
-    if (suggested.isNotEmpty &&
-        (intent == ChatIntent.priceInquiry ||
-            intent == ChatIntent.productSearch)) {
-      finalMessage = _buildMessageWithProducts(message, suggested, intent);
-    }
-
     return ChatResponse(
-      message: finalMessage,
+      message: message,
       detectedIntent: intent,
       suggestedActions: actions,
-      suggestedProducts: suggested,
+      suggestedProducts: const [],
       confidence: intent == ChatIntent.unknown ? 0.3 : 0.8,
     );
-  }
-
-  // 🔥 NOUVEAU: Construire un message avec les détails des produits
-  String _buildMessageWithProducts(
-    String baseMessage,
-    List<dynamic> products,
-    ChatIntent intent,
-  ) {
-    if (products.isEmpty) return baseMessage;
-
-    StringBuffer sb = StringBuffer();
-    sb.writeln(baseMessage);
-    sb.writeln('\n📦 Produits trouvés:');
-
-    for (int i = 0; i < products.length && i < 5; i++) {
-      final p = products[i];
-      final designation = p.designation ?? 'Sans nom';
-      final marque = p.marque ?? '';
-      final prix = p.prix ?? '?';
-      final stock = p.qtestock ?? 0;
-
-      sb.writeln('${i + 1}. $designation');
-      if (marque.isNotEmpty) sb.writeln('   Marque: $marque');
-      sb.writeln('   💰 Prix: $prix DA');
-      if (intent == ChatIntent.availabilityCheck) {
-        sb.writeln('   📊 Stock: $stock unités');
-      }
-    }
-
-    return sb.toString();
-  }
-
-  // 🔥 AMÉLIORATION: Filtrage intelligent des produits
-  List<dynamic> _filterProducts(
-    ChatIntent intent,
-    String message,
-    List<dynamic> products,
-  ) {
-    if (products.isEmpty) return [];
-    final lower = message.toLowerCase();
-
-    // 🔥 Chercher par marque D'ABORD (plus spécifique)
-    final brands = [
-      'samsung',
-      'apple',
-      'iphone',
-      'huawei',
-      'xiaomi',
-      'sony',
-      'lg',
-      'nokia',
-    ];
-    for (final brand in brands) {
-      if (lower.contains(brand)) {
-        final filtered = products.where((p) {
-          final m = (p.marque ?? '').toLowerCase();
-          return m.contains(brand);
-        }).toList();
-        if (filtered.isNotEmpty) return filtered.take(5).toList();
-      }
-    }
-
-    // 🔥 Chercher par catégorie/type de produit
-    final categoryMap = {
-      'smartphone': ['smartphone', 'téléphone', 'iphone', 'mobile', 'portable'],
-      'ordinateur': ['ordinateur', 'laptop', 'pc', 'computer'],
-      'vêtement': [
-        'vêtement',
-        'vetement',
-        'chemise',
-        'pantalon',
-        'robe',
-        'tee',
-        't-shirt',
-      ],
-      'sport': ['sport', 'football', 'running', 'basket'],
-      'accessoire': ['casque', 'ecran', 'écran', 'cable', 'chargeur'],
-    };
-
-    for (final entry in categoryMap.entries) {
-      if (entry.value.any((kw) => lower.contains(kw))) {
-        final filtered = products.where((p) {
-          final d = (p.designation ?? '').toLowerCase();
-          return entry.value.any((kw) => d.contains(kw));
-        }).toList();
-        if (filtered.isNotEmpty) return filtered.take(5).toList();
-      }
-    }
-
-    // 🔥 Par défaut: retourner les premiers produits
-    return products.take(5).toList();
   }
 
   void clearHistory() => _history.clear();

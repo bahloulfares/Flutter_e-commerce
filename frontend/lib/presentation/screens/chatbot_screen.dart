@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:atelier7/utils/chatbot_service.dart';
-import 'package:atelier7/utils/chat_action.dart';
-import 'package:atelier7/data/datasource/services/article_service.dart';
-import 'package:atelier7/data/datasource/models/article.model.dart';
 import 'package:get/get.dart';
 
+// ── Modèle de message enrichi ─────────────────────────────────────────────────
 class ChatMessage {
   final String text;
   final bool isUser;
   final DateTime timestamp;
-  final List<dynamic> suggestedProducts;
+  final List<dynamic> suggestedProducts; // Produits de la BDD
   final List<String> quickReplies;
 
   ChatMessage({
@@ -33,52 +32,25 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final ChatbotService _chatbotService = ChatbotService();
-  final ArticleService _articleService = ArticleService();
 
   final List<ChatMessage> _messages = [];
   bool _isLoading = false;
-  List<Article> _allProducts = [];
 
   @override
   void initState() {
     super.initState();
     developer.log('🤖 CHATBOT: Démarrage', name: 'ChatbotDebug');
-    _loadProducts();
     _addWelcomeMessage();
-  }
-
-  Future<void> _loadProducts() async {
-    try {
-      developer.log('📦 CHATBOT: Chargement produits...', name: 'ChatbotDebug');
-      final products = await _articleService.getArticles();
-      developer.log(
-        '✅ CHATBOT: ${products.length} produits reçus',
-        name: 'ChatbotDebug',
-      );
-      setState(() {
-        _allProducts = products.map((json) => Article.fromJson(json)).toList();
-        developer.log(
-          '✅ CHATBOT: ${_allProducts.length} convertis',
-          name: 'ChatbotDebug',
-        );
-      });
-    } catch (e) {
-      developer.log(
-        '❌ CHATBOT: Erreur produits - $e',
-        name: 'ChatbotDebug',
-        error: e,
-      );
-    }
   }
 
   void _addWelcomeMessage() {
     setState(() {
       _messages.add(
         ChatMessage(
-          text: 'chatbot_welcome'.tr,
+          text: 'Bonjour ! 👋 Je suis votre assistant shopping.\nJe peux vous aider à trouver des produits, vérifier les prix et les stocks.\nComment puis-je vous aider ?',
           isUser: false,
           timestamp: DateTime.now(),
-          quickReplies: ['Voir les produits', 'Aide', 'Suivre ma commande'],
+          quickReplies: ['Voir les produits', 'Promotions', 'Aide'],
         ),
       );
     });
@@ -95,18 +67,16 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
     _messageController.clear();
     _scrollToBottom();
-    await Future.delayed(const Duration(milliseconds: 800));
+
     try {
       final response = await _chatbotService.generateResponse(
         userMessage: text,
-        products: _allProducts,
       );
       developer.log(
-        '🤖 CHATBOT: Intent=${response.detectedIntent}',
+        '🤖 CHATBOT: Intent=${response.detectedIntent} Produits=${response.suggestedProducts.length}',
         name: 'ChatbotDebug',
       );
 
-      // ✅ Ajouter le message du bot
       setState(() {
         _messages.add(
           ChatMessage(
@@ -120,16 +90,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         _isLoading = false;
       });
 
-      // ✅ Exécuter l'action si elle existe (redirection, etc)
-      if (response.action != null) {
-        await _handleChatAction(response.action!);
-      }
+      // ✅ Plus de redirection automatique ! Les produits sont affichés dans le chat.
+      // On propose juste un bouton "Voir tous les produits" si pertinent.
+
     } catch (e) {
       developer.log('❌ CHATBOT: Erreur - $e', name: 'ChatbotDebug', error: e);
       setState(() {
         _messages.add(
           ChatMessage(
-            text: '${'erreur'.tr}: $e',
+            text: 'Désolé, une erreur est survenue. Veuillez réessayer.',
             isUser: false,
             timestamp: DateTime.now(),
           ),
@@ -140,31 +109,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     _scrollToBottom();
   }
 
-  Map<String, String> get _quickReplyMessages => {
-    'Voir les smartphones': 'chat_qr_smartphones'.tr,
-    'Voir les ordinateurs': 'chat_qr_computers'.tr,
-    'Voir les vêtements': 'chat_qr_clothes'.tr,
-    'Voir les articles de sport': 'chat_qr_sports'.tr,
-    'Voir les promotions': 'chat_qr_promotions'.tr,
-    'Voir les produits': 'chat_qr_products'.tr,
-    'Suivre ma commande': 'chat_qr_track_order'.tr,
-    'Comment commander ?': 'chat_qr_how_to_order'.tr,
-    'Frais de livraison': 'chat_qr_shipping_fees'.tr,
-    'Aide': 'chat_qr_help'.tr,
-    'Contacter le support': 'chat_qr_contact_support'.tr,
-    'Historique des commandes': 'chat_qr_order_history'.tr,
-    'Nouveautés': 'chat_qr_new_items'.tr,
-    'Produits populaires': 'chat_qr_popular_products'.tr,
-    'Délais de livraison': 'chat_qr_delivery_time'.tr,
-  };
-
-  void _handleQuickReply(String action) {
-    final msg = _quickReplyMessages[action] ?? action;
-    _sendMessage(msg);
-  }
-
   void _scrollToBottom() {
-    Future.delayed(const Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 150), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
@@ -173,65 +119,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         );
       }
     });
-  }
-
-  // ✅ Gérer les actions du chatbot (redirections, etc)
-  Future<void> _handleChatAction(ChatAction action) async {
-    developer.log(
-      '🎯 Action chatbot: ${action.type} -> ${action.target}',
-      name: 'ChatbotDebug',
-    );
-
-    try {
-      switch (action.type) {
-        case ActionType.redirect:
-          // Redirection simple vers une page
-          if (action.target != null) {
-            developer.log(
-              '🔀 Redirection vers: ${action.target}',
-              name: 'ChatbotDebug',
-            );
-            Navigator.pushNamed(context, action.target!);
-          }
-          break;
-
-        case ActionType.filter:
-          // Navigation vers Products avec filtres
-          if (action.target == '/Products' && action.params != null) {
-            developer.log(
-              '🔍 Filtre produits: ${action.params}',
-              name: 'ChatbotDebug',
-            );
-            Navigator.pushNamed(context, action.target!);
-          } else if (action.target != null) {
-            Navigator.pushNamed(context, action.target!);
-          }
-          break;
-
-        case ActionType.url:
-          // Ouvrir une URL externe
-          if (action.target != null) {
-            developer.log(
-              '🌐 Ouverture URL: ${action.target}',
-              name: 'ChatbotDebug',
-            );
-            // Vous pouvez utiliser url_launcher pour ouvrir des URL
-            // launch(action.target!);
-          }
-          break;
-
-        case ActionType.message:
-          // Message seul, aucune action
-          developer.log('💬 Message action', name: 'ChatbotDebug');
-          break;
-      }
-    } catch (e) {
-      developer.log(
-        '❌ Erreur execution action: $e',
-        name: 'ChatbotDebug',
-        error: e,
-      );
-    }
   }
 
   @override
@@ -251,137 +138,180 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           children: [
             CircleAvatar(
               radius: 16,
-              backgroundColor: colorScheme.primary,
-              child: Icon(
-                Icons.smart_toy,
-                size: 20,
-                color: colorScheme.onPrimary,
-              ),
+              backgroundColor: colorScheme.onPrimary.withValues(alpha: 0.2),
+              child: Icon(Icons.smart_toy, size: 18, color: colorScheme.onPrimary),
             ),
-            const SizedBox(width: 8),
-            Text('Assistant'.tr),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Assistant'.tr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16, fontWeight: FontWeight.w600,
+                      color: colorScheme.onPrimary,
+                    )),
+                Text('Gemini AI • En ligne',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11, color: colorScheme.onPrimary.withValues(alpha: 0.75),
+                    )),
+              ],
+            ),
           ],
         ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            tooltip: 'about'.tr,
-            onPressed: () => _showAboutDialog(),
-          ),
-        ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: _messages.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.smart_toy,
-                          size: 64,
-                          color: colorScheme.primary,
-                        ),
-                        const SizedBox(height: 16),
-                        Text('chatbot_starting'.tr),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _messages.length + (_isLoading ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == _messages.length && _isLoading) {
-                        return _buildTypingIndicator();
-                      }
-                      return _buildMessageBubble(_messages[index], colorScheme);
-                    },
-                  ),
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
+              itemCount: _messages.length + (_isLoading ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == _messages.length && _isLoading) {
+                  return _buildTypingIndicator(colorScheme);
+                }
+                return _buildMessageBubble(_messages[index], colorScheme);
+              },
+            ),
           ),
+          // Suggestions rapides
           if (_messages.isNotEmpty && _messages.last.quickReplies.isNotEmpty)
-            _buildQuickReplies(_messages.last.quickReplies),
+            _buildQuickReplies(_messages.last.quickReplies, colorScheme),
           _buildInputArea(colorScheme),
         ],
       ),
     );
   }
 
+  // ── Bulle de message ─────────────────────────────────────────────────────────
   Widget _buildMessageBubble(ChatMessage message, ColorScheme colorScheme) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: message.isUser
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment:
+            message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          if (!message.isUser) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: colorScheme.primary,
-              child: Icon(
-                Icons.smart_toy,
-                size: 16,
-                color: colorScheme.onPrimary,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: message.isUser
-                    ? colorScheme.primary
-                    : colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+          Row(
+            mainAxisAlignment:
+                message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (!message.isUser) ...[
+                CircleAvatar(
+                  radius: 15,
+                  backgroundColor: colorScheme.primary,
+                  child: Icon(Icons.smart_toy, size: 14, color: colorScheme.onPrimary),
+                ),
+                const SizedBox(width: 8),
+              ],
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: message.isUser
+                        ? colorScheme.primary
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(18),
+                      topRight: const Radius.circular(18),
+                      bottomLeft: Radius.circular(message.isUser ? 18 : 4),
+                      bottomRight: Radius.circular(message.isUser ? 4 : 18),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        message.text,
+                        style: GoogleFonts.poppins(
+                          color: message.isUser
+                              ? colorScheme.onPrimary
+                              : colorScheme.onSurface,
+                          fontSize: 14,
+                          height: 1.45,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _formatTime(message.timestamp),
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          color: message.isUser
+                              ? colorScheme.onPrimary.withValues(alpha: 0.65)
+                              : colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+              if (message.isUser) ...[
+                const SizedBox(width: 8),
+                CircleAvatar(
+                  radius: 15,
+                  backgroundColor: colorScheme.primaryContainer,
+                  child: Icon(Icons.person, size: 14, color: colorScheme.onPrimaryContainer),
+                ),
+              ],
+            ],
+          ),
+
+          // ✅ Cartes produits affichées DIRECTEMENT sous la bulle du bot
+          if (!message.isUser && message.suggestedProducts.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(left: 38),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message.text,
-                    style: TextStyle(
-                      color: message.isUser
-                          ? colorScheme.onPrimary
-                          : colorScheme.onSurface,
-                      fontSize: 15,
+                  // Scrollable horizontal de cartes produits
+                  SizedBox(
+                    height: 175,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: message.suggestedProducts.length,
+                      itemBuilder: (ctx, i) =>
+                          _buildProductCard(message.suggestedProducts[i], colorScheme),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatTime(message.timestamp),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: message.isUser
-                          ? colorScheme.onPrimary.withAlpha(178)
-                          : colorScheme.onSurfaceVariant,
+                  // Bouton "Voir tous les produits" en bas des cartes
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, '/Products'),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.5)),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.store_outlined, size: 14, color: colorScheme.primary),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Voir tous les produits →',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: colorScheme.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
-              ),
-            ),
-          ),
-          if (message.isUser) ...[
-            const SizedBox(width: 8),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: colorScheme.primaryContainer,
-              child: Icon(
-                Icons.person,
-                size: 16,
-                color: colorScheme.onPrimaryContainer,
               ),
             ),
           ],
@@ -390,30 +320,147 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     );
   }
 
-  Widget _buildTypingIndicator() {
+  // ── Carte produit ─────────────────────────────────────────────────────────────
+  Widget _buildProductCard(dynamic product, ColorScheme colorScheme) {
+    final String designation = (product['designation'] ?? product.designation ?? 'Produit').toString();
+    final String marque = (product['marque'] ?? product.marque ?? '').toString();
+    final dynamic prixRaw = product['prix'] ?? product.prix ?? 0;
+    final double prix = double.tryParse(prixRaw.toString()) ?? 0;
+    final int stock = int.tryParse((product['qtestock'] ?? product.qtestock ?? 0).toString()) ?? 0;
+    final String imageUrl = (product['imageart'] ?? product.imageart ?? '').toString();
+    final bool inStock = stock > 0;
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/Products'),
+      child: Container(
+        width: 145,
+        margin: const EdgeInsets.only(right: 10),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image produit
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(13)),
+              child: SizedBox(
+                height: 90,
+                width: double.infinity,
+                child: imageUrl.isNotEmpty
+                    ? Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: colorScheme.surfaceContainerHighest,
+                          child: Icon(Icons.image_not_supported_rounded,
+                              color: colorScheme.onSurfaceVariant, size: 28),
+                        ),
+                      )
+                    : Container(
+                        color: colorScheme.surfaceContainerHighest,
+                        child: Icon(Icons.shopping_bag_outlined,
+                            color: colorScheme.onSurfaceVariant, size: 28),
+                      ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(9, 7, 9, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (marque.isNotEmpty)
+                    Text(marque,
+                        style: GoogleFonts.poppins(
+                          fontSize: 9,
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                  Text(designation,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                        height: 1.2,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('${prix.toStringAsFixed(0)} TND',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.primary,
+                          )),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: inStock
+                              ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                              : Colors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          inStock ? '✓ Dispo' : 'Rupture',
+                          style: GoogleFonts.poppins(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                            color: inStock ? const Color(0xFF10B981) : Colors.red,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Typing indicator ─────────────────────────────────────────────────────────
+  Widget _buildTypingIndicator(ColorScheme colorScheme) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
           CircleAvatar(
-            radius: 16,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            child: Icon(
-              Icons.smart_toy,
-              size: 16,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
+            radius: 15,
+            backgroundColor: colorScheme.primary,
+            child: Icon(Icons.smart_toy, size: 14, color: colorScheme.onPrimary),
           ),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(16),
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
+                bottomRight: Radius.circular(18),
+                bottomLeft: Radius.circular(4),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: List.generate(3, (i) => _buildDot(i)),
+              children: List.generate(3, (i) => _buildDot(i, colorScheme)),
             ),
           ),
         ],
@@ -421,67 +468,66 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     );
   }
 
-  Widget _buildDot(int delay) {
-    return TweenAnimationBuilder(
-      duration: Duration(milliseconds: 600 + delay * 200),
-      tween: Tween<double>(begin: 0, end: 1),
-      builder: (context, double value, child) {
-        return Transform.translate(
-          offset: Offset(0, -4 * value),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: delay == 1 ? 4 : 0),
-            child: Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                shape: BoxShape.circle,
-              ),
+  Widget _buildDot(int index, ColorScheme colorScheme) {
+    return TweenAnimationBuilder<double>(
+      duration: Duration(milliseconds: 600 + index * 200),
+      tween: Tween(begin: 0, end: 1),
+      builder: (context, value, child) => Transform.translate(
+        offset: Offset(0, -4 * (value < 0.5 ? value : 1 - value) * 2),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: index == 1 ? 4 : 0),
+          child: Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+              shape: BoxShape.circle,
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  Widget _buildQuickReplies(List<String> replies) {
+  // ── Suggestions rapides ───────────────────────────────────────────────────────
+  Widget _buildQuickReplies(List<String> replies, ColorScheme colorScheme) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: replies
-              .map(
-                (reply) => Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ActionChip(
-                    label: Text(reply),
-                    onPressed: () => _handleQuickReply(reply),
-                    backgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.secondaryContainer,
-                    labelStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      fontWeight: FontWeight.w500,
+              .map((reply) => Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ActionChip(
+                      label: Text(reply,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: colorScheme.primary,
+                          )),
+                      onPressed: () => _sendMessage(reply),
+                      backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.5),
+                      side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.3)),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                     ),
-                  ),
-                ),
-              )
+                  ))
               .toList(),
         ),
       ),
     );
   }
 
+  // ── Zone de saisie ────────────────────────────────────────────────────────────
   Widget _buildInputArea(ColorScheme colorScheme) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
             offset: const Offset(0, -2),
           ),
         ],
@@ -492,76 +538,46 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             Expanded(
               child: TextField(
                 controller: _messageController,
+                style: GoogleFonts.poppins(fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'write_message'.tr,
+                  hintText: 'Posez votre question...',
+                  hintStyle: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(26),
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
                   fillColor: colorScheme.surfaceContainerHighest,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                 ),
                 onSubmitted: _sendMessage,
                 textInputAction: TextInputAction.send,
               ),
             ),
-            const SizedBox(width: 12),
-            CircleAvatar(
-              backgroundColor: colorScheme.primary,
+            const SizedBox(width: 10),
+            Container(
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.primary.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
               child: IconButton(
-                icon: Icon(Icons.send, color: colorScheme.onPrimary),
+                icon: Icon(Icons.send_rounded, color: colorScheme.onPrimary, size: 20),
                 onPressed: () => _sendMessage(_messageController.text),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showAboutDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Assistant'.tr),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('chat_about_intro'.tr),
-            const SizedBox(height: 16),
-            Text('chat_about_help_with'.tr),
-            const SizedBox(height: 8),
-            _buildFeatureItem(Icons.search, 'chat_feature_search'.tr),
-            _buildFeatureItem(Icons.attach_money, 'chat_feature_price'.tr),
-            _buildFeatureItem(Icons.inventory_2, 'chat_feature_stock'.tr),
-            _buildFeatureItem(Icons.local_shipping, 'chat_feature_tracking'.tr),
-            _buildFeatureItem(Icons.help, 'chat_feature_support'.tr),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('close'.tr),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureItem(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 8),
-          Text(text),
-        ],
       ),
     );
   }

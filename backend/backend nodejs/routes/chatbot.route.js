@@ -1,33 +1,91 @@
 const express = require('express');
 const router = express.Router();
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenerativeAI, SchemaType } = require('@google/generative-ai');
 const { Article, Scategorie, Categorie } = require('../models');
 const { Op } = require('sequelize');
 
 // ── Gemini Initialization ─────────────────────────────────────────────────────
-// La clé est sécurisée côté serveur, jamais exposée au client Flutter
-const geminiEnabled = !!process.env.GEMINI_API_KEY && 
+const geminiEnabled = !!process.env.GEMINI_API_KEY &&
                       process.env.GEMINI_API_KEY !== 'VOTRE_CLE_GEMINI_ICI';
 
 let genAI = null;
 let geminiModel = null;
+let extractorModel = null; // Modèle léger pour l'extraction de mots-clés
 
 if (geminiEnabled) {
   genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  geminiModel = genAI.getGenerativeModel({ model: 'gemini-flash-lite-latest' });
-  console.log('✅ Gemini API activé (gemini-flash-lite-latest)');
+
+  // ✅ AMÉLIORATION 1 : systemInstruction séparé de la conversation
+  // Le modèle comprend son rôle TOUJOURS, sans polluer l'historique
+  const systemInstruction = `Tu es un assistant e-commerce intelligent et chaleureux pour une boutique en ligne.
+Tu réponds en FRANÇAIS par défaut, mais tu comprends aussi l'ARABE et l'ANGLAIS.
+Tu es spécialisé dans la recherche de produits, les prix, la disponibilité et l'aide à la navigation.
+Sois précis, amical et concis. Utilise les données produits fournies dans chaque message.
+Si un produit n'est pas dans les données fournies, dis-le honnêtement.`;
+
+  // ✅ AMÉLIORATION 2 : Structured Output (JSON garanti mathématiquement)
+  // Plus jamais d'erreur de parsing, plus besoin de nettoyer les backticks markdown
+  const responseSchema = {
+    type: SchemaType.OBJECT,
+    properties: {
+      intent: {
+        type: SchemaType.STRING,
+        enum: ['greeting', 'productSearch', 'priceInquiry', 'availabilityCheck', 'orderStatus', 'recommendation', 'categoryBrowse', 'delivery', 'help', 'goodbye', 'unknown'],
+        description: "L'intention détectée dans le message de l'utilisateur",
+      },
+      message: {
+        type: SchemaType.STRING,
+        description: "Ta réponse naturelle, amicale et précise à l'utilisateur",
+      },
+      searchTerm: {
+        type: SchemaType.STRING,
+        nullable: true,
+        description: "Le terme de recherche extrait du message, null si pas de recherche",
+      },
+      needsProductList: {
+        type: SchemaType.BOOLEAN,
+        description: "true si la réponse doit afficher la liste des produits",
+      },
+      redirectTo: {
+        type: SchemaType.STRING,
+        nullable: true,
+        description: "Route Flutter vers laquelle rediriger (/Products, /Documents, etc.), null sinon",
+      },
+    },
+    required: ['intent', 'message', 'needsProductList'],
+  };
+
+  // ✅ AMÉLIORATION 3 : gemini-1.5-flash (plus intelligent, reste très rapide)
+  geminiModel = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    systemInstruction,
+    generationConfig: {
+      responseMimeType: 'application/json',
+      responseSchema,
+      maxOutputTokens: 600,
+      temperature: 0.2, // Réponses cohérentes et précises
+    },
+  });
+
+  // Modèle ultra-léger SEULEMENT pour l'extraction du mot-clé de recherche
+  extractorModel = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash-8b',
+    generationConfig: {
+      maxOutputTokens: 50,
+      temperature: 0,
+    },
+  });
+
+  console.log('✅ Gemini API activé (gemini-1.5-flash + Structured Output)');
 } else {
   console.log('⚠️  Gemini API désactivé — mode RegEx fallback actif');
-  console.log('   → Ajoutez GEMINI_API_KEY dans .env pour activer l\'IA');
 }
 
 // ── Mémoire conversationnelle par session (in-memory) ────────────────────────
-// Clé = sessionId (envoyé par Flutter), valeur = historique messages
 const sessionHistory = new Map();
-const SESSION_MAX_MESSAGES = 10; // Garder les 10 derniers échanges
+const SESSION_MAX_MESSAGES = 12; // Garder les 12 derniers échanges
 const SESSION_TTL_MS = 30 * 60 * 1000; // 30 min d'inactivité → reset
 
-// Nettoyage automatique des sessions expirées
 setInterval(() => {
   const now = Date.now();
   for (const [sessionId, session] of sessionHistory.entries()) {
@@ -35,15 +93,44 @@ setInterval(() => {
       sessionHistory.delete(sessionId);
     }
   }
-}, 5 * 60 * 1000); // Vérifier toutes les 5 min
+}, 5 * 60 * 1000);
+
+// ── ✅ AMÉLIORATION 4 : Extraction dynamique du mot-clé via IA ────────────────
+// Remplace la liste hardcodée ['samsung', 'apple', ...] qui était cassée
+async function extractSearchTermWithAI(userMessage) {
+  if (!extractorModel) return null;
+  try {
+    const prompt = `Analyse cette phrase d'un client d'une boutique en ligne.
+Phrase: "${userMessage}"
+Extrais UNIQUEMENT le terme de recherche de produit (marque, type, nom de produit).
+Réponds avec juste le terme en 1-4 mots, ou "NULL" si ce n'est pas une recherche de produit.
+Exemples:
+- "Je cherche un Samsung Galaxy" → "Samsung Galaxy"
+- "Avez-vous des PC Asus ?" → "PC Asus"  
+- "C'est combien une souris gaming ?" → "souris gaming"
+- "Bonjour" → "NULL"
+- "Comment passer une commande ?" → "NULL"`;
+
+    const result = await extractorModel.generateContent(prompt);
+    const term = result.response.text().trim();
+    return (term === 'NULL' || term === '') ? null : term;
+  } catch (e) {
+    console.log('⚠️ Extraction mot-clé échouée, pas de filtre produit:', e.message);
+    return null;
+  }
+}
 
 // ── Chargement des produits depuis MySQL ─────────────────────────────────────
-async function loadProductsForContext(searchTerm = null, limit = 8) {
+async function loadProductsForContext(searchTerm = null, limit = 10) {
   try {
     let where = {};
     if (searchTerm) {
+      // Découpage du terme en mots pour une recherche plus large
+      const words = searchTerm.split(' ').filter(w => w.length > 2);
       where = {
         [Op.or]: [
+          ...words.map(w => ({ designation: { [Op.like]: `%${w}%` } })),
+          ...words.map(w => ({ marque: { [Op.like]: `%${w}%` } })),
           { designation: { [Op.like]: `%${searchTerm}%` } },
           { marque: { [Op.like]: `%${searchTerm}%` } },
         ],
@@ -58,7 +145,7 @@ async function loadProductsForContext(searchTerm = null, limit = 8) {
         include: [{ model: Categorie, as: 'categorie', attributes: ['nomcategorie'] }],
       }],
       limit,
-      order: [['id', 'DESC']],
+      order: searchTerm ? [['id', 'ASC']] : [['id', 'DESC']],
     });
 
     return articles.map(a => {
@@ -66,9 +153,11 @@ async function loadProductsForContext(searchTerm = null, limit = 8) {
       return {
         id: json.id,
         designation: json.designation,
-        marque: json.marque,
+        marque: json.marque || 'N/A',
         prix: json.prix,
         qtestock: json.qtestock,
+        reference: json.reference || '',
+        imageart: json.imageart || '',
         categorie: json.scategorie?.categorie?.nomcategorie ?? 'N/A',
       };
     });
@@ -80,51 +169,14 @@ async function loadProductsForContext(searchTerm = null, limit = 8) {
 
 // ── Formatage des produits pour le prompt ────────────────────────────────────
 function formatProductsForPrompt(products) {
-  if (!products.length) return 'Aucun produit trouvé en base de données.';
+  if (!products.length) return 'Aucun produit trouvé en base de données pour ce terme.';
   return products.map((p, i) =>
-    `${i + 1}. ${p.designation} | Marque: ${p.marque} | Prix: ${p.prix} DA | Stock: ${p.qtestock} unités | Catégorie: ${p.categorie}`
+    `${i + 1}. ${p.designation} | Marque: ${p.marque} | Prix: ${p.prix} TND | Stock: ${p.qtestock} | Catégorie: ${p.categorie}`
   ).join('\n');
-}
-
-// ── Prompt système Gemini ────────────────────────────────────────────────────
-function buildSystemPrompt(products) {
-  const productsText = formatProductsForPrompt(products);
-
-  return `Tu es un assistant intelligent pour une boutique e-commerce algérienne.
-Tu réponds en FRANÇAIS par défaut, mais tu comprends aussi l'ARABE et l'ANGLAIS.
-Tu es capable de comprendre les fautes de frappe et les variations de langue.
-
-## PRODUITS ACTUELLEMENT EN BASE DE DONNÉES (données réelles MySQL):
-${productsText}
-
-## TES CAPACITÉS:
-- Rechercher des produits par nom, marque, catégorie
-- Donner les prix exacts depuis la base de données
-- Vérifier le stock disponible
-- Guider l'utilisateur dans sa navigation
-- Répondre aux questions sur les commandes et la livraison
-- Recommander des produits
-
-## FORMAT DE RÉPONSE OBLIGATOIRE (JSON strict, rien d'autre):
-{
-  "intent": "greeting|productSearch|priceInquiry|availabilityCheck|orderStatus|recommendation|categoryBrowse|delivery|help|goodbye|unknown",
-  "message": "Ta réponse naturelle et amicale ici",
-  "searchTerm": "terme_recherche_ou_null",
-  "action": null ou {"type": "redirect|filter|message", "target": "/Products", "params": {}}
-}
-
-## RÈGLES IMPORTANTES:
-1. Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks
-2. Le champ "message" doit être naturel, chaleureux et utile
-3. Si l'utilisateur mentionne un produit spécifique, mets son nom dans "searchTerm"
-4. Pour les prix et stocks, utilise EXACTEMENT les données fournies ci-dessus
-5. Si une info n'est pas dans les données, dis-le honnêtement`;
 }
 
 // ── Appel Gemini avec historique conversationnel ─────────────────────────────
 async function callGemini(userMessage, sessionId, products) {
-  const systemPrompt = buildSystemPrompt(products);
-
   // Récupérer/créer la session
   if (!sessionHistory.has(sessionId)) {
     sessionHistory.set(sessionId, { messages: [], lastActivity: Date.now() });
@@ -132,56 +184,30 @@ async function callGemini(userMessage, sessionId, products) {
   const session = sessionHistory.get(sessionId);
   session.lastActivity = Date.now();
 
-  // Construire l'historique pour Gemini (format parts[])
+  // Construire l'historique pour Gemini
   const historyParts = session.messages.slice(-SESSION_MAX_MESSAGES).map(msg => ({
     role: msg.role,
     parts: [{ text: msg.text }],
   }));
 
-  // Créer le chat avec historique
-  const chat = geminiModel.startChat({
-    history: historyParts,
-    generationConfig: {
-      maxOutputTokens: 500,
-      temperature: 0.3, // Réponses cohérentes (0=déterministe, 1=créatif)
-    },
-  });
+  const chat = geminiModel.startChat({ history: historyParts });
 
-  // Message complet avec contexte produits (uniquement le premier tour ou si contexte change)
-  const fullMessage = session.messages.length === 0
-    ? `${systemPrompt}\n\nUtilisateur: ${userMessage}`
-    : userMessage;
+  // ✅ Le contexte produits est injecté dans CHAQUE message utilisateur
+  // (pas seulement le premier), pour que les données soient toujours fraîches
+  const productsContext = products.length > 0
+    ? `\n\n--- PRODUITS DISPONIBLES EN BASE DE DONNÉES ---\n${formatProductsForPrompt(products)}\n---`
+    : '\n\n--- Aucun produit spécifique trouvé pour cette recherche. ---';
 
-  const result = await chat.sendMessage(fullMessage);
-  const responseText = result.response.text().trim();
+  const fullUserMessage = `${userMessage}${productsContext}`;
 
-  // Sauvegarder dans l'historique
+  const result = await chat.sendMessage(fullUserMessage);
+  const responseText = result.response.text();
+
+  // Sauvegarder uniquement le vrai message dans l'historique (sans le contexte produits)
   session.messages.push({ role: 'user', text: userMessage });
   session.messages.push({ role: 'model', text: responseText });
 
   return responseText;
-}
-
-// ── Parsing sécurisé du JSON Gemini ─────────────────────────────────────────
-function parseGeminiResponse(rawText) {
-  try {
-    // Nettoyer les backticks markdown si Gemini en ajoute malgré les instructions
-    const cleaned = rawText
-      .replace(/```json\s*/gi, '')
-      .replace(/```\s*/gi, '')
-      .trim();
-    return JSON.parse(cleaned);
-  } catch (e) {
-    console.error('❌ Parsing JSON Gemini échoué:', e.message);
-    console.error('   Texte reçu:', rawText.substring(0, 200));
-    // Retourner une réponse de secours
-    return {
-      intent: 'unknown',
-      message: rawText, // Afficher le texte brut si pas JSON
-      searchTerm: null,
-      action: null,
-    };
-  }
 }
 
 // ── Fallback RegEx (si Gemini non configuré) ─────────────────────────────────
@@ -204,19 +230,6 @@ function detectIntentFallback(message) {
   return 'unknown';
 }
 
-function extractSearchTermFallback(message) {
-  const msg = message.toLowerCase();
-  const brands = ['samsung', 'apple', 'iphone', 'huawei', 'xiaomi', 'sony', 'lg', 'nokia', 'oppo'];
-  for (const brand of brands) {
-    if (msg.includes(brand)) return brand;
-  }
-  const categories = ['smartphone', 'ordinateur', 'vêtement', 'vetement', 'sport', 'casque', 'tablette'];
-  for (const cat of categories) {
-    if (msg.includes(cat)) return cat;
-  }
-  return null;
-}
-
 async function buildFallbackResponse(intent, searchTerm) {
   const products = await loadProductsForContext(searchTerm, 5);
   const responses = {
@@ -226,8 +239,8 @@ async function buildFallbackResponse(intent, searchTerm) {
     availabilityCheck: '📊 Voici les articles actuellement en stock:',
     categoryBrowse:    '📂 Parcourez nos catégories:',
     recommendation:    '🎁 Découvrez nos meilleures offres:',
-    orderStatus:       '📋 Pour suivre votre commande, consultez votre email de confirmation ou contactez-nous.',
-    help:              '❓ Je peux vous aider avec:\n• Rechercher des produits\n• Vérifier les prix et stocks\n• Infos de livraison\n• Suivre une commande',
+    orderStatus:       '📋 Pour suivre votre commande, consultez votre email de confirmation.',
+    help:              '❓ Je peux vous aider avec:\n• Rechercher des produits\n• Vérifier les prix et stocks\n• Infos de livraison',
     goodbye:           '👋 Au revoir ! Merci de votre visite. À bientôt !',
     unknown:           '❓ Je n\'ai pas bien compris. Pouvez-vous reformuler ? (ex: "je cherche un samsung")',
   };
@@ -237,7 +250,6 @@ async function buildFallbackResponse(intent, searchTerm) {
     type: 'filter',
     target: '/Products',
     params: searchTerm ? { search: searchTerm } : {},
-    message: '📦 Affichage des produits...',
   } : null;
 
   return {
@@ -251,7 +263,6 @@ async function buildFallbackResponse(intent, searchTerm) {
 }
 
 // ── Main Endpoint ─────────────────────────────────────────────────────────────
-// POST /api/chatbot/process
 router.post('/process', async (req, res) => {
   try {
     const { userMessage, sessionId = 'default' } = req.body;
@@ -265,50 +276,55 @@ router.post('/process', async (req, res) => {
     // ── MODE GEMINI ──────────────────────────────────────────────────────────
     if (geminiEnabled) {
       try {
-        // 1. Extraire un terme de recherche rapide (pour précharger les produits pertinents)
-        const quickSearch = extractSearchTermFallback(userMessage);
+        // ✅ ÉTAPE 1 : Extraction intelligente du terme de recherche via IA (rapide)
+        const searchTerm = await extractSearchTermWithAI(userMessage);
+        console.log(`🔍 [Chatbot] Terme extrait par IA: "${searchTerm ?? 'aucun'}"`);
 
-        // 2. Charger les produits pertinents depuis MySQL (contexte réel pour Gemini)
-        const products = await loadProductsForContext(quickSearch, 8);
-        console.log(`📦 [Chatbot] ${products.length} produits chargés pour le contexte Gemini`);
+        // ✅ ÉTAPE 2 : Chargement des produits VRAIMENT pertinents depuis MySQL
+        const products = await loadProductsForContext(searchTerm, 10);
+        console.log(`📦 [Chatbot] ${products.length} produits chargés${searchTerm ? ` pour "${searchTerm}"` : ''}`);
 
-        // 3. Appeler Gemini avec contexte + historique conversation
-        const rawGeminiResponse = await callGemini(userMessage, sessionId, products);
-        console.log(`🤖 [Gemini] Réponse brute: ${rawGeminiResponse.substring(0, 150)}...`);
+        // ✅ ÉTAPE 3 : Appel Gemini avec contexte produits + historique conversation
+        const rawResponse = await callGemini(userMessage, sessionId, products);
+        console.log(`🤖 [Gemini] Réponse: ${rawResponse.substring(0, 120)}...`);
 
-        // 4. Parser le JSON retourné par Gemini
-        const parsed = parseGeminiResponse(rawGeminiResponse);
+        // ✅ ÉTAPE 4 : Parsing JSON garanti par le Structured Output
+        const parsed = JSON.parse(rawResponse);
 
-        // 5. Recharger les produits filtrés si Gemini a identifié un searchTerm
-        let finalProducts = products;
-        if (parsed.searchTerm && parsed.searchTerm !== quickSearch) {
-          finalProducts = await loadProductsForContext(parsed.searchTerm, 5);
+        // ✅ ÉTAPE 5 : Construction de l'action de navigation si nécessaire
+        let action = null;
+        if (parsed.redirectTo) {
+          action = { type: 'redirect', target: parsed.redirectTo, params: {} };
+        } else if (parsed.needsProductList && products.length > 0) {
+          action = {
+            type: 'filter',
+            target: '/Products',
+            params: searchTerm ? { search: searchTerm } : {},
+          };
         }
 
         const response = {
           intent: parsed.intent ?? 'unknown',
           message: parsed.message ?? 'Je n\'ai pas compris.',
-          action: parsed.action ?? null,
-          products: finalProducts,
+          action,
+          products,
+          searchTerm,
           source: 'gemini',
         };
 
-        console.log(`✅ [Chatbot] Intent="${response.intent}" Produits=${finalProducts.length}`);
+        console.log(`✅ [Chatbot] Intent="${response.intent}" Produits=${products.length}`);
         return res.status(200).json(response);
 
       } catch (geminiError) {
         console.error('❌ [Gemini] Erreur:', geminiError.message);
         console.log('⚠️  Basculement vers le fallback RegEx...');
-        // Continuer vers le fallback ci-dessous
       }
     }
 
-    // ── MODE FALLBACK REGEX (si Gemini désactivé ou en erreur) ──────────────
+    // ── MODE FALLBACK REGEX ──────────────────────────────────────────────────
     const intent = detectIntentFallback(userMessage);
-    const searchTerm = extractSearchTermFallback(userMessage);
-    const fallbackResponse = await buildFallbackResponse(intent, searchTerm);
-
-    console.log(`⚡ [Fallback] Intent="${intent}" SearchTerm="${searchTerm}"`);
+    const fallbackResponse = await buildFallbackResponse(intent, null);
+    console.log(`⚡ [Fallback] Intent="${intent}"`);
     return res.status(200).json(fallbackResponse);
 
   } catch (error) {
@@ -321,7 +337,6 @@ router.post('/process', async (req, res) => {
 });
 
 // ── Reset conversation session ────────────────────────────────────────────────
-// DELETE /api/chatbot/session/:sessionId
 router.delete('/session/:sessionId', (req, res) => {
   const { sessionId } = req.params;
   if (sessionHistory.has(sessionId)) {
