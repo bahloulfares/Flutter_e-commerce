@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import 'chat_action.dart';
-// For BASE_URL
+import 'package:atelier7/utils/config.dart'; // baseUrl défini ici
 
 /// Types d'intentions pour le chatbot e-commerce
 enum ChatIntent {
@@ -39,9 +39,11 @@ class ChatResponse {
   });
 }
 
-/// Service principal du chatbot — basé sur règles locales
+/// Service principal du chatbot — Gemini NLU + fallback local
 class ChatbotService {
   final List<_ChatMsg> _history = [];
+  // SessionId unique par instance du service (mémoire conversationnelle Gemini)
+  final String _sessionId = 'session_${DateTime.now().millisecondsSinceEpoch}';
 
   // ── Patterns d'intention ──────────────────────────────────────────────────
   static final Map<ChatIntent, List<RegExp>> _patterns = {
@@ -268,13 +270,13 @@ class ChatbotService {
     }
   }
 
-  // ── Appel au backend ──────────────────────────────────────────────────────
+  // ── Appel au backend (Gemini NLU intégré côté serveur) ──────────────────
   Future<Map<String, dynamic>?> _callBackendChatbot(String userMessage) async {
     try {
-      // Configuration de l'URL
-      const String apiUrl = 'http://192.168.100.139:3001/api/chatbot/process';
+      // ✅ URL dynamique depuis config.dart (plus d'IP hardcodée)
+      final String apiUrl = '$baseUrl/api/chatbot/process';
 
-      developer.log('🌐 Appel backend: $apiUrl avec message: "$userMessage"');
+      developer.log('🌐 Appel backend Gemini: $apiUrl', name: 'ChatbotDebug');
 
       final response = await http
           .post(
@@ -283,28 +285,35 @@ class ChatbotService {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
             },
-            body: jsonEncode({'userMessage': userMessage}),
+            body: jsonEncode({
+              'userMessage': userMessage,
+              'sessionId': _sessionId, // Mémoire conversationnelle Gemini
+            }),
           )
           .timeout(
-            const Duration(seconds: 5),
+            const Duration(seconds: 15), // Gemini peut prendre plus longtemps
             onTimeout: () {
-              developer.log('⏱️ Timeout backend chatbot');
+              developer.log('⏱️ Timeout backend Gemini', name: 'ChatbotDebug');
               throw Exception('Backend timeout');
             },
           );
 
-      developer.log('📡 Réponse backend: ${response.statusCode}');
+      developer.log('📡 Réponse: ${response.statusCode}', name: 'ChatbotDebug');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        developer.log('✅ Réponse backend OK: ${data['intent']}');
+        final source = data['source'] ?? 'unknown';
+        developer.log(
+          '✅ OK | Source=$source | Intent=${data['intent']}',
+          name: 'ChatbotDebug',
+        );
         return data;
       } else {
-        developer.log('❌ Status ${response.statusCode}: ${response.body}');
+        developer.log('❌ Status ${response.statusCode}', name: 'ChatbotDebug');
         return null;
       }
     } catch (e) {
-      developer.log('❌ Erreur appel backend: $e');
+      developer.log('❌ Erreur appel backend: $e', name: 'ChatbotDebug');
       return null;
     }
   }
