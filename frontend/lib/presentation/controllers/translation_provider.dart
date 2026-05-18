@@ -21,149 +21,41 @@ class TranslationProvider extends GetxController {
   // Exemple: "categories" -> "Catégories" (si langue = fr)
   final translations = <String, String>{}.obs;
 
-  // Ensemble de textes à traduire
-  final Set<String> _textSet = {
-    // ===== MENU PRINCIPAL (Sidebar) =====
-    'accueil',
-    'categories',
-    'Sous-catégories',
-    'Articles (admin)',
-    'commandes',
-    'utilisateurs',
-    'produits',
-    'panier',
-    'profil',
-    'parametres',
-    'inscription',
-    'connexion',
-    'deconnexion',
-    'ADMIN',
-    'Utilisateur',
-    'About app',
+  // Ensemble de textes à traduire, alimenté dynamiquement
+  final Set<String> _textSet = {};
 
-    // ===== APPBAR / NAV =====
-    'boutique',
-    'Assistant',
-    'shopping_cart',
-
-    // ===== SHOPPING / CART =====
-    'Ajouter au panier',
-    'Supprimer',
-    'Total',
-    'Panier vide',
-    'Shop now',
-    'Passer la commande',
-    'Product removed from cart',
-    'Product not found in the cart',
-
-    // Currency / misc
-    'TND',
-    'Scanner un produit',
-    'bienvenue',
-    'client',
-
-    // ===== SETTINGS =====
-    'Theme',
-    'Language',
-    'Notifications',
-    'Biometric',
-    'Face ID',
-    'Activer Face ID',
-    'Activer l\'empreinte',
-    'Entrez vos identifiants pour confirmer :',
-    'Face ID activé(e) avec succès',
-    'Identifiants invalides ou biométrie non disponible',
-
-    // ===== PRODUITS / ARTICLES =====
-    'Scanner avec la caméra',
-    'Scanner depuis la galerie',
-    'Référence détectée',
-    'Référence déjà existante',
-    'Erreur scan galerie',
-    'Image uploadée avec succès',
-    'Erreur upload image',
-    'rechercher',
-    'tout',
-    'aucun_produit',
-    'retirer',
-    'ajouter',
-
-    // ===== COMMANDES / ORDERS =====
-    'Commande #',
-    'Commande confirmée !',
-    'Merci pour votre commande',
-    'Changer le statut :',
-    'Not processed',
-    'Processing',
-    'Shipped',
-    'Delivered',
-    'Cancelled',
-    'Statut mis à jour',
-    'Erreur mise à jour',
-    'Supprimer la commande ?',
-
-    // ===== GESTION ADMIN =====
-    'Aucune sous-catégorie',
-    'Supprimer la sous-catégorie ?',
-    'Supprimé avec succès',
-    'Erreur suppression',
-    'Modifier le rôle de',
-    'Annuler',
-    'Vous ne pouvez pas supprimer votre propre compte',
-    'Supprimer l\'utilisateur ?',
-    'rôle changé à',
-
-    // ===== FORMULAIRES =====
-    'Category name',
-    'Créer un compte',
-    'Inscrivez-vous pour accéder à toutes les fonctionnalités',
-    'Nom',
-    'Email',
-    'Password',
-    'Retape Password',
-    'Compte créé avec succès',
-    'Placez votre visage dans le cadre et appuyez sur le bouton',
-    'Regardez la caméra pour vous connecter',
-    'Visage reconnu',
-    'Trop de tentatives',
-    'Permission biométrique refusée',
-    'Biométrie non disponible',
-    'Authentification échouée',
-
-    // ===== MESSAGES COMMUNS =====
-    'Placez le code-barres dans le cadre',
-    'Détails de la commande',
-    'loading',
-    'error',
-    'success',
-    'ok',
-    'cancel',
-    'done',
-    'Ajouter',
-    'Modifier',
-    'Accueil',
-    'PICK FROM GALLERY',
-    'PICK FROM CAMERA',
-    'Image non disponible',
-  };
+  // Stockage local des traductions pour accès avant que GetMaterialApp ne monte
+  Map<String, Map<String, String>> _allTranslations = {};
 
   @override
   void onInit() {
     super.onInit();
     _mlkitManager.setSourceLanguage(sourceLanguage.value);
-    _seedNativeTranslations();
     developer.log(
-      '🚀 TranslationProvider initialisé. Langue source: ${sourceLanguage.value}',
+      '🚀 TranslationProvider initialisé. En attente des clés...',
       name: 'TranslationProvider',
     );
   }
 
-  /// Charge les textes natifs de base pour la langue source.
-  /// Comme l'app démarre en français, la version native est une identité.
-  void _seedNativeTranslations() {
+  void init(Map<String, Map<String, String>> allTranslations) {
+    _allTranslations = allTranslations;
+    // Charge les clés
+    final Map<String, String>? sourceTranslations = allTranslations[sourceLanguage.value];
+    if (sourceTranslations != null) {
+      _textSet.addAll(sourceTranslations.keys);
+      developer.log('✅ ${_textSet.length} clés chargées dynamiquement', name: 'TranslationProvider');
+    }
+
+    // Charge les textes natifs
     translations.clear();
-    for (final key in _textSet) {
-      translations[key] = key;
+    if (sourceTranslations != null) {
+      for (final key in _textSet) {
+        translations[key] = sourceTranslations[key] ?? key;
+      }
+    } else {
+      for (final key in _textSet) {
+        translations[key] = key;
+      }
     }
   }
 
@@ -189,15 +81,22 @@ class TranslationProvider extends GetxController {
       // Étape 1: Définir la langue actuelle
       currentLanguage.value = newLanguage;
 
-      // Si on revient à la langue source, réinitialiser l'affichage natif.
-      if (newLanguage == sourceLanguage.value) {
-        _seedNativeTranslations();
+      // Si on revient à la langue source ou si la langue cible existe dans les JSON, on utilise les JSON !
+      // Cela évite de faire appel à ML Kit si on a déjà la traduction en dur.
+      final targetTranslations = _allTranslations[newLanguage] ?? Get.translations[newLanguage];
+      if (targetTranslations != null && targetTranslations.isNotEmpty) {
+        translations.clear();
+        for (final key in _textSet) {
+          translations[key] = targetTranslations[key] ?? key;
+        }
         developer.log(
-          '✅ Langue source restaurée, textes natifs réinitialisés',
+          '✅ Langue $newLanguage chargée depuis les fichiers JSON natifs (${translations.length} clés)',
           name: 'TranslationProvider',
         );
-        return;
+        return; // ON ARRÊTE LÀ, PAS DE ML KIT SI ON A LE JSON !
       }
+
+      // --- LOGIQUE FALLBACK ML KIT (si pas de JSON pour cette langue) ---
 
       // Étape 2: Si langue source change aussi, vider le cache
       if (sourceLanguage.value != newLanguage) {
@@ -207,20 +106,22 @@ class TranslationProvider extends GetxController {
       // Étape 3: Traduire TOUS les textes en parallèle
       final textList = _textSet.toList();
       developer.log(
-        '📝 Traduction de ${textList.length} textes vers $newLanguage...',
+        '📝 Traduction de ${textList.length} textes vers $newLanguage via MLKit...',
         name: 'TranslationProvider',
       );
 
-      final translatedTexts = await _mlkitManager.translateMultiple(
-        textList,
+      // On traduit les VALEURS de la langue source, pas les CLÉS
+      final sourceValuesList = textList.map((k) => Get.translations[sourceLanguage.value]?[k] ?? k).toList();
+      final translatedValues = await _mlkitManager.translateMultiple(
+        sourceValuesList,
         newLanguage,
       );
 
-      // Étape 4: Mettre à jour la map réactive
-      translations.clear(); // Vider l'ancienne map
-      translatedTexts.forEach((key, value) {
-        translations[key] = value;
-      });
+      // Étape 4: Mettre à jour la map réactive avec les nouvelles valeurs
+      translations.clear();
+      for (int i = 0; i < textList.length; i++) {
+        translations[textList[i]] = translatedValues[sourceValuesList[i]] ?? textList[i];
+      }
 
       developer.log(
         '✅ Tous les textes traduits! Map mise à jour avec ${translations.length} entrées.',
@@ -245,11 +146,8 @@ class TranslationProvider extends GetxController {
     if (translations.containsKey(key)) {
       return translations[key]!;
     }
-    developer.log(
-      '⚠️ Clé "$key" non trouvée dans les traductions',
-      name: 'TranslationProvider',
-    );
-    return key; // Retourner la clé elle-même comme fallback
+    // Fallback silencieux vers le système natif de GetX
+    return key.tr;
   }
 
   /// ✅ Ajouter un nouveau texte à traduire (dynamique)

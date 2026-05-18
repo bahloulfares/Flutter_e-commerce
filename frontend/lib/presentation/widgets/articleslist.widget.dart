@@ -31,6 +31,8 @@ class ArticlesListWidget extends StatelessWidget {
                   articles.imageart.toString(),
                   width: 68,
                   height: 68,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.broken_image, size: 68, color: Colors.grey),
                 ),
                 const SizedBox(
                   width: 10,

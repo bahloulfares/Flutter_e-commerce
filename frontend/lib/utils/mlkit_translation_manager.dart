@@ -22,7 +22,7 @@ class MLKitTranslationManager {
   final Map<String, String> _translationCache = {};
 
   // Langage source par défaut
-  String _sourceLanguage = 'en';
+  String _sourceLanguage = 'fr';
 
   // Manager des modèles
   final OnDeviceTranslatorModelManager _modelManager =

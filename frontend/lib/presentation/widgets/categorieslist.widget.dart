@@ -21,6 +21,8 @@ class Categorieslistwidget extends StatelessWidget {
             categories.imagecategorie,
             width: 68,
             height: 68,
+            errorBuilder: (context, error, stackTrace) =>
+                const Icon(Icons.broken_image, size: 68, color: Colors.grey),
           ),
           title: Text(categories.nomcategorie),
           trailing: Obx(() {

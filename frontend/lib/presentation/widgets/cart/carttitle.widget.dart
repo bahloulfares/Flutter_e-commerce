@@ -55,6 +55,8 @@ class CartTitleWidget extends StatelessWidget {
                 data.productImages![0].toString(),
                 width: 68,
                 height: 68,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.broken_image, size: 68, color: Colors.grey),
               ),
               const SizedBox(width: 10),
               Expanded(

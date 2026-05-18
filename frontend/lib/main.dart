@@ -85,7 +85,8 @@ void main() async {
   Get.put(LanguageController());
 
   // 🎯 Initialiser le TranslationProvider (100% ML Kit)
-  Get.put(TranslationProvider());
+  final translationProvider = Get.put(TranslationProvider());
+  translationProvider.init(translations.keys);
   // Synchroniser ML Kit avec la langue courante du LanguageController
   await Get.find<LanguageController>().syncMlKitTranslation();
 
