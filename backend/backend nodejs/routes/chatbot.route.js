@@ -55,9 +55,9 @@ Si un produit n'est pas dans les données fournies, dis-le honnêtement.`;
     required: ['intent', 'message', 'needsProductList'],
   };
 
-  // ✅ AMÉLIORATION 3 : gemini-1.5-flash (plus intelligent, reste très rapide)
+  // ✅ AMÉLIORATION 3 : Modèle flash-lite-latest (compatible avec votre clé API)
   geminiModel = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-flash-lite-latest',
     systemInstruction,
     generationConfig: {
       responseMimeType: 'application/json',
@@ -69,7 +69,7 @@ Si un produit n'est pas dans les données fournies, dis-le honnêtement.`;
 
   // Modèle ultra-léger SEULEMENT pour l'extraction du mot-clé de recherche
   extractorModel = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash-8b',
+    model: 'gemini-flash-lite-latest',
     generationConfig: {
       maxOutputTokens: 50,
       temperature: 0,
@@ -95,9 +95,47 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
-// ── ✅ AMÉLIORATION 4 : Extraction dynamique du mot-clé via IA ────────────────
-// Remplace la liste hardcodée ['samsung', 'apple', ...] qui était cassée
+// ── Extraction locale du mot-clé (rapide, fiable, sans appel API) ─────────────
+// Utilisé en PREMIER, avant toute tentative IA, pour garantir un résultat rapide
+function extractSearchTermLocal(userMessage) {
+  const msg = userMessage.toLowerCase();
+
+  // 1. Marques connues dans votre base
+  const brands = [
+    'samsung', 'xiaomi', 'xioami', 'lenovo', 'dell', 'huawei', 'tecno',
+    'infinix', 'versus', 'delice', 'adidas', 'nike', 'apple', 'iphone',
+    'sony', 'lg', 'asus', 'hp', 'acer', 'oppo', 'realme',
+  ];
+  for (const brand of brands) {
+    if (msg.includes(brand)) return brand;
+  }
+
+  // 2. Types de produits
+  const products = [
+    'smartphone', 'téléphone', 'telephone', 'portable', 'mobile',
+    'ordinateur', 'laptop', 'pc portable', 'tablette', 'tablet',
+    'casque', 'écran', 'ecran', 'chargeur', 'cable',
+    'vêtement', 'vetement', 'chemise', 'pantalon', 'robe', 'chaussure',
+    'lait', 'jus', 'eau', 'huile', 'farine', 'thon',
+    'sport', 'football', 'basket',
+  ];
+  for (const prod of products) {
+    if (msg.includes(prod)) return prod;
+  }
+
+  return null;
+}
+
+// ── ✅ Extraction hybride : Local d'abord (immédiat), IA en secours ────────────
 async function extractSearchTermWithAI(userMessage) {
+  // ÉTAPE 1 : Essai local immédiat (0ms, 100% fiable)
+  const localTerm = extractSearchTermLocal(userMessage);
+  if (localTerm) {
+    console.log(`🔍 [Local] Terme extrait localement: "${localTerm}"`);
+    return localTerm;
+  }
+
+  // ÉTAPE 2 : Si la regex locale n'a rien trouvé, on essaie l'IA
   if (!extractorModel) return null;
   try {
     const prompt = `Analyse cette phrase d'un client d'une boutique en ligne.
@@ -112,10 +150,12 @@ Exemples:
 - "Comment passer une commande ?" → "NULL"`;
 
     const result = await extractorModel.generateContent(prompt);
-    const term = result.response.text().trim();
-    return (term === 'NULL' || term === '') ? null : term;
+    const term = result.response.text().trim().replace(/['"]/g, '');
+    const found = (term === 'NULL' || term === '' || term.length > 40) ? null : term;
+    console.log(`🤖 [IA] Terme extrait: "${found ?? 'aucun'}"`);
+    return found;
   } catch (e) {
-    console.log('⚠️ Extraction mot-clé échouée, pas de filtre produit:', e.message);
+    console.log('⚠️ Extraction IA échouée, pas de filtre:', e.message);
     return null;
   }
 }
@@ -323,8 +363,9 @@ router.post('/process', async (req, res) => {
 
     // ── MODE FALLBACK REGEX ──────────────────────────────────────────────────
     const intent = detectIntentFallback(userMessage);
-    const fallbackResponse = await buildFallbackResponse(intent, null);
-    console.log(`⚡ [Fallback] Intent="${intent}"`);
+    const fallbackSearchTerm = extractSearchTermLocal(userMessage); // On extrait le mot en local
+    const fallbackResponse = await buildFallbackResponse(intent, fallbackSearchTerm);
+    console.log(`⚡ [Fallback] Intent="${intent}" SearchTerm="${fallbackSearchTerm}"`);
     return res.status(200).json(fallbackResponse);
 
   } catch (error) {
