@@ -60,7 +60,7 @@ class _CartViewState extends State<CartViewItem> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            tr('Total'),
+                            tr('total'),
                             style: GoogleFonts.poppins(
                               color: colorScheme.onSurfaceVariant,
                               fontSize: 18,
@@ -94,7 +94,7 @@ class _CartViewState extends State<CartViewItem> {
                             ),
                           ),
                           child: Text(
-                            tr('Passer la commande'),
+                            tr('checkout'),
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

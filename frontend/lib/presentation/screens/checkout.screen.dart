@@ -243,7 +243,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Total:',
+                      '${'total'.tr}:',
                       style: GoogleFonts.poppins(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -286,7 +286,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Informations de livraison',
+                      'delivery_info'.tr,
                       style: GoogleFonts.poppins(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -299,7 +299,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                        labelText: 'Nom complet *',
+                        labelText: '${'fullname'.tr} *',
                         prefixIcon: const Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -309,7 +309,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Le nom est requis';
+                          return 'name_required_validation'.tr;
                         }
                         return null;
                       },
@@ -322,7 +322,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
-                        labelText: 'Téléphone *',
+                        labelText: '${'phone'.tr} *',
                         prefixIcon: const Icon(Icons.phone_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -332,7 +332,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Le téléphone est requis';
+                          return 'required_field'.tr;
                         }
                         if (value.length < 8) {
                           return 'Numéro invalide';
@@ -348,7 +348,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       controller: _addressController,
                       maxLines: 3,
                       decoration: InputDecoration(
-                        labelText: 'Adresse de livraison *',
+                        labelText: '${'address'.tr} *',
                         prefixIcon: const Icon(Icons.location_on_outlined),
                         alignLabelWithHint: true,
                         border: OutlineInputBorder(
@@ -359,7 +359,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'L\'adresse est requise';
+                          return 'required_field'.tr;
                         }
                         return null;
                       },
@@ -418,7 +418,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ),
                           )
                         : Text(
-                            'Confirmer la commande',
+                            'confirm_order'.tr,
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

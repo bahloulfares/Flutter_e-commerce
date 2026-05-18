@@ -58,7 +58,7 @@ class OrderConfirmationScreen extends StatelessWidget {
 
               // Success Message
               Text(
-                'Commande confirmée !',
+                'confirmation'.tr,
                 style: GoogleFonts.poppins(
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
@@ -70,7 +70,7 @@ class OrderConfirmationScreen extends StatelessWidget {
               const SizedBox(height: 12),
 
               Text(
-                'Merci pour votre commande',
+                'thank_you_order'.tr,
                 style: GoogleFonts.poppins(
                   fontSize: 15,
                   color: colorScheme.onSurfaceVariant,
@@ -94,7 +94,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Détails de la commande',
+                        'order_details'.tr,
                         style: GoogleFonts.poppins(
                           fontSize: 17,
                           fontWeight: FontWeight.w600,
@@ -104,21 +104,21 @@ class OrderConfirmationScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       _buildDetailRow(
                         context,
-                        'Numéro de commande',
+                        'order_number_label'.tr,
                         '#${order['id']?.toString() ?? 'N/A'}',
                         Icons.receipt_long,
                       ),
                       const Divider(height: 24),
                       _buildDetailRow(
                         context,
-                        'Montant total',
+                        'total_amount'.tr,
                         '${_safeToDouble(order['total']).toStringAsFixed(2)} TND',
                         Icons.payments,
                       ),
                       const Divider(height: 24),
                       _buildDetailRow(
                         context,
-                        'Statut',
+                        'status'.tr,
                         order['status'] ?? 'Not processed',
                         Icons.info_outline,
                         statusColor:
@@ -127,7 +127,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                       const Divider(height: 24),
                       _buildDetailRow(
                         context,
-                        'Date',
+                        'date'.tr,
                         _formatDate(order['createdAt']),
                         Icons.calendar_today,
                       ),
@@ -150,7 +150,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Nous traiterons votre commande dans les plus brefs délais.',
+                        'order_will_be_processed'.tr,
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           color: colorScheme.onSurface,
@@ -178,7 +178,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Continuer mes achats',
+                    'continue_shopping'.tr,
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -203,7 +203,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Retour à l\'accueil',
+                    'back_home'.tr,
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

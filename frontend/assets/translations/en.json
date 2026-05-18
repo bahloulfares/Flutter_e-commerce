@@ -64,8 +64,8 @@
   "settings": "Settings",
   "app_preferences": "App preferences",
   "Product removed from cart.": "Product removed from cart.",
-  "Product not found in the cart.": "Product not found in the cart."
-  ,"cancel": "Cancel",
+  "Product not found in the cart.": "Product not found in the cart.",
+  "cancel": "Cancel",
   "activate": "Activate",
   "continue": "Continue",
   "download_model": "Download model",
@@ -81,175 +81,202 @@
   "verify_credentials": "Verify your credentials:",
   "model_available": "Model available",
   "model_not_downloaded": "Model not downloaded",
-  "download_in_progress": "Download in progress..."
-  ,"login_subtitle": "Enter your information to continue"
-  ,"email": "Email"
-  ,"password": "Password"
-  ,"login_button": "Login"
-  ,"invalid_credentials": "Invalid email or password"
-  ,"or": "or"
-  ,"fingerprint": "Fingerprint"
-  ,"fingerprint_not_available": "Not available — configure in Android"
-  ,"press_to_login": "Press to login"
-  ,"faceid_label": "Face ID ML Kit"
-  ,"use_registered_face": "Use your registered face"
-  ,"not_configured": "Not configured"
-  ,"no_account": "Don't have an account?"
-  ,"register_subtitle": "Sign up to access all features"
-  ,"name": "Name"
-  ,"password_confirm_hint": "Retype password"
-  ,"register_success": "Account created successfully"
-  ,"register_failed": "Failed to create account"
-  ,"register_action": "Register"
-  ,"enable_face_id_title": "Enable Face ID"
-  ,"enable_fingerprint_title": "Enable fingerprint"
-  ,"face_id_setup_warning": "⚠️ Make sure face recognition is configured in Android Settings → Security → Face recognition."
-  ,"fingerprint_setup_warning": "⚠️ Make sure your fingerprint is enrolled in Android Settings → Security → Fingerprint."
-  ,"face_id_enabled_success": "Face ID enabled successfully"
-  ,"fingerprint_enabled_success": "Fingerprint enabled successfully"
-  ,"biometric_credentials_or_unavailable": "❌ Invalid credentials or biometric auth not available"
-  ,"face_id_mlkit_title": "Face ID ML Kit"
-  ,"face_id_mlkit_description": "✅ Accurate recognition based on facial landmarks\n📸 You will see a capture screen to enroll your face\n🔐 Face data is stored locally and securely"
-  ,"face_id_mlkit_enabled_success": "Face ID ML Kit enabled successfully"
-  ,"face_capture_cancelled": "Face capture cancelled"
-  ,"download_model_prompt": "Download model"
-  ,"model_download_required": "The model \"{lang}\" must be downloaded (~30 MB)."
-  ,"vpn_required_note": "⚠️ Requires a VPN if you are in Tunisia.\nRecommended: ProtonVPN or Windscribe (free)"
-  ,"fingerprint_section_title": "Fingerprint"
-  ,"fingerprint_section_description": "Fingerprint uses Android native biometrics, separate from Face ID ML Kit."
-  ,"fingerprint_native_hint": "Native fingerprint not detected automatically.\nIf your phone has a sensor, fingerprint mode may still work."
-  ,"fingerprint_connection_title": "Fingerprint login"
-  ,"fingerprint_not_available_status": "Not available — enroll a fingerprint in Android"
-  ,"fingerprint_enabled_status": "Enabled ✓"
-  ,"fingerprint_disabled_status": "Disabled"
-  ,"fingerprint_disabled_snackbar": "Fingerprint disabled"
-  ,"face_section_title": "Face ID ML Kit"
-  ,"face_section_description": "Face ID ML Kit requires the front camera.\nIf unavailable, check camera permissions."
-  ,"face_connection_title": "Face ID ML Kit"
-  ,"face_not_available_status": "Not available — front camera required"
-  ,"face_enabled_status": "Enabled ✓"
-  ,"face_disabled_status": "Disabled"
-  ,"face_disabled_snackbar": "Face ID ML Kit disabled"
-  ,"mlkit_download_test_subtitle": "Test model downloads"
-  ,"article_reference_duplicate": "Reference already exists ({source}): {ref}"
-  ,"article_reference_detected": "Reference detected ({source}): {ref}"
-  ,"ocr_text_extracted": "Text extracted by OCR."
-  ,"ocr_error": "OCR error"
-  ,"article_reference_exists": "This reference already exists."
-  ,"article_created_success": "Article created successfully!"
-  ,"article_create_error": "Creation error"
-  ,"image_uploaded_success": "Image uploaded successfully"
-  ,"image_upload_error": "Image upload error"
-  ,"barcode_no_valid_result": "No valid barcode detected (allowed formats: EAN/UPC/Code128/Code39/QR)."
-  ,"mlkit_scan_error": "ML Kit scan error"
-  ,"add_article_title": "Add article"
-  ,"designation_required": "Designation *"
-  ,"price_required": "Price (DT) *"
-  ,"stock_required": "Stock *"
-  ,"brand": "Brand"
-  ,"reference": "Reference"
-  ,"scan_in_progress": "Scanning..."
-  ,"scan_camera": "Scan camera"
-  ,"scan_gallery": "Scan gallery"
-  ,"barcode_formats_hint": "Allowed ML Kit formats: EAN-13, EAN-8, UPC-A, UPC-E, Code128, Code39, QR"
-  ,"image_url": "Image URL"
-  ,"upload_in_progress": "Uploading..."
-  ,"choose_existing_file_ocr": "Choose an existing file (+ auto OCR)"
-  ,"file": "File"
-  ,"cloudinary_url_ready": "Cloudinary URL ready"
-  ,"subcategory": "Subcategory"
-  ,"none_option": "--- None ---"
-  ,"without_name": "Without name"
-  ,"required_field": "Required field"
-  ,"article_reference_exists_other": "This reference already exists for another article."
-  ,"article_updated_success": "Article updated successfully!"
-  ,"error_generic": "Error"
-  ,"edit_article_title": "Edit article"
-  ,"subcategory_created_success": "Subcategory created!"
-  ,"subcategory_updated_success": "Updated successfully!"
-  ,"subcategory_update_error": "Update error"
-  ,"add_subcategory_title": "Add subcategory"
-  ,"edit_subcategory_title": "Edit subcategory"
-  ,"name_required": "Name *"
-  ,"parent_category_required": "Parent category *"
-  ,"parent_category": "Parent category"
-  ,"select_category": "Select a category"
-  ,"choose_image": "Choose image"
-  ,"camera": "Camera"
-  ,"no_image_selected": "No image selected"
-  ,"cart_empty": "Cart empty"
-  ,"add_items_before_order": "Add items before placing the order"
-  ,"cannot_place_order": "Unable to place the order"
-  ,"checkout_finalize_title": "Finalize order"
-  ,"your_cart_is_empty": "Your cart is empty"
-  ,"documents_available_list": "List of available documents."
-  ,"place_barcode_in_frame": "Place the barcode in the frame"
-  ,"code_detected": "Code detected: {code}"
-  ,"no_readable_code_retry": "No readable code. Move closer and try again."
-  ,"barcode_scan_title": "Barcode scan (ML Kit)"
-  ,"flash": "Flash"
-  ,"close": "Close"
-  ,"camera_access_unavailable": "Unable to access the camera."
-  ,"camera_permissions_retry": "Check camera permissions and try again."
-  ,"profile_updated_success": "Profile updated successfully"
-  ,"profile_update_error": "Error updating profile"
-  ,"my_profile": "My profile"
-  ,"gallery": "Gallery"
-  ,"full_name": "Full name"
-  ,"name_required_validation": "Name required"
-  ,"email_required_validation": "Email required"
-  ,"email_invalid_validation": "Invalid email"
-  ,"avatar_url": "Avatar URL"
-  ,"role": "Role"
-  ,"id": "ID"
-  ,"order_status_not_processed": "Not processed"
-  ,"order_status_processing": "Processing"
-  ,"order_status_shipped": "Shipped"
-  ,"order_status_delivered": "Delivered"
-  ,"order_status_cancelled": "Cancelled"
-  ,"order_number": "Order #{id}"
-  ,"change_status": "Change status:"
-  ,"status_updated": "Status updated"
-  ,"status_update_error": "Status update error"
-  ,"delete_order_question": "Delete order?"
-  ,"order_of_client": "Order #{id} from {client}"
-  ,"manage_orders": "Manage orders"
-  ,"no_orders": "No orders"
-  ,"unknown_client": "Unknown client"
-  ,"change_status_tooltip": "Change status"
-  ,"articles_label": "Articles:"
-  ,"unknown_article": "Unknown article"
-  ,"delete": "Delete"
-  ,"edit_role_of": "Edit role of {name}"
-  ,"admin_role": "Admin"
-  ,"user_role": "User"
-  ,"role_changed_to": "{name}: role changed to \"{role}\""
-  ,"role_change_error": "Role change error"
-  ,"cannot_delete_self": "You cannot delete your own account."
-  ,"delete_user_question": "Delete user?"
-  ,"delete_user_content": "Delete \"{name}\" ({email})?"
-  ,"manage_users": "Manage users"
-  ,"no_users": "No users"
-  ,"unknown": "Unknown"
-  ,"you": "You"
-  ,"demote_to_user": "Demote to user"
-  ,"promote_to_admin": "Promote to admin"
-  ,"gallery_scan_error": "Gallery scan error"
-  ,"scan_with_camera": "Scan with camera"
-  ,"scan_from_gallery": "Scan from gallery"
-  ,"article_not_found": "Article not found"
-  ,"no_article_with_reference": "No article with reference \"{ref}\".\nCreate a prefilled new article?"
-  ,"create": "Create"
-  ,"delete_article_question": "Delete article?"
-  ,"delete_named_item": "Delete \"{name}\"?"
-  ,"article_deleted_success": "Article deleted"
-  ,"delete_error": "Delete error"
-  ,"manage_articles": "Manage articles"
-  ,"scan_reference": "Scan a reference"
-  ,"search_article": "Search an article..."
-  ,"no_article_found": "No article found"
-  ,"delete_subcategory_question": "Delete subcategory?"
-  ,"deleted_success": "Deleted successfully"
-  ,"subcategories": "Subcategories"
-  ,"no_subcategory": "No subcategory"
+  "download_in_progress": "Download in progress...",
+  "login_subtitle": "Enter your information to continue",
+  "email": "Email",
+  "password": "Password",
+  "login_button": "Login",
+  "invalid_credentials": "Invalid email or password",
+  "or": "or",
+  "fingerprint": "Fingerprint",
+  "fingerprint_not_available": "Not available — configure in Android",
+  "press_to_login": "Press to login",
+  "faceid_label": "Face ID ML Kit",
+  "use_registered_face": "Use your registered face",
+  "not_configured": "Not configured",
+  "no_account": "Don't have an account?",
+  "register_subtitle": "Sign up to access all features",
+  "name": "Name",
+  "password_confirm_hint": "Retype password",
+  "register_success": "Account created successfully",
+  "register_failed": "Failed to create account",
+  "register_action": "Register",
+  "enable_face_id_title": "Enable Face ID",
+  "enable_fingerprint_title": "Enable fingerprint",
+  "face_id_setup_warning": "⚠️ Make sure face recognition is configured in Android Settings → Security → Face recognition.",
+  "fingerprint_setup_warning": "⚠️ Make sure your fingerprint is enrolled in Android Settings → Security → Fingerprint.",
+  "face_id_enabled_success": "Face ID enabled successfully",
+  "fingerprint_enabled_success": "Fingerprint enabled successfully",
+  "biometric_credentials_or_unavailable": "❌ Invalid credentials or biometric auth not available",
+  "face_id_mlkit_title": "Face ID ML Kit",
+  "face_id_mlkit_description": "✅ Accurate recognition based on facial landmarks\n📸 You will see a capture screen to enroll your face\n🔐 Face data is stored locally and securely",
+  "face_id_mlkit_enabled_success": "Face ID ML Kit enabled successfully",
+  "face_capture_cancelled": "Face capture cancelled",
+  "download_model_prompt": "Download model",
+  "model_download_required": "The model \"{lang}\" must be downloaded (~30 MB).",
+  "vpn_required_note": "⚠️ Requires a VPN if you are in Tunisia.\nRecommended: ProtonVPN or Windscribe (free)",
+  "fingerprint_section_title": "Fingerprint",
+  "fingerprint_section_description": "Fingerprint uses Android native biometrics, separate from Face ID ML Kit.",
+  "fingerprint_native_hint": "Native fingerprint not detected automatically.\nIf your phone has a sensor, fingerprint mode may still work.",
+  "fingerprint_connection_title": "Fingerprint login",
+  "fingerprint_not_available_status": "Not available — enroll a fingerprint in Android",
+  "fingerprint_enabled_status": "Enabled ✓",
+  "fingerprint_disabled_status": "Disabled",
+  "fingerprint_disabled_snackbar": "Fingerprint disabled",
+  "face_section_title": "Face ID ML Kit",
+  "face_section_description": "Face ID ML Kit requires the front camera.\nIf unavailable, check camera permissions.",
+  "face_connection_title": "Face ID ML Kit",
+  "face_not_available_status": "Not available — front camera required",
+  "face_enabled_status": "Enabled ✓",
+  "face_disabled_status": "Disabled",
+  "face_disabled_snackbar": "Face ID ML Kit disabled",
+  "mlkit_download_test_subtitle": "Test model downloads",
+  "article_reference_duplicate": "Reference already exists ({source}): {ref}",
+  "article_reference_detected": "Reference detected ({source}): {ref}",
+  "ocr_text_extracted": "Text extracted by OCR.",
+  "ocr_error": "OCR error",
+  "article_reference_exists": "This reference already exists.",
+  "article_created_success": "Article created successfully!",
+  "article_create_error": "Creation error",
+  "image_uploaded_success": "Image uploaded successfully",
+  "image_upload_error": "Image upload error",
+  "barcode_no_valid_result": "No valid barcode detected (allowed formats: EAN/UPC/Code128/Code39/QR).",
+  "mlkit_scan_error": "ML Kit scan error",
+  "add_article_title": "Add article",
+  "designation_required": "Designation *",
+  "price_required": "Price (DT) *",
+  "stock_required": "Stock *",
+  "brand": "Brand",
+  "scan_in_progress": "Scanning...",
+  "scan_camera": "Scan camera",
+  "scan_gallery": "Scan gallery",
+  "barcode_formats_hint": "Allowed ML Kit formats: EAN-13, EAN-8, UPC-A, UPC-E, Code128, Code39, QR",
+  "image_url": "Image URL",
+  "upload_in_progress": "Uploading...",
+  "choose_existing_file_ocr": "Choose an existing file (+ auto OCR)",
+  "file": "File",
+  "cloudinary_url_ready": "Cloudinary URL ready",
+  "subcategory": "Subcategory",
+  "none_option": "--- None ---",
+  "without_name": "Without name",
+  "required_field": "Required field",
+  "article_reference_exists_other": "This reference already exists for another article.",
+  "article_updated_success": "Article updated successfully!",
+  "error_generic": "Error",
+  "edit_article_title": "Edit article",
+  "subcategory_created_success": "Subcategory created!",
+  "subcategory_updated_success": "Updated successfully!",
+  "subcategory_update_error": "Update error",
+  "add_subcategory_title": "Add subcategory",
+  "edit_subcategory_title": "Edit subcategory",
+  "name_required": "Name *",
+  "parent_category_required": "Parent category *",
+  "parent_category": "Parent category",
+  "select_category": "Select a category",
+  "choose_image": "Choose image",
+  "camera": "Camera",
+  "no_image_selected": "No image selected",
+  "cart_empty": "Cart empty",
+  "add_items_before_order": "Add items before placing the order",
+  "cannot_place_order": "Unable to place the order",
+  "checkout_finalize_title": "Finalize order",
+  "your_cart_is_empty": "Your cart is empty",
+  "documents_available_list": "List of available documents.",
+  "place_barcode_in_frame": "Place the barcode in the frame",
+  "code_detected": "Code detected: {code}",
+  "no_readable_code_retry": "No readable code. Move closer and try again.",
+  "barcode_scan_title": "Barcode scan (ML Kit)",
+  "flash": "Flash",
+  "close": "Close",
+  "camera_access_unavailable": "Unable to access the camera.",
+  "camera_permissions_retry": "Check camera permissions and try again.",
+  "profile_updated_success": "Profile updated successfully",
+  "profile_update_error": "Error updating profile",
+  "my_profile": "My profile",
+  "gallery": "Gallery",
+  "full_name": "Full name",
+  "name_required_validation": "Name required",
+  "email_required_validation": "Email required",
+  "email_invalid_validation": "Invalid email",
+  "avatar_url": "Avatar URL",
+  "role": "Role",
+  "id": "ID",
+  "order_status_not_processed": "Not processed",
+  "order_status_processing": "Processing",
+  "order_status_shipped": "Shipped",
+  "order_status_delivered": "Delivered",
+  "order_status_cancelled": "Cancelled",
+  "order_number": "Order #{id}",
+  "change_status": "Change status:",
+  "status_updated": "Status updated",
+  "status_update_error": "Status update error",
+  "delete_order_question": "Delete order?",
+  "order_of_client": "Order #{id} from {client}",
+  "manage_orders": "Manage orders",
+  "no_orders": "No orders",
+  "unknown_client": "Unknown client",
+  "change_status_tooltip": "Change status",
+  "articles_label": "Articles:",
+  "unknown_article": "Unknown article",
+  "delete": "Delete",
+  "edit_role_of": "Edit role of {name}",
+  "admin_role": "Admin",
+  "user_role": "User",
+  "role_changed_to": "{name}: role changed to \"{role}\"",
+  "role_change_error": "Role change error",
+  "cannot_delete_self": "You cannot delete your own account.",
+  "delete_user_question": "Delete user?",
+  "delete_user_content": "Delete \"{name}\" ({email})?",
+  "manage_users": "Manage users",
+  "no_users": "No users",
+  "unknown": "Unknown",
+  "you": "You",
+  "demote_to_user": "Demote to user",
+  "promote_to_admin": "Promote to admin",
+  "gallery_scan_error": "Gallery scan error",
+  "scan_with_camera": "Scan with camera",
+  "scan_from_gallery": "Scan from gallery",
+  "article_not_found": "Article not found",
+  "no_article_with_reference": "No article with reference \"{ref}\".\nCreate a prefilled new article?",
+  "create": "Create",
+  "delete_article_question": "Delete article?",
+  "delete_named_item": "Delete \"{name}\"?",
+  "article_deleted_success": "Article deleted",
+  "delete_error": "Delete error",
+  "manage_articles": "Manage articles",
+  "scan_reference": "Scan a reference",
+  "search_article": "Search an article...",
+  "no_article_found": "No article found",
+  "delete_subcategory_question": "Delete subcategory?",
+  "deleted_success": "Deleted successfully",
+  "subcategories": "Subcategories",
+  "no_subcategory": "No subcategory",
+  "remember_me": "Remember me",
+  "forgot_password": "Forgot password?",
+  "thank_you_order": "Thank you for your order",
+  "order_details": "Order details",
+  "continue_shopping": "Continue shopping",
+  "back_home": "Back to home",
+  "order_will_be_processed": "We will process your order shortly.",
+  "order_number_label": "Order number",
+  "total_amount": "Total amount",
+  "status": "Status",
+  "date": "Date",
+  "order_summary": "Order summary",
+  "total_items": "Total items",
+  "shipping_fee": "Shipping fee",
+  "total_to_pay": "Total to pay",
+  "delivery_info": "Delivery information",
+  "fullname": "Full name",
+  "address": "Full address",
+  "city": "City",
+  "phone": "Phone",
+  "confirm_order": "Confirm order",
+  "free": "Free",
+  "mon_panier": "My Cart",
+  "no_articles": "No items",
+  "price": "Price",
+  "stock_label": "Stock:",
+  "brand_label": "Brand:",
+  "edit_article_tooltip": "Edit item"
 }

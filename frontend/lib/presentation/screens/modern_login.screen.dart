@@ -241,7 +241,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                           ),
                           SizedBox(height: 30),
                           Text(
-                            'Bienvenue',
+                            'bienvenue'.tr,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 32,
@@ -251,7 +251,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                           ),
                           SizedBox(height: 8),
                           Text(
-                            'Connectez-vous à votre compte',
+                            'login_subtitle'.tr,
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.8),
                               fontSize: 16,
@@ -306,7 +306,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                               children: [
                                 // Email Field
                                 Text(
-                                  'Email',
+                                  'email'.tr,
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -361,7 +361,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 SizedBox(height: 24),
                                 // Password Field
                                 Text(
-                                  'Mot de passe',
+                                  'password'.tr,
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -446,7 +446,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                           ),
                                           Expanded(
                                             child: Text(
-                                              'Se souvenir de moi',
+                                              'remember_me'.tr,
                                               style: TextStyle(
                                                 color: Colors.grey.shade700,
                                                 fontSize: 13,
@@ -462,7 +462,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                         Get.toNamed('/ResetPassword');
                                       },
                                       child: Text(
-                                        'Mot de passe oublié?',
+                                        'forgot_password'.tr,
                                         style: TextStyle(
                                           color: Color(0xFF667EEA),
                                           fontSize: 13,
@@ -610,7 +610,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                                 ),
                                               )
                                             : Text(
-                                                'SE CONNECTER',
+                                                'connexion'.tr.toUpperCase(),
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 16,
@@ -676,14 +676,14 @@ class _ModernLoginScreenState extends State<ModernLoginScreen>
                                 Center(
                                   child: RichText(
                                     text: TextSpan(
-                                      text: 'Pas encore de compte? ',
+                                      text: '${'no_account'.tr} ',
                                       style: TextStyle(
                                         color: Colors.grey.shade700,
                                         fontSize: 14,
                                       ),
                                       children: [
                                         TextSpan(
-                                          text: 'S\'inscrire',
+                                          text: 'register_action'.tr,
                                           style: TextStyle(
                                             color: Color(0xFF667EEA),
                                             fontWeight: FontWeight.w700,

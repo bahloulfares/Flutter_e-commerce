@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 import 'package:atelier7/presentation/controllers/translation_provider.dart';
@@ -76,6 +77,8 @@ class LanguageController extends GetxController {
       currentLocale.value = langCode;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_prefKey, langCode);
+      
+      Get.updateLocale(Locale(langCode));
 
       if (Get.isRegistered<TranslationProvider>()) {
         await Get.find<TranslationProvider>().setLanguage(langCode);

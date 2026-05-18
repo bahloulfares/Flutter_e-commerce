@@ -64,8 +64,8 @@
   "settings": "الإعدادات",
   "app_preferences": "تفضيلات التطبيق",
   "Product removed from cart.": "تمت إزالة المنتج من السلة.",
-  "Product not found in the cart.": "المنتج غير موجود في السلة."
-  ,"cancel": "إلغاء",
+  "Product not found in the cart.": "المنتج غير موجود في السلة.",
+  "cancel": "إلغاء",
   "activate": "تفعيل",
   "continue": "متابعة",
   "download_model": "تحميل النموذج",
@@ -81,175 +81,202 @@
   "verify_credentials": "تحقق من بياناتك:",
   "model_available": "النموذج متاح",
   "model_not_downloaded": "النموذج غير محمّل",
-  "download_in_progress": "جاري التحميل..."
-  ,"login_subtitle": "أدخل معلوماتك للمتابعة"
-  ,"email": "البريد الإلكتروني"
-  ,"password": "كلمة المرور"
-  ,"login_button": "تسجيل الدخول"
-  ,"invalid_credentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
-  ,"or": "أو"
-  ,"fingerprint": "بصمة الإصبع"
-  ,"fingerprint_not_available": "غير متوفر — قم بالتكوين في Android"
-  ,"press_to_login": "اضغط لتسجيل الدخول"
-  ,"faceid_label": "Face ID ML Kit"
-  ,"use_registered_face": "استخدم وجهك المسجل"
-  ,"not_configured": "غير مهيأ"
-  ,"no_account": "ليس لديك حساب؟"
-  ,"register_subtitle": "سجل للوصول إلى جميع الميزات"
-  ,"name": "الاسم"
-  ,"password_confirm_hint": "أعد كتابة كلمة المرور"
-  ,"register_success": "تم إنشاء الحساب بنجاح"
-  ,"register_failed": "فشل إنشاء الحساب"
-  ,"register_action": "إنشاء حساب"
-  ,"enable_face_id_title": "تفعيل Face ID"
-  ,"enable_fingerprint_title": "تفعيل البصمة"
-  ,"face_id_setup_warning": "⚠️ تأكد من إعداد التعرف على الوجه في إعدادات Android → الأمان → التعرف على الوجه."
-  ,"fingerprint_setup_warning": "⚠️ تأكد من تسجيل بصمتك في إعدادات Android → الأمان → البصمة."
-  ,"face_id_enabled_success": "تم تفعيل Face ID بنجاح"
-  ,"fingerprint_enabled_success": "تم تفعيل البصمة بنجاح"
-  ,"biometric_credentials_or_unavailable": "❌ بيانات اعتماد غير صحيحة أو المصادقة البيومترية غير متاحة"
-  ,"face_id_mlkit_title": "Face ID ML Kit"
-  ,"face_id_mlkit_description": "✅ تعرف دقيق يعتمد على معالم الوجه\n📸 سترى شاشة التقاط لتسجيل وجهك\n🔐 بيانات الوجه مخزنة محليًا وبشكل آمن"
-  ,"face_id_mlkit_enabled_success": "تم تفعيل Face ID ML Kit بنجاح"
-  ,"face_capture_cancelled": "تم إلغاء التقاط الوجه"
-  ,"download_model_prompt": "تحميل النموذج"
-  ,"model_download_required": "يجب تحميل النموذج \"{lang}\" (~30 ميغابايت)."
-  ,"vpn_required_note": "⚠️ يتطلب VPN إذا كنت في تونس.\nمُوصى به: ProtonVPN أو Windscribe (مجانيان)"
-  ,"fingerprint_section_title": "البصمة"
-  ,"fingerprint_section_description": "تستخدم البصمة المصادقة البيومترية الأصلية في Android، وهي منفصلة عن Face ID ML Kit."
-  ,"fingerprint_native_hint": "لم يتم اكتشاف بصمة الأصلية تلقائياً.\nإذا كان هاتفك يحتوي على مستشعر، فقد يعمل وضع البصمة على أي حال."
-  ,"fingerprint_connection_title": "تسجيل الدخول بالبصمة"
-  ,"fingerprint_not_available_status": "غير متاح — سجّل بصمة في Android"
-  ,"fingerprint_enabled_status": "مفعلة ✓"
-  ,"fingerprint_disabled_status": "معطلة"
-  ,"fingerprint_disabled_snackbar": "تم تعطيل البصمة"
-  ,"face_section_title": "Face ID ML Kit"
-  ,"face_section_description": "يتطلب Face ID ML Kit الكاميرا الأمامية.\nإذا كانت غير متاحة، تحقق من أذونات الكاميرا."
-  ,"face_connection_title": "Face ID ML Kit"
-  ,"face_not_available_status": "غير متاح — الكاميرا الأمامية مطلوبة"
-  ,"face_enabled_status": "مفعّل ✓"
-  ,"face_disabled_status": "معطّل"
-  ,"face_disabled_snackbar": "تم تعطيل Face ID ML Kit"
-  ,"mlkit_download_test_subtitle": "اختبار تنزيل النماذج"
-  ,"article_reference_duplicate": "المرجع موجود مسبقاً ({source}) : {ref}"
-  ,"article_reference_detected": "تم اكتشاف المرجع ({source}) : {ref}"
-  ,"ocr_text_extracted": "تم استخراج النص بواسطة OCR."
-  ,"ocr_error": "خطأ OCR"
-  ,"article_reference_exists": "هذا المرجع موجود بالفعل."
-  ,"article_created_success": "تم إنشاء المقال بنجاح!"
-  ,"article_create_error": "خطأ في الإنشاء"
-  ,"image_uploaded_success": "تم رفع الصورة بنجاح"
-  ,"image_upload_error": "خطأ في رفع الصورة"
-  ,"barcode_no_valid_result": "لم يتم اكتشاف أي باركود صالح (الصيغ المسموح بها: EAN/UPC/Code128/Code39/QR)."
-  ,"mlkit_scan_error": "خطأ في مسح ML Kit"
-  ,"add_article_title": "إضافة مقال"
-  ,"designation_required": "التسمية *"
-  ,"price_required": "السعر (DT) *"
-  ,"stock_required": "المخزون *"
-  ,"brand": "العلامة التجارية"
-  ,"reference": "المرجع"
-  ,"scan_in_progress": "جارٍ المسح..."
-  ,"scan_camera": "مسح بالكاميرا"
-  ,"scan_gallery": "مسح من المعرض"
-  ,"barcode_formats_hint": "الصيغ المسموح بها في ML Kit: EAN-13, EAN-8, UPC-A, UPC-E, Code128, Code39, QR"
-  ,"image_url": "رابط الصورة"
-  ,"upload_in_progress": "جارٍ الرفع..."
-  ,"choose_existing_file_ocr": "اختر ملفاً موجوداً (+ OCR تلقائي)"
-  ,"file": "الملف"
-  ,"cloudinary_url_ready": "رابط Cloudinary جاهز"
-  ,"subcategory": "الفئة الفرعية"
-  ,"none_option": "--- لا شيء ---"
-  ,"without_name": "بدون اسم"
-  ,"required_field": "حقل مطلوب"
-  ,"article_reference_exists_other": "هذا المرجع موجود بالفعل لمقال آخر."
-  ,"article_updated_success": "تم تعديل المقال بنجاح!"
-  ,"error_generic": "خطأ"
-  ,"edit_article_title": "تعديل المقال"
-  ,"subcategory_created_success": "تم إنشاء الفئة الفرعية!"
-  ,"subcategory_updated_success": "تم التعديل بنجاح!"
-  ,"subcategory_update_error": "خطأ في التعديل"
-  ,"add_subcategory_title": "إضافة فئة فرعية"
-  ,"edit_subcategory_title": "تعديل الفئة الفرعية"
-  ,"name_required": "الاسم *"
-  ,"parent_category_required": "الفئة الأم *"
-  ,"parent_category": "الفئة الأم"
-  ,"select_category": "اختر فئة"
-  ,"choose_image": "اختر صورة"
-  ,"camera": "الكاميرا"
-  ,"no_image_selected": "لم يتم اختيار صورة"
-  ,"cart_empty": "السلة فارغة"
-  ,"add_items_before_order": "أضف عناصر قبل إتمام الطلب"
-  ,"cannot_place_order": "تعذر إتمام الطلب"
-  ,"checkout_finalize_title": "إتمام الطلب"
-  ,"your_cart_is_empty": "سلتك فارغة"
-  ,"documents_available_list": "قائمة المستندات المتاحة."
-  ,"place_barcode_in_frame": "ضع رمز الباركود داخل الإطار"
-  ,"code_detected": "تم اكتشاف الرمز: {code}"
-  ,"no_readable_code_retry": "لا يوجد رمز مقروء. اقترب وحاول مرة أخرى."
-  ,"barcode_scan_title": "مسح الباركود (ML Kit)"
-  ,"flash": "الفلاش"
-  ,"close": "إغلاق"
-  ,"camera_access_unavailable": "يتعذر الوصول إلى الكاميرا."
-  ,"camera_permissions_retry": "تحقق من أذونات الكاميرا وحاول مرة أخرى."
-  ,"profile_updated_success": "تم تحديث الملف الشخصي بنجاح"
-  ,"profile_update_error": "خطأ في تحديث الملف الشخصي"
-  ,"my_profile": "ملفي الشخصي"
-  ,"gallery": "المعرض"
-  ,"full_name": "الاسم الكامل"
-  ,"name_required_validation": "الاسم مطلوب"
-  ,"email_required_validation": "البريد الإلكتروني مطلوب"
-  ,"email_invalid_validation": "البريد الإلكتروني غير صالح"
-  ,"avatar_url": "رابط الصورة الشخصية"
-  ,"role": "الدور"
-  ,"id": "المعرف"
-  ,"order_status_not_processed": "غير معالج"
-  ,"order_status_processing": "قيد المعالجة"
-  ,"order_status_shipped": "تم الشحن"
-  ,"order_status_delivered": "تم التسليم"
-  ,"order_status_cancelled": "ملغى"
-  ,"order_number": "الطلب #{id}"
-  ,"change_status": "تغيير الحالة:"
-  ,"status_updated": "تم تحديث الحالة"
-  ,"status_update_error": "خطأ في تحديث الحالة"
-  ,"delete_order_question": "حذف الطلب؟"
-  ,"order_of_client": "الطلب #{id} للعميل {client}"
-  ,"manage_orders": "إدارة الطلبات"
-  ,"no_orders": "لا توجد طلبات"
-  ,"unknown_client": "عميل غير معروف"
-  ,"change_status_tooltip": "تغيير الحالة"
-  ,"articles_label": "العناصر:"
-  ,"unknown_article": "مقال غير معروف"
-  ,"delete": "حذف"
-  ,"edit_role_of": "تعديل دور {name}"
-  ,"admin_role": "مشرف"
-  ,"user_role": "مستخدم"
-  ,"role_changed_to": "{name}: تم تغيير الدور إلى \"{role}\""
-  ,"role_change_error": "خطأ في تغيير الدور"
-  ,"cannot_delete_self": "لا يمكنك حذف حسابك الخاص."
-  ,"delete_user_question": "حذف المستخدم؟"
-  ,"delete_user_content": "حذف \"{name}\" ({email})؟"
-  ,"manage_users": "إدارة المستخدمين"
-  ,"no_users": "لا يوجد مستخدمون"
-  ,"unknown": "غير معروف"
-  ,"you": "أنت"
-  ,"demote_to_user": "خفض إلى مستخدم"
-  ,"promote_to_admin": "ترقية إلى مشرف"
-  ,"gallery_scan_error": "خطأ مسح المعرض"
-  ,"scan_with_camera": "المسح بالكاميرا"
-  ,"scan_from_gallery": "المسح من المعرض"
-  ,"article_not_found": "لم يتم العثور على المقال"
-  ,"no_article_with_reference": "لا يوجد مقال بالمرجع \"{ref}\".\nهل تريد إنشاء مقال جديد مملوء مسبقًا؟"
-  ,"create": "إنشاء"
-  ,"delete_article_question": "حذف المقال؟"
-  ,"delete_named_item": "حذف \"{name}\"؟"
-  ,"article_deleted_success": "تم حذف المقال"
-  ,"delete_error": "خطأ في الحذف"
-  ,"manage_articles": "إدارة المقالات"
-  ,"scan_reference": "مسح مرجع"
-  ,"search_article": "ابحث عن مقال..."
-  ,"no_article_found": "لم يتم العثور على مقال"
-  ,"delete_subcategory_question": "حذف الفئة الفرعية؟"
-  ,"deleted_success": "تم الحذف بنجاح"
-  ,"subcategories": "الفئات الفرعية"
-  ,"no_subcategory": "لا توجد فئة فرعية"
+  "download_in_progress": "جاري التحميل...",
+  "login_subtitle": "أدخل معلوماتك للمتابعة",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "login_button": "تسجيل الدخول",
+  "invalid_credentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+  "or": "أو",
+  "fingerprint": "بصمة الإصبع",
+  "fingerprint_not_available": "غير متوفر — قم بالتكوين في Android",
+  "press_to_login": "اضغط لتسجيل الدخول",
+  "faceid_label": "Face ID ML Kit",
+  "use_registered_face": "استخدم وجهك المسجل",
+  "not_configured": "غير مهيأ",
+  "no_account": "ليس لديك حساب؟",
+  "register_subtitle": "سجل للوصول إلى جميع الميزات",
+  "name": "الاسم",
+  "password_confirm_hint": "أعد كتابة كلمة المرور",
+  "register_success": "تم إنشاء الحساب بنجاح",
+  "register_failed": "فشل إنشاء الحساب",
+  "register_action": "إنشاء حساب",
+  "enable_face_id_title": "تفعيل Face ID",
+  "enable_fingerprint_title": "تفعيل البصمة",
+  "face_id_setup_warning": "⚠️ تأكد من إعداد التعرف على الوجه في إعدادات Android → الأمان → التعرف على الوجه.",
+  "fingerprint_setup_warning": "⚠️ تأكد من تسجيل بصمتك في إعدادات Android → الأمان → البصمة.",
+  "face_id_enabled_success": "تم تفعيل Face ID بنجاح",
+  "fingerprint_enabled_success": "تم تفعيل البصمة بنجاح",
+  "biometric_credentials_or_unavailable": "❌ بيانات اعتماد غير صحيحة أو المصادقة البيومترية غير متاحة",
+  "face_id_mlkit_title": "Face ID ML Kit",
+  "face_id_mlkit_description": "✅ تعرف دقيق يعتمد على معالم الوجه\n📸 سترى شاشة التقاط لتسجيل وجهك\n🔐 بيانات الوجه مخزنة محليًا وبشكل آمن",
+  "face_id_mlkit_enabled_success": "تم تفعيل Face ID ML Kit بنجاح",
+  "face_capture_cancelled": "تم إلغاء التقاط الوجه",
+  "download_model_prompt": "تحميل النموذج",
+  "model_download_required": "يجب تحميل النموذج \"{lang}\" (~30 ميغابايت).",
+  "vpn_required_note": "⚠️ يتطلب VPN إذا كنت في تونس.\nمُوصى به: ProtonVPN أو Windscribe (مجانيان)",
+  "fingerprint_section_title": "البصمة",
+  "fingerprint_section_description": "تستخدم البصمة المصادقة البيومترية الأصلية في Android، وهي منفصلة عن Face ID ML Kit.",
+  "fingerprint_native_hint": "لم يتم اكتشاف بصمة الأصلية تلقائياً.\nإذا كان هاتفك يحتوي على مستشعر، فقد يعمل وضع البصمة على أي حال.",
+  "fingerprint_connection_title": "تسجيل الدخول بالبصمة",
+  "fingerprint_not_available_status": "غير متاح — سجّل بصمة في Android",
+  "fingerprint_enabled_status": "مفعلة ✓",
+  "fingerprint_disabled_status": "معطلة",
+  "fingerprint_disabled_snackbar": "تم تعطيل البصمة",
+  "face_section_title": "Face ID ML Kit",
+  "face_section_description": "يتطلب Face ID ML Kit الكاميرا الأمامية.\nإذا كانت غير متاحة، تحقق من أذونات الكاميرا.",
+  "face_connection_title": "Face ID ML Kit",
+  "face_not_available_status": "غير متاح — الكاميرا الأمامية مطلوبة",
+  "face_enabled_status": "مفعّل ✓",
+  "face_disabled_status": "معطّل",
+  "face_disabled_snackbar": "تم تعطيل Face ID ML Kit",
+  "mlkit_download_test_subtitle": "اختبار تنزيل النماذج",
+  "article_reference_duplicate": "المرجع موجود مسبقاً ({source}) : {ref}",
+  "article_reference_detected": "تم اكتشاف المرجع ({source}) : {ref}",
+  "ocr_text_extracted": "تم استخراج النص بواسطة OCR.",
+  "ocr_error": "خطأ OCR",
+  "article_reference_exists": "هذا المرجع موجود بالفعل.",
+  "article_created_success": "تم إنشاء المقال بنجاح!",
+  "article_create_error": "خطأ في الإنشاء",
+  "image_uploaded_success": "تم رفع الصورة بنجاح",
+  "image_upload_error": "خطأ في رفع الصورة",
+  "barcode_no_valid_result": "لم يتم اكتشاف أي باركود صالح (الصيغ المسموح بها: EAN/UPC/Code128/Code39/QR).",
+  "mlkit_scan_error": "خطأ في مسح ML Kit",
+  "add_article_title": "إضافة مقال",
+  "designation_required": "التسمية *",
+  "price_required": "السعر (DT) *",
+  "stock_required": "المخزون *",
+  "brand": "العلامة التجارية",
+  "scan_in_progress": "جارٍ المسح...",
+  "scan_camera": "مسح بالكاميرا",
+  "scan_gallery": "مسح من المعرض",
+  "barcode_formats_hint": "الصيغ المسموح بها في ML Kit: EAN-13, EAN-8, UPC-A, UPC-E, Code128, Code39, QR",
+  "image_url": "رابط الصورة",
+  "upload_in_progress": "جارٍ الرفع...",
+  "choose_existing_file_ocr": "اختر ملفاً موجوداً (+ OCR تلقائي)",
+  "file": "الملف",
+  "cloudinary_url_ready": "رابط Cloudinary جاهز",
+  "subcategory": "الفئة الفرعية",
+  "none_option": "--- لا شيء ---",
+  "without_name": "بدون اسم",
+  "required_field": "حقل مطلوب",
+  "article_reference_exists_other": "هذا المرجع موجود بالفعل لمقال آخر.",
+  "article_updated_success": "تم تعديل المقال بنجاح!",
+  "error_generic": "خطأ",
+  "edit_article_title": "تعديل المقال",
+  "subcategory_created_success": "تم إنشاء الفئة الفرعية!",
+  "subcategory_updated_success": "تم التعديل بنجاح!",
+  "subcategory_update_error": "خطأ في التعديل",
+  "add_subcategory_title": "إضافة فئة فرعية",
+  "edit_subcategory_title": "تعديل الفئة الفرعية",
+  "name_required": "الاسم *",
+  "parent_category_required": "الفئة الأم *",
+  "parent_category": "الفئة الأم",
+  "select_category": "اختر فئة",
+  "choose_image": "اختر صورة",
+  "camera": "الكاميرا",
+  "no_image_selected": "لم يتم اختيار صورة",
+  "cart_empty": "السلة فارغة",
+  "add_items_before_order": "أضف عناصر قبل إتمام الطلب",
+  "cannot_place_order": "تعذر إتمام الطلب",
+  "checkout_finalize_title": "إتمام الطلب",
+  "your_cart_is_empty": "سلتك فارغة",
+  "documents_available_list": "قائمة المستندات المتاحة.",
+  "place_barcode_in_frame": "ضع رمز الباركود داخل الإطار",
+  "code_detected": "تم اكتشاف الرمز: {code}",
+  "no_readable_code_retry": "لا يوجد رمز مقروء. اقترب وحاول مرة أخرى.",
+  "barcode_scan_title": "مسح الباركود (ML Kit)",
+  "flash": "الفلاش",
+  "close": "إغلاق",
+  "camera_access_unavailable": "يتعذر الوصول إلى الكاميرا.",
+  "camera_permissions_retry": "تحقق من أذونات الكاميرا وحاول مرة أخرى.",
+  "profile_updated_success": "تم تحديث الملف الشخصي بنجاح",
+  "profile_update_error": "خطأ في تحديث الملف الشخصي",
+  "my_profile": "ملفي الشخصي",
+  "gallery": "المعرض",
+  "full_name": "الاسم الكامل",
+  "name_required_validation": "الاسم مطلوب",
+  "email_required_validation": "البريد الإلكتروني مطلوب",
+  "email_invalid_validation": "البريد الإلكتروني غير صالح",
+  "avatar_url": "رابط الصورة الشخصية",
+  "role": "الدور",
+  "id": "المعرف",
+  "order_status_not_processed": "غير معالج",
+  "order_status_processing": "قيد المعالجة",
+  "order_status_shipped": "تم الشحن",
+  "order_status_delivered": "تم التسليم",
+  "order_status_cancelled": "ملغى",
+  "order_number": "الطلب #{id}",
+  "change_status": "تغيير الحالة:",
+  "status_updated": "تم تحديث الحالة",
+  "status_update_error": "خطأ في تحديث الحالة",
+  "delete_order_question": "حذف الطلب؟",
+  "order_of_client": "الطلب #{id} للعميل {client}",
+  "manage_orders": "إدارة الطلبات",
+  "no_orders": "لا توجد طلبات",
+  "unknown_client": "عميل غير معروف",
+  "change_status_tooltip": "تغيير الحالة",
+  "articles_label": "العناصر:",
+  "unknown_article": "مقال غير معروف",
+  "delete": "حذف",
+  "edit_role_of": "تعديل دور {name}",
+  "admin_role": "مشرف",
+  "user_role": "مستخدم",
+  "role_changed_to": "{name}: تم تغيير الدور إلى \"{role}\"",
+  "role_change_error": "خطأ في تغيير الدور",
+  "cannot_delete_self": "لا يمكنك حذف حسابك الخاص.",
+  "delete_user_question": "حذف المستخدم؟",
+  "delete_user_content": "حذف \"{name}\" ({email})؟",
+  "manage_users": "إدارة المستخدمين",
+  "no_users": "لا يوجد مستخدمون",
+  "unknown": "غير معروف",
+  "you": "أنت",
+  "demote_to_user": "خفض إلى مستخدم",
+  "promote_to_admin": "ترقية إلى مشرف",
+  "gallery_scan_error": "خطأ مسح المعرض",
+  "scan_with_camera": "المسح بالكاميرا",
+  "scan_from_gallery": "المسح من المعرض",
+  "article_not_found": "لم يتم العثور على المقال",
+  "no_article_with_reference": "لا يوجد مقال بالمرجع \"{ref}\".\nهل تريد إنشاء مقال جديد مملوء مسبقًا؟",
+  "create": "إنشاء",
+  "delete_article_question": "حذف المقال؟",
+  "delete_named_item": "حذف \"{name}\"؟",
+  "article_deleted_success": "تم حذف المقال",
+  "delete_error": "خطأ في الحذف",
+  "manage_articles": "إدارة المقالات",
+  "scan_reference": "مسح مرجع",
+  "search_article": "ابحث عن مقال...",
+  "no_article_found": "لم يتم العثور على مقال",
+  "delete_subcategory_question": "حذف الفئة الفرعية؟",
+  "deleted_success": "تم الحذف بنجاح",
+  "subcategories": "الفئات الفرعية",
+  "no_subcategory": "لا توجد فئة فرعية",
+  "remember_me": "تذكرني",
+  "forgot_password": "هل نسيت كلمة المرور؟",
+  "thank_you_order": "شكرا لطلبك",
+  "order_details": "تفاصيل الطلب",
+  "continue_shopping": "مواصلة التسوق",
+  "back_home": "العودة للرئيسية",
+  "order_will_be_processed": "سنقوم بمعالجة طلبك في أقرب وقت.",
+  "order_number_label": "رقم الطلب",
+  "total_amount": "المبلغ الإجمالي",
+  "status": "الحالة",
+  "date": "التاريخ",
+  "order_summary": "ملخص الطلب",
+  "total_items": "إجمالي العناصر",
+  "shipping_fee": "رسوم التوصيل",
+  "total_to_pay": "المبلغ الإجمالي",
+  "delivery_info": "معلومات التوصيل",
+  "fullname": "الاسم الكامل",
+  "address": "العنوان بالكامل",
+  "city": "المدينة",
+  "phone": "الهاتف",
+  "confirm_order": "تأكيد الطلب",
+  "free": "مجاني",
+  "mon_panier": "عربة التسوق",
+  "no_articles": "لا توجد عناصر",
+  "price": "السعر",
+  "stock_label": "المخزون:",
+  "brand_label": "العلامة التجارية:",
+  "edit_article_tooltip": "تعديل العنصر"
 }

@@ -64,8 +64,8 @@
   "settings": "Paramètres",
   "app_preferences": "Préférences de l'application",
   "Product removed from cart.": "Produit retiré du panier.",
-  "Product not found in the cart.": "Produit introuvable dans le panier."
-  ,"cancel": "Annuler",
+  "Product not found in the cart.": "Produit introuvable dans le panier.",
+  "cancel": "Annuler",
   "activate": "Activer",
   "continue": "Continuer",
   "download_model": "Télécharger le modèle",
@@ -81,175 +81,202 @@
   "verify_credentials": "Vérifiez vos identifiants :",
   "model_available": "Modèle disponible",
   "model_not_downloaded": "Modèle non téléchargé",
-  "download_in_progress": "Téléchargement en cours..."
-  ,"login_subtitle": "Entrez vos informations pour continuer"
-  ,"email": "Email"
-  ,"password": "Mot de passe"
-  ,"login_button": "Se connecter"
-  ,"invalid_credentials": "Email ou mot de passe invalide"
-  ,"or": "ou"
-  ,"fingerprint": "Empreinte digitale"
-  ,"fingerprint_not_available": "Non disponible — configurez dans Android"
-  ,"press_to_login": "Appuyez pour vous connecter"
-  ,"faceid_label": "Face ID ML Kit"
-  ,"use_registered_face": "Utiliser votre visage enregistré"
-  ,"not_configured": "Non configuré"
-  ,"no_account": "Vous n'avez pas de compte ?"
-  ,"register_subtitle": "Inscrivez-vous pour accéder à toutes les fonctionnalités"
-  ,"name": "Nom"
-  ,"password_confirm_hint": "Retapez le mot de passe"
-  ,"register_success": "Compte créé avec succès"
-  ,"register_failed": "Échec de création du compte"
-  ,"register_action": "S'inscrire"
-  ,"enable_face_id_title": "Activer Face ID"
-  ,"enable_fingerprint_title": "Activer l'empreinte"
-  ,"face_id_setup_warning": "⚠️ Assurez-vous d'avoir configuré la reconnaissance faciale dans Paramètres Android → Sécurité → Reconnaissance faciale."
-  ,"fingerprint_setup_warning": "⚠️ Assurez-vous d'avoir enregistré votre empreinte dans Paramètres Android → Sécurité → Empreinte digitale."
-  ,"face_id_enabled_success": "Face ID activé avec succès"
-  ,"fingerprint_enabled_success": "Empreinte activée avec succès"
-  ,"biometric_credentials_or_unavailable": "❌ Identifiants invalides ou biométrie non disponible"
-  ,"face_id_mlkit_title": "Face ID ML Kit"
-  ,"face_id_mlkit_description": "✅ Reconnaissance précise basée sur les landmarks du visage\n📸 Vous verrez un écran de capture pour enregistrer votre visage\n🔐 Les données du visage sont stockées localement de façon sécurisée"
-  ,"face_id_mlkit_enabled_success": "Face ID ML Kit activé avec succès"
-  ,"face_capture_cancelled": "Enregistrement du visage annulé"
-  ,"download_model_prompt": "Télécharger le modèle"
-  ,"model_download_required": "Le modèle \"{lang}\" doit être téléchargé (~30 Mo)."
-  ,"vpn_required_note": "⚠️ Nécessite un VPN si vous êtes en Tunisie.\nRecommandé: ProtonVPN ou Windscribe (gratuits)"
-  ,"fingerprint_section_title": "Empreinte digitale"
-  ,"fingerprint_section_description": "L'empreinte utilise la biométrie native Android, séparée de Face ID ML Kit."
-  ,"fingerprint_native_hint": "Empreinte native non détectée automatiquement.\nSi votre téléphone a un capteur, le mode empreinte peut quand même fonctionner."
-  ,"fingerprint_connection_title": "Connexion par empreinte"
-  ,"fingerprint_not_available_status": "Non disponible — enregistrez une empreinte dans Android"
-  ,"fingerprint_enabled_status": "Activée ✓"
-  ,"fingerprint_disabled_status": "Désactivée"
-  ,"fingerprint_disabled_snackbar": "Empreinte désactivée"
-  ,"face_section_title": "Face ID ML Kit"
-  ,"face_section_description": "Face ID ML Kit nécessite la caméra frontale.\nSi elle est indisponible, vérifiez les permissions caméra."
-  ,"face_connection_title": "Face ID ML Kit"
-  ,"face_not_available_status": "Non disponible — caméra frontale requise"
-  ,"face_enabled_status": "Activé ✓"
-  ,"face_disabled_status": "Désactivé"
-  ,"face_disabled_snackbar": "Face ID ML Kit désactivé"
-  ,"mlkit_download_test_subtitle": "Tester le téléchargement des modèles"
-  ,"article_reference_duplicate": "Référence déjà existante ({source}) : {ref}"
-  ,"article_reference_detected": "Référence détectée ({source}) : {ref}"
-  ,"ocr_text_extracted": "Texte extrait par OCR."
-  ,"ocr_error": "Erreur OCR"
-  ,"article_reference_exists": "Cette référence existe déjà."
-  ,"article_created_success": "Article créé avec succès !"
-  ,"article_create_error": "Erreur création"
-  ,"image_uploaded_success": "Image uploadée avec succès"
-  ,"image_upload_error": "Erreur upload image"
-  ,"barcode_no_valid_result": "Aucun code-barres valide détecté (formats autorisés: EAN/UPC/Code128/Code39/QR)."
-  ,"mlkit_scan_error": "Erreur scan ML Kit"
-  ,"add_article_title": "Ajouter un article"
-  ,"designation_required": "Désignation *"
-  ,"price_required": "Prix (DT) *"
-  ,"stock_required": "Stock *"
-  ,"brand": "Marque"
-  ,"reference": "Référence"
-  ,"scan_in_progress": "Scan..."
-  ,"scan_camera": "Scanner caméra"
-  ,"scan_gallery": "Scanner galerie"
-  ,"barcode_formats_hint": "Formats ML Kit autorisés: EAN-13, EAN-8, UPC-A, UPC-E, Code128, Code39, QR"
-  ,"image_url": "URL Image"
-  ,"upload_in_progress": "Upload en cours..."
-  ,"choose_existing_file_ocr": "Choisir un fichier existant (+ OCR auto)"
-  ,"file": "Fichier"
-  ,"cloudinary_url_ready": "URL Cloudinary prête"
-  ,"subcategory": "Sous-catégorie"
-  ,"none_option": "--- Aucune ---"
-  ,"without_name": "Sans nom"
-  ,"required_field": "Champ requis"
-  ,"article_reference_exists_other": "Cette référence existe déjà pour un autre article."
-  ,"article_updated_success": "Article modifié avec succès !"
-  ,"error_generic": "Erreur"
-  ,"edit_article_title": "Modifier l'article"
-  ,"subcategory_created_success": "Sous-catégorie créée !"
-  ,"subcategory_updated_success": "Modifié avec succès !"
-  ,"subcategory_update_error": "Erreur modification"
-  ,"add_subcategory_title": "Ajouter une sous-catégorie"
-  ,"edit_subcategory_title": "Modifier sous-catégorie"
-  ,"name_required": "Nom *"
-  ,"parent_category_required": "Catégorie parente *"
-  ,"parent_category": "Catégorie parente"
-  ,"select_category": "Sélectionner une catégorie"
-  ,"choose_image": "Choisir image"
-  ,"camera": "Caméra"
-  ,"no_image_selected": "Aucune image sélectionnée"
-  ,"cart_empty": "Panier vide"
-  ,"add_items_before_order": "Ajoutez des articles avant de passer commande"
-  ,"cannot_place_order": "Impossible de passer la commande"
-  ,"checkout_finalize_title": "Finaliser la commande"
-  ,"your_cart_is_empty": "Votre panier est vide"
-  ,"documents_available_list": "Liste des documents disponibles."
-  ,"place_barcode_in_frame": "Placez le code-barres dans le cadre"
-  ,"code_detected": "Code détecté: {code}"
-  ,"no_readable_code_retry": "Aucun code lisible. Rapprochez-vous et réessayez."
-  ,"barcode_scan_title": "Scan code-barres (ML Kit)"
-  ,"flash": "Flash"
-  ,"close": "Fermer"
-  ,"camera_access_unavailable": "Impossible d'accéder à la caméra."
-  ,"camera_permissions_retry": "Vérifiez les permissions caméra puis réessayez."
-  ,"profile_updated_success": "Profil mis à jour avec succès"
-  ,"profile_update_error": "Erreur lors de la mise à jour du profil"
-  ,"my_profile": "Mon profil"
-  ,"gallery": "Galerie"
-  ,"full_name": "Nom complet"
-  ,"name_required_validation": "Nom requis"
-  ,"email_required_validation": "Email requis"
-  ,"email_invalid_validation": "Email invalide"
-  ,"avatar_url": "URL avatar"
-  ,"role": "Rôle"
-  ,"id": "ID"
-  ,"order_status_not_processed": "Non traité"
-  ,"order_status_processing": "En traitement"
-  ,"order_status_shipped": "Expédié"
-  ,"order_status_delivered": "Livré"
-  ,"order_status_cancelled": "Annulé"
-  ,"order_number": "Commande #{id}"
-  ,"change_status": "Changer le statut :"
-  ,"status_updated": "Statut mis à jour"
-  ,"status_update_error": "Erreur mise à jour"
-  ,"delete_order_question": "Supprimer la commande ?"
-  ,"order_of_client": "Commande #{id} de {client}"
-  ,"manage_orders": "Gestion des commandes"
-  ,"no_orders": "Aucune commande"
-  ,"unknown_client": "Client inconnu"
-  ,"change_status_tooltip": "Changer statut"
-  ,"articles_label": "Articles :"
-  ,"unknown_article": "Article inconnu"
-  ,"delete": "Supprimer"
-  ,"edit_role_of": "Modifier le rôle de {name}"
-  ,"admin_role": "Admin"
-  ,"user_role": "Utilisateur"
-  ,"role_changed_to": "{name} : rôle changé à \"{role}\""
-  ,"role_change_error": "Erreur changement de rôle"
-  ,"cannot_delete_self": "Vous ne pouvez pas supprimer votre propre compte."
-  ,"delete_user_question": "Supprimer l'utilisateur ?"
-  ,"delete_user_content": "Supprimer \"{name}\" ({email}) ?"
-  ,"manage_users": "Gestion des utilisateurs"
-  ,"no_users": "Aucun utilisateur"
-  ,"unknown": "Inconnu"
-  ,"you": "Vous"
-  ,"demote_to_user": "Rétrograder en utilisateur"
-  ,"promote_to_admin": "Promouvoir en admin"
-  ,"gallery_scan_error": "Erreur scan galerie"
-  ,"scan_with_camera": "Scanner avec la caméra"
-  ,"scan_from_gallery": "Scanner depuis la galerie"
-  ,"article_not_found": "Article introuvable"
-  ,"no_article_with_reference": "Aucun article avec la référence \"{ref}\".\nCréer un nouvel article prérempli ?"
-  ,"create": "Créer"
-  ,"delete_article_question": "Supprimer l'article ?"
-  ,"delete_named_item": "Supprimer \"{name}\" ?"
-  ,"article_deleted_success": "Article supprimé"
-  ,"delete_error": "Erreur suppression"
-  ,"manage_articles": "Gestion des articles"
-  ,"scan_reference": "Scanner une référence"
-  ,"search_article": "Rechercher un article..."
-  ,"no_article_found": "Aucun article trouvé"
-  ,"delete_subcategory_question": "Supprimer la sous-catégorie ?"
-  ,"deleted_success": "Supprimé avec succès"
-  ,"subcategories": "Sous-catégories"
-  ,"no_subcategory": "Aucune sous-catégorie"
+  "download_in_progress": "Téléchargement en cours...",
+  "login_subtitle": "Entrez vos informations pour continuer",
+  "email": "Email",
+  "password": "Mot de passe",
+  "login_button": "Se connecter",
+  "invalid_credentials": "Email ou mot de passe invalide",
+  "or": "ou",
+  "fingerprint": "Empreinte digitale",
+  "fingerprint_not_available": "Non disponible — configurez dans Android",
+  "press_to_login": "Appuyez pour vous connecter",
+  "faceid_label": "Face ID ML Kit",
+  "use_registered_face": "Utiliser votre visage enregistré",
+  "not_configured": "Non configuré",
+  "no_account": "Vous n'avez pas de compte ?",
+  "register_subtitle": "Inscrivez-vous pour accéder à toutes les fonctionnalités",
+  "name": "Nom",
+  "password_confirm_hint": "Retapez le mot de passe",
+  "register_success": "Compte créé avec succès",
+  "register_failed": "Échec de création du compte",
+  "register_action": "S'inscrire",
+  "enable_face_id_title": "Activer Face ID",
+  "enable_fingerprint_title": "Activer l'empreinte",
+  "face_id_setup_warning": "⚠️ Assurez-vous d'avoir configuré la reconnaissance faciale dans Paramètres Android → Sécurité → Reconnaissance faciale.",
+  "fingerprint_setup_warning": "⚠️ Assurez-vous d'avoir enregistré votre empreinte dans Paramètres Android → Sécurité → Empreinte digitale.",
+  "face_id_enabled_success": "Face ID activé avec succès",
+  "fingerprint_enabled_success": "Empreinte activée avec succès",
+  "biometric_credentials_or_unavailable": "❌ Identifiants invalides ou biométrie non disponible",
+  "face_id_mlkit_title": "Face ID ML Kit",
+  "face_id_mlkit_description": "✅ Reconnaissance précise basée sur les landmarks du visage\n📸 Vous verrez un écran de capture pour enregistrer votre visage\n🔐 Les données du visage sont stockées localement de façon sécurisée",
+  "face_id_mlkit_enabled_success": "Face ID ML Kit activé avec succès",
+  "face_capture_cancelled": "Enregistrement du visage annulé",
+  "download_model_prompt": "Télécharger le modèle",
+  "model_download_required": "Le modèle \"{lang}\" doit être téléchargé (~30 Mo).",
+  "vpn_required_note": "⚠️ Nécessite un VPN si vous êtes en Tunisie.\nRecommandé: ProtonVPN ou Windscribe (gratuits)",
+  "fingerprint_section_title": "Empreinte digitale",
+  "fingerprint_section_description": "L'empreinte utilise la biométrie native Android, séparée de Face ID ML Kit.",
+  "fingerprint_native_hint": "Empreinte native non détectée automatiquement.\nSi votre téléphone a un capteur, le mode empreinte peut quand même fonctionner.",
+  "fingerprint_connection_title": "Connexion par empreinte",
+  "fingerprint_not_available_status": "Non disponible — enregistrez une empreinte dans Android",
+  "fingerprint_enabled_status": "Activée ✓",
+  "fingerprint_disabled_status": "Désactivée",
+  "fingerprint_disabled_snackbar": "Empreinte désactivée",
+  "face_section_title": "Face ID ML Kit",
+  "face_section_description": "Face ID ML Kit nécessite la caméra frontale.\nSi elle est indisponible, vérifiez les permissions caméra.",
+  "face_connection_title": "Face ID ML Kit",
+  "face_not_available_status": "Non disponible — caméra frontale requise",
+  "face_enabled_status": "Activé ✓",
+  "face_disabled_status": "Désactivé",
+  "face_disabled_snackbar": "Face ID ML Kit désactivé",
+  "mlkit_download_test_subtitle": "Tester le téléchargement des modèles",
+  "article_reference_duplicate": "Référence déjà existante ({source}) : {ref}",
+  "article_reference_detected": "Référence détectée ({source}) : {ref}",
+  "ocr_text_extracted": "Texte extrait par OCR.",
+  "ocr_error": "Erreur OCR",
+  "article_reference_exists": "Cette référence existe déjà.",
+  "article_created_success": "Article créé avec succès !",
+  "article_create_error": "Erreur création",
+  "image_uploaded_success": "Image uploadée avec succès",
+  "image_upload_error": "Erreur upload image",
+  "barcode_no_valid_result": "Aucun code-barres valide détecté (formats autorisés: EAN/UPC/Code128/Code39/QR).",
+  "mlkit_scan_error": "Erreur scan ML Kit",
+  "add_article_title": "Ajouter un article",
+  "designation_required": "Désignation *",
+  "price_required": "Prix (DT) *",
+  "stock_required": "Stock *",
+  "brand": "Marque",
+  "scan_in_progress": "Scan...",
+  "scan_camera": "Scanner caméra",
+  "scan_gallery": "Scanner galerie",
+  "barcode_formats_hint": "Formats ML Kit autorisés: EAN-13, EAN-8, UPC-A, UPC-E, Code128, Code39, QR",
+  "image_url": "URL Image",
+  "upload_in_progress": "Upload en cours...",
+  "choose_existing_file_ocr": "Choisir un fichier existant (+ OCR auto)",
+  "file": "Fichier",
+  "cloudinary_url_ready": "URL Cloudinary prête",
+  "subcategory": "Sous-catégorie",
+  "none_option": "--- Aucune ---",
+  "without_name": "Sans nom",
+  "required_field": "Champ requis",
+  "article_reference_exists_other": "Cette référence existe déjà pour un autre article.",
+  "article_updated_success": "Article modifié avec succès !",
+  "error_generic": "Erreur",
+  "edit_article_title": "Modifier l'article",
+  "subcategory_created_success": "Sous-catégorie créée !",
+  "subcategory_updated_success": "Modifié avec succès !",
+  "subcategory_update_error": "Erreur modification",
+  "add_subcategory_title": "Ajouter une sous-catégorie",
+  "edit_subcategory_title": "Modifier sous-catégorie",
+  "name_required": "Nom *",
+  "parent_category_required": "Catégorie parente *",
+  "parent_category": "Catégorie parente",
+  "select_category": "Sélectionner une catégorie",
+  "choose_image": "Choisir image",
+  "camera": "Caméra",
+  "no_image_selected": "Aucune image sélectionnée",
+  "cart_empty": "Panier vide",
+  "add_items_before_order": "Ajoutez des articles avant de passer commande",
+  "cannot_place_order": "Impossible de passer la commande",
+  "checkout_finalize_title": "Finaliser la commande",
+  "your_cart_is_empty": "Votre panier est vide",
+  "documents_available_list": "Liste des documents disponibles.",
+  "place_barcode_in_frame": "Placez le code-barres dans le cadre",
+  "code_detected": "Code détecté: {code}",
+  "no_readable_code_retry": "Aucun code lisible. Rapprochez-vous et réessayez.",
+  "barcode_scan_title": "Scan code-barres (ML Kit)",
+  "flash": "Flash",
+  "close": "Fermer",
+  "camera_access_unavailable": "Impossible d'accéder à la caméra.",
+  "camera_permissions_retry": "Vérifiez les permissions caméra puis réessayez.",
+  "profile_updated_success": "Profil mis à jour avec succès",
+  "profile_update_error": "Erreur lors de la mise à jour du profil",
+  "my_profile": "Mon profil",
+  "gallery": "Galerie",
+  "full_name": "Nom complet",
+  "name_required_validation": "Nom requis",
+  "email_required_validation": "Email requis",
+  "email_invalid_validation": "Email invalide",
+  "avatar_url": "URL avatar",
+  "role": "Rôle",
+  "id": "ID",
+  "order_status_not_processed": "Non traité",
+  "order_status_processing": "En traitement",
+  "order_status_shipped": "Expédié",
+  "order_status_delivered": "Livré",
+  "order_status_cancelled": "Annulé",
+  "order_number": "Commande #{id}",
+  "change_status": "Changer le statut :",
+  "status_updated": "Statut mis à jour",
+  "status_update_error": "Erreur mise à jour",
+  "delete_order_question": "Supprimer la commande ?",
+  "order_of_client": "Commande #{id} de {client}",
+  "manage_orders": "Gestion des commandes",
+  "no_orders": "Aucune commande",
+  "unknown_client": "Client inconnu",
+  "change_status_tooltip": "Changer statut",
+  "articles_label": "Articles :",
+  "unknown_article": "Article inconnu",
+  "delete": "Supprimer",
+  "edit_role_of": "Modifier le rôle de {name}",
+  "admin_role": "Admin",
+  "user_role": "Utilisateur",
+  "role_changed_to": "{name} : rôle changé à \"{role}\"",
+  "role_change_error": "Erreur changement de rôle",
+  "cannot_delete_self": "Vous ne pouvez pas supprimer votre propre compte.",
+  "delete_user_question": "Supprimer l'utilisateur ?",
+  "delete_user_content": "Supprimer \"{name}\" ({email}) ?",
+  "manage_users": "Gestion des utilisateurs",
+  "no_users": "Aucun utilisateur",
+  "unknown": "Inconnu",
+  "you": "Vous",
+  "demote_to_user": "Rétrograder en utilisateur",
+  "promote_to_admin": "Promouvoir en admin",
+  "gallery_scan_error": "Erreur scan galerie",
+  "scan_with_camera": "Scanner avec la caméra",
+  "scan_from_gallery": "Scanner depuis la galerie",
+  "article_not_found": "Article introuvable",
+  "no_article_with_reference": "Aucun article avec la référence \"{ref}\".\nCréer un nouvel article prérempli ?",
+  "create": "Créer",
+  "delete_article_question": "Supprimer l'article ?",
+  "delete_named_item": "Supprimer \"{name}\" ?",
+  "article_deleted_success": "Article supprimé",
+  "delete_error": "Erreur suppression",
+  "manage_articles": "Gestion des articles",
+  "scan_reference": "Scanner une référence",
+  "search_article": "Rechercher un article...",
+  "no_article_found": "Aucun article trouvé",
+  "delete_subcategory_question": "Supprimer la sous-catégorie ?",
+  "deleted_success": "Supprimé avec succès",
+  "subcategories": "Sous-catégories",
+  "no_subcategory": "Aucune sous-catégorie",
+  "remember_me": "Se souvenir de moi",
+  "forgot_password": "Mot de passe oublié?",
+  "thank_you_order": "Merci pour votre commande",
+  "order_details": "Détails de la commande",
+  "continue_shopping": "Continuer mes achats",
+  "back_home": "Retour à l'accueil",
+  "order_will_be_processed": "Nous traiterons votre commande dans les plus brefs délais.",
+  "order_number_label": "Numéro de commande",
+  "total_amount": "Montant total",
+  "status": "Statut",
+  "date": "Date",
+  "order_summary": "Résumé de la commande",
+  "total_items": "Total des articles",
+  "shipping_fee": "Frais de livraison",
+  "total_to_pay": "Total à payer",
+  "delivery_info": "Informations de livraison",
+  "fullname": "Nom complet",
+  "address": "Adresse complète",
+  "city": "Ville",
+  "phone": "Téléphone",
+  "confirm_order": "Confirmer la commande",
+  "free": "Gratuit",
+  "mon_panier": "Mon Panier",
+  "no_articles": "Aucun article",
+  "price": "Prix",
+  "stock_label": "Stock :",
+  "brand_label": "Marque :",
+  "edit_article_tooltip": "Modifier l'article"
 }

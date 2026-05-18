@@ -13,7 +13,7 @@ class Categorieslist extends StatelessWidget {
     contoller.fetchAllCategories();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Categories"),
+        title: Text("categories".tr),
       ),
       body: Obx(
         () => contoller.isLoading.value == true

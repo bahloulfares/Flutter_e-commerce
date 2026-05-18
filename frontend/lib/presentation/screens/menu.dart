@@ -27,7 +27,7 @@ class Menu extends StatelessWidget {
             route: '/Categories',
           ),
           MenuItemData(
-            titleKey: 'products',
+            titleKey: 'produits',
             subtitleKey: 'view_catalog',
             icon: Icons.shopping_bag_rounded,
             iconBg: const Color(0xFF0EA5E9),
@@ -41,7 +41,7 @@ class Menu extends StatelessWidget {
             route: '/Documents',
           ),
           MenuItemData(
-            titleKey: 'cart',
+            titleKey: 'panier',
             subtitleKey: 'shopping_cart',
             icon: Icons.shopping_cart_rounded,
             iconBg: const Color(0xFF10B981),
