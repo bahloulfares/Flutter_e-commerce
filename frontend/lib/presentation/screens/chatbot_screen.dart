@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:atelier7/utils/chatbot_service.dart';
+import 'package:atelier7/data/datasource/models/article.model.dart';
 import 'package:get/get.dart';
 
 // ── Modèle de message enrichi ─────────────────────────────────────────────────
@@ -331,7 +332,17 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     final bool inStock = stock > 0;
 
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/Products'),
+      onTap: () {
+        try {
+          // Convertir le Map dynamique en objet Article pour la page de détails
+          final articleObj = Article.fromJson(product as Map<String, dynamic>);
+          Navigator.pushNamed(context, '/details', arguments: articleObj);
+        } catch (e) {
+          developer.log('Erreur conversion produit: $e', error: e);
+          // Fallback sur la liste des produits si erreur
+          Navigator.pushNamed(context, '/Products');
+        }
+      },
       child: Container(
         width: 145,
         margin: const EdgeInsets.only(right: 10),
